@@ -1,0 +1,19 @@
+.body {
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    margin: 0 auto;
+    width: 600px;
+    max-width: 600px;
+    min-height: 100%;
+    box-sizing: border-box;
+}
+
+/* .main {
+    margin-bottom: 50px;
+    padding: 40px 40px;
+    padding-bottom: 50px;
+    background: #fff;
+} */

@@ -1,0 +1,133 @@
+.feedback_final {
+    margin: 0;
+    padding: 0;
+    background-color: #EDF2FB;
+}
+
+.feedback_final_rank{
+    background-color: #9CB6E5;
+    border-top-left-radius: 50px;
+    border-top-right-radius: 50px;
+    padding: 20px 60px;
+    padding-bottom: 80px;
+}
+
+.rank_title{
+    font-style:italic;
+    font-weight: 700;
+    font-size: 40px;
+    color: #fff;
+}
+
+.rank_first{
+    margin-top: 30px;
+    margin-bottom:30px;
+    display: flex;
+    background-color:#fff;
+    height:150px;
+    border-radius: 5px;
+}
+
+.rank_first_num {
+    position: relative;
+    margin-left: 30px;
+    margin-top: 25px;
+    display: inline-block;
+}
+
+.text_overlay{
+    position:absolute;
+    top: 15%;
+    left:23%;
+}
+
+.r_f_main{
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.r_f_sub{
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    margin-left: 10px;
+}
+
+.rank_name{
+    margin-left: 70px;
+    margin-top: 50px;
+    font-size: 30px;
+    font-weight:bold;
+   
+}
+
+.rank_score{
+    margin-left: 50px;
+    margin-top: 50px;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.rank_other{
+    background-color: #fff;
+    height: 550px;
+    border-radius: 5px;
+}
+
+.rank_other_list{
+    display: flex;
+    margin-left: 50px;
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+.rank_other_num{
+    margin-top: 20px;
+}
+
+.other_rank_name{
+    margin-left: 80px; 
+    margin-top: 20px;
+}
+
+.other_rank_score{
+    margin-left: 80px; 
+    margin-top: 20px;
+}
+
+
+.feedback_final_btn{
+    margin-top: 40px;
+    display: flex;
+    text-align: center;
+    gap: 15px;
+    font-size: 20px;
+}
+
+.retry{
+    width: 230px;
+    height: 60px;
+    line-height: 60px;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    box-shadow: 0px 5px 6px 2px #cacaca;
+}
+
+.gohome{
+    width: 230px;
+    height: 60px;
+    line-height: 60px;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    box-shadow: 0px 5px 6px 2px #cacaca;
+}

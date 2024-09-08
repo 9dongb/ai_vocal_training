@@ -4,32 +4,41 @@ import './join_member.css';
 import { Link, useNavigate } from 'react-router-dom';
 
 function Join_member() {
-    const [nickname, setNickname] = useState('');
-    const [username, setUsername] = useState('');
+    const [id, setId] = useState('');
+    const [name, setName] = useState('');
+    const [age, setAge] = useState('');
+    const [gender, setGender] = useState('');
     const [password, setPassword] = useState('');
-    const [email, setEmail] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
     const navigate = useNavigate();
 
     const handleJoin = async () => {
         // 필드 검증
-        if (!nickname || !username || !password || !email) {
+        if (!name || !id || !age || !gender || !password || !confirmPassword ) {
             alert('모든 필드를 입력해 주세요.');
             return;
         }
+
+        //비밀번호와 비밀번호 확인 일치 여부
+        if(password !== confirmPassword){
+            alert('비밀번호가 일치하지 않습니다.');
+            return;
+        }
+
         try {
-            const response = await fetch('http://localhost:5000/register', { // 서버 엔드포인트
+            const response = await fetch('http://localhost:3001/register', { // 서버 엔드포인트
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ nickname, username, password, email }),
+                body: JSON.stringify({ name, id, password, age, gender  }), //서버로 전송되는 것
             });
 
             const data = await response.json();
 
-            if (data.status === 'success') {
+            if (response.ok && data.success) {
                 // 회원가입 성공 시 메시지 표시 후 로그인 페이지로 이동
                 setSuccess(true);
                 setTimeout(() => {
@@ -52,28 +61,69 @@ function Join_member() {
                     <div className="join_member_logo">
                         <img className="join_member_logo_img" src={"/img/logo.png"} alt="logo" />
                     </div>
+
                     <div className="join_member_area">
                         <h2>JOIN</h2>
-                        <div className='join_member_nickname'>
+                        
+                        <div className='join_member_id'>
                             <input
                                 type='text'
-                                id='nickname'
-                                placeholder='NAME | 닉네임을 입력해주세요'
-                                value={nickname}
-                                onChange={(e) => setNickname(e.target.value)}
-                            />
-                            <br />
-                        </div>
-                        <div className='join_member_username'>
-                            <input
-                                type='text'
-                                id='username'
+                                id='id'
                                 placeholder='ID | 아이디를 입력해주세요'
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
+                                value={id}
+                                onChange={(e) => setId(e.target.value)}
                             />
                             <br />
                         </div>
+
+                        <div className='join_member_name'>
+                            <input
+                                type='text'
+                                id='name'
+                                placeholder='NAME | 이름을 입력해주세요'
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                            />
+                            <br />
+                        </div>
+
+                        <div className='join_member_age'>
+                            <input
+                                type='text'
+                                id='age'
+                                placeholder='AGE | 나이를 입력해주세요'
+                                value={age}
+                                onChange={(e) => setAge(e.target.value)}
+                            />
+                            <br />
+                        </div>
+
+                        <div className='join_member_gender'>
+                        <label className='gender-selection-label'>성별을 선택해주세요</label>
+                        <input 
+                            type='radio' 
+                            id='male' 
+                            name='gender' 
+                            value='male' 
+                            className='gender-option'
+                            checked={gender === 'male'}
+                            onChange={(e) => setGender(e.target.value)}
+                        />
+                        <label htmlFor='male' className='gender-label'>남</label>
+
+                        <input 
+                            type='radio' 
+                            id='female' 
+                            name='gender' 
+                            value='female' 
+                            className='gender-option'
+                            checked={gender === 'female'}
+                            onChange={(e) => setGender(e.target.value)}
+                        />
+                        <label htmlFor='female' className='gender-label'>여</label>
+                    </div>
+
+
                         <div className='join_member_password'>
                             <input
                                 type='password'
@@ -82,14 +132,16 @@ function Join_member() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
+                            <br />
                         </div>
-                        <div className='join_member_mail'>
+
+                        <div className='join_member_password'>
                             <input
-                                type='text'
-                                id='mail'
-                                placeholder='MAIL | 이메일을 입력해주세요'
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                type='password'
+                                id='confirm_password'
+                                placeholder='PW | 비밀번호를 다시 입력해주세요'
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
                             />
                             <br />
                         </div>

@@ -1,134 +1,138 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useRef } from 'react';
 import './immediate_feedback_analyze.css';
 import "./common/root.css";
-import YouTube from 'react-youtube';
-import { Link } from 'react-router-dom';
 import Header2 from './common/Header2.js';
 
 function Immediate_feedback_analyze() {
-  const videoId = "nENMWU6BtAo"; // 유튜브 동영상 ID
+  const [isPlaying, setIsPlaying] = useState(false); // 재생 상태
+  const [isPaused, setIsPaused] = useState(false); // 녹음 일시 중지 상태
+  const audioRef = useRef(null); // 오디오 요소 참조
+  const [mediaRecorder, setMediaRecorder] = useState(null); // MediaRecorder 참조
+  const [recordedChunks, setRecordedChunks] = useState([]); // 녹음된 데이터 저장
 
-  const [message, setMessage] = useState("분석중입니다."); // 초기 메시지 상태
-  const [score, setScore] = useState(0); // 초기 점수 상태
-  const [tuneValue, setTuneValue] = useState(0); // 음정 초기 값
-  const [beatValue, setBeatValue] = useState(0); // 박자 초기 값
+  // 오디오 재생 및 녹음 시작
+  const handleStart = async () => {
+    if (audioRef.current) {
+      audioRef.current.play();
+    }
 
-  const opts = {
-    height: '350',
-    width: '550',
-    playerVars: {
-      autoplay: 1,
-    },
-  };
+    // 녹음 시작
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      setMediaRecorder(recorder);
 
-  const onReady = (event) => {
-    // 동영상이 준비되었을 때의 처리
-    event.target.pauseVideo(); // 자동 재생 후 일시 정지
-  };
-
-  useEffect(() => {
-    // 10초 후 그래프 애니메이션 시작
-    const timer1 = setTimeout(() => {
-      setTuneValue(85); // 목표 값 설정
-      setBeatValue(90); // 목표 값 설정
-
-      // 점수 애니메이션 시작
-      let startScore = 0;
-      const endScore = 88;
-      const scoreDuration = 25000; // 25초 동안 증가
-      const scoreIncrement = endScore / (scoreDuration / 100);
-      const animateScore = () => {
-        startScore += scoreIncrement;
-        if (startScore <= endScore) {
-          setScore(Math.round(startScore));
-          setTimeout(animateScore, 100); // 100ms 간격으로 증가
+      const chunks = [];
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          chunks.push(event.data);
         }
       };
-      animateScore();
-    }, 18000);
 
-    // 15초 후 메시지 변경
-    const timer2 = setTimeout(() => {
-      setMessage("음정이 낮습니다. 한 키 올려주세요!");
-    }, 15000);
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'audio/wav' });
+        setRecordedChunks(chunks);
+        console.log('녹음된 데이터 Blob:', blob);
+        uploadToServer(blob); // 녹음이 멈추면 서버로 업로드
+      };
 
-    // 25초 후 메시지 변경
-    const timer3 = setTimeout(() => {
-      setMessage("음정이 좋아졌습니다!");
-    }, 35000);
+      recorder.start();
+      setIsPlaying(true);
+      setIsPaused(false); // 처음 시작할 때는 중지 상태 아님
+      console.log('녹음 및 재생 시작');
+    } catch (error) {
+      console.error('녹음 시작 오류:', error);
+    }
+  };
 
-    return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-      clearTimeout(timer3);
-    };
-  }, []);
+  // 녹음 일시 중지 함수
+  const handlePause = () => {
+    if (mediaRecorder && mediaRecorder.state === "recording") {
+      mediaRecorder.pause(); // 녹음 일시 중지
+      audioRef.current.pause(); // 오디오 재생 멈춤
+      setIsPaused(true);
+      setIsPlaying(false);
+      console.log('녹음 및 재생 일시 중지');
+    }
+  };
+
+  // 녹음 재개 함수
+  const handleResume = () => {
+    if (mediaRecorder && mediaRecorder.state === "paused") {
+      mediaRecorder.resume(); // 녹음 재개
+      audioRef.current.play(); // 오디오 재생 재개
+      setIsPaused(false);
+      setIsPlaying(true);
+      console.log('녹음 및 재생 재개');
+    }
+  };
+
+  // 녹음 완전히 멈추는 함수 (업로드는 recorder.onstop에서 처리됨)
+  const handleStop = () => {
+    if (mediaRecorder && mediaRecorder.state !== "inactive") {
+      mediaRecorder.stop(); // 녹음 완전 중지
+      audioRef.current.pause(); // 오디오 재생 멈춤
+      audioRef.current.currentTime = 0; // 재생 위치 초기화
+      setIsPlaying(false);
+      setIsPaused(false);
+      console.log('녹음 중지');
+    }
+  };
+
+  // 서버로 녹음된 파일 전송 함수
+  const uploadToServer = async (blob) => {
+    const formData = new FormData();
+    formData.append('audio', blob, 'recording.wav'); // 서버에 파일로 전송
+
+    try {
+      const response = await fetch('http://localhost:3001/uploads', {
+        method: 'POST',
+        body: formData,
+      });
+      const result = await response.json();
+      console.log('서버 응답:', result);
+    } catch (error) {
+      console.error('서버로 파일 업로드 실패:', error);
+    }
+  };
 
   return (
     <div className="body">
       <div className='container'>
-      <Header2/>
-      <div className='immediate_feedback_analyze'>
-        <div className='song_container'>
-          <div className='song_info_container'>
-            <div className='song_img'>
-              <img src='./img/songs/supernova.png' alt="Supernova" />
-            </div>
+        <Header2 />
+        <div className='immediate_feedback_analyze'>
+          <div className='song_container'>
+            <div className='song_info_container'>
+              <div className='song_img'>
+                <img src='./img/songs/supernova.png' alt="Supernova" />
+              </div>
               <div className='song_name'>Supernova</div>
               <div className='song_artist'>aespa</div>
-          </div>
-
-          <div className='song_lyrics_container'>
-            <YouTube videoId={videoId} opts={opts} onReady={onReady} /> {/* 유튜브 동영상 컴포넌트 */}
-          </div>
-        
-          <div className='btn_container'>
-            <div className = 'playbtn_container'>
-              <img src = '/img/playbtn.png'  />
-            </div>
-            <div className = 'stopbtn_container'>
-              <img src = '/img/stopbtn.png' />
-            </div>
-            <div className = 'pausetn_container'>
-              <img src = '/img/pausebtn.png'  />
-            </div>
-          </div>
-
-          <div className='feedback_container'>
-
-            <div className='feedback_title'>실시간 피드백</div>
-            <div className='feedback_inner'>
-              <div className='feedback_message'>
-                {message}
-              </div>
             </div>
 
-            <div className='feedback_analyze_score'>
-              <div className='feedback_score_title'>
-                <div className='feedback_score'>SCORE</div>
-                <div className='feedback_score_number'>{score}</div>
+            <div className='song_lyrics_container'>가사</div>
+
+            <div className='btn_container'>
+              {/* Play 버튼: 녹음 시작 또는 재개 */}
+              <div className='playbtn_container'>
+                <img
+                  src={isPlaying ? '/img/stopbtn.png' : '/img/playbtn.png'}
+                  alt="Play or Pause Button"
+                  onClick={isPlaying ? handlePause : handleStart} // 상태에 따라 재생/일시정지
+                />
               </div>
 
-              <div className='feedback_bar_container'>
-                <div className='feedback_label'>음정</div>
-                <div className='feedback_tune_bar' style={{ '--value': tuneValue }}></div>
-              </div>
-
-              <div className='feedback_bar_container'>
-                <div className='feedback_label'>박자</div>
-                <div className='feedback_beat_bar' style={{ '--value': beatValue }}></div>
-              </div>
-
-              <div className='feedback_button'>
-                <div className='feedback_restartBtn'>재시작</div>
-                <Link to={"/immediate_feedback_final"}>
-                  <div className='feedback_endBtn'>종료</div>
-                </Link>
+              {/* Stop 버튼: 녹음 중지 및 서버 업로드 */}
+              <div className='stopbtn_container'>
+                <img
+                  src='/img/pausebtn.png'
+                  alt="Stop Button"
+                  onClick={handleStop} // 녹음 중지
+                  disabled={!isPlaying && !isPaused} // 녹음 중이 아니면 비활성화
+                />
               </div>
             </div>
-
-            
-          </div>
+            <audio ref={audioRef} src="./mr/babyshark.wav" />
           </div>
         </div>
       </div>

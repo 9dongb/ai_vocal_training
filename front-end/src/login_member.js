@@ -4,30 +4,30 @@ import './login_member.css';
 import { Link, useNavigate } from 'react-router-dom';
 
 function Login_member() {
-    const [username, setUsername] = useState('');
+    const [id, setId] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
     const navigate = useNavigate();
 
     const handleLogin = async () => {
         // 필드 검증
-        if (!username || !password) {
+        if (!id || !password) {
             alert('아이디와 비밀번호를 모두 입력해 주세요.');
             return;
         }
 
         try {
-            const response = await fetch('http://localhost:5000/login', {
+            const response = await fetch('http://localhost:3001/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, password }),
+                body: JSON.stringify({ id, password }),
             });
 
             const data = await response.json();
 
-            if (data.status === 'success') {
+            if (response.ok && data.success) {
                 // 로그인 성공 시 메인 페이지로 이동
                 navigate("/main");
             } else {
@@ -55,8 +55,8 @@ function Login_member() {
                                 type='text' 
                                 id='username' 
                                 placeholder='ID | 아이디를 입력해주세요' 
-                                value={username} 
-                                onChange={(e) => setUsername(e.target.value)}
+                                value={id} 
+                                onChange={(e) => setId(e.target.value)}
                             />
                             <br/>
                         </div>

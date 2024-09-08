@@ -36,11 +36,9 @@ function Main() {
                 </div>
                 <div id='top100_list'>
                     <div className='title'>
-                        <Link to={"/record"}>
                             <div className='title_main'>
                                 TOP 100
-                            </div>
-                        </Link>    
+                            </div>           
                     </div>
                     <div id='top100'>
                         <Link to={"/immediate_feedback_analyze"}>

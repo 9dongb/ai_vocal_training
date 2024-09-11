@@ -4,12 +4,12 @@ import pymysql
 # DATABASE_USER = ""
 # DATABASE_PASSWORD = ""
 
-DATABASE_DB = "singking_db"
+DATABASE_DB = "singking"
 DATABASE_PORT = 3306
 
 DATABASE_HOST = "localhost"
 DATABASE_USER = "root"
-DATABASE_PASSWORD = "1541"
+DATABASE_PASSWORD = "1234"
 
 # Database 클래스는 MySQL 데이터베이스와 연결을 담당
 class Database:
@@ -24,14 +24,17 @@ class Database:
         )  
         self.cursor = self.conn.cursor(pymysql.cursors.DictCursor) # (2) 연결자로 부터 DB를 조작할 Cusor 생성 (커서이름 = 연결자.cursor()) 
 
-    def db_login(self, user_id):
-        SQL = 'SELECT * FROM singking_db.user_info where user_id = %s'
-        self.cursor.execute(SQL, user_id)
-        data = self.cursor.fetchall()
+    def db_login(self, user_id, user_password):
+        try:
 
-        return data
-
-    def db_register(self, user_id, user_pw):
+            SQL = 'SELECT * FROM singking_db.user_info where user_id = %s'
+            self.cursor.execute(SQL, user_id)
+            data = self.cursor.fetchall()
+            return {'status':'success', 'user_id': data}
+        except:
+            return {'message':'fail'}
+        
+    def db_register(self, user_id, user_name, user_age, user_gender, user_pw):
         try:
             SQL = '''INSERT INTO singking_db.user_info (user_id, user_name, user_age, user_gender, user_pw, user_membership)
             VALUES (%s, %s, %s, %s,  %s, %s)'''
@@ -40,4 +43,4 @@ class Database:
             self.conn.commit()
             return {'status':'success'}
         except:
-            return {'status':'fail'}
+            return {'message':'fail'}

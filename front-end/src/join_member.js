@@ -28,7 +28,7 @@ function Join_member() {
         }
 
         try {
-            const response = await fetch('http://localhost:3001/register', { // 서버 엔드포인트
+            const response = await fetch('http://localhost:5000/register', { // 서버 엔드포인트
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ function Join_member() {
 
             const data = await response.json();
 
-            if (response.ok && data.success) {
+            if (data.status ==='success') {
                 // 회원가입 성공 시 메시지 표시 후 로그인 페이지로 이동
                 setSuccess(true);
                 setTimeout(() => {

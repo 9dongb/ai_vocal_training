@@ -11,7 +11,7 @@ app = Flask(__name__)
 CORS(app, supports_credentials=True)
 app.secret_key = "Um_AI_Diary_Hungry_BBC_BBQ_Chicken"
 
-UPLOAD_FOLDER = 'upload'
+UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 db = Database()
@@ -20,12 +20,14 @@ db = Database()
 def login():
     if request.method == "POST":
         data = request.get_json()
-        user_id = data['username']
         
-        login_data = db.db_login(user_id)
+        user_id = data['id']
+        user_password = data['password']
+        
+        login_data = db.db_login(user_id, user_password)
 
-        print(login_data)
-        return {"status":"success"}
+        print(login_data['user_id'])
+        return {"status":"success", 'user_id':login_data['user_id']}
     else:
 
         return {"message":"로그인 에러"}
@@ -34,15 +36,26 @@ def login():
 def register():
     if request.method == "POST":
         data = request.get_json()
-        user_id = data['username']
+    
+        user_id = data['id']
+        user_age = data['age']
+        user_gender = data['gender']
+        user_name = data['name']
         user_pw = data['password']
 
-        register_data = db.db_register(user_id, user_pw)
+        register_data = db.db_register(user_id, user_name, user_age, user_gender, user_pw)
         print(register_data)
         return register_data
 
-@app.route("/upload", methods=["GET", "POST"])
+    
+@app.route("/uploads", methods=["GET", "POST"])
 def upload():
+    # 업로드 폴더 경로 설정
+    UPLOAD_FOLDER = 'uploads/'
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
+
+
        # 'audio_file'은 JavaScript에서 전송한 FormData key와 일치해야 합니다.
     if 'audio' not in request.files:
         return jsonify({"error": "No audio file part"}), 400

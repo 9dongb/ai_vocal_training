@@ -17,7 +17,7 @@ function Login_member() {
         }
 
         try {
-            const response = await fetch('http://localhost:3001/login', {
+            const response = await fetch('http://localhost:5000/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -27,7 +27,7 @@ function Login_member() {
 
             const data = await response.json();
 
-            if (response.ok && data.success) {
+            if (data.status==='success') {
                 // 로그인 성공 시 메인 페이지로 이동
                 navigate("/main");
             } else {

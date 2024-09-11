@@ -85,7 +85,7 @@ function Immediate_feedback_analyze() {
     formData.append('audio', blob, 'recording.wav'); // 서버에 파일로 전송
 
     try {
-      const response = await fetch('http://localhost:3001/uploads', {
+      const response = await fetch('http://localhost:5000/uploads', {
         method: 'POST',
         body: formData,
       });

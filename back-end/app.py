@@ -25,9 +25,7 @@ def login():
         user_password = data['password']
         
         login_data = db.db_login(user_id, user_password)
-
-        print(login_data['user_id'])
-        return {"status":"success", 'user_id':login_data['user_id']}
+        return login_data
     else:
 
         return {"message":"로그인 에러"}

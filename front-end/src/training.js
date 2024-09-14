@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import Footer from "./common/Footer";
 import "./common/root.css";
 const Training = () => {
@@ -12,3 +13,25 @@ const Training = () => {
 };
 
 export default Training;
+=======
+import React from 'react';
+import Footer from'./common/Footer';
+import './training.css';
+import './common/root.css';
+
+function Training(){
+    return(
+        <div className='body'>
+            <div className='container'>
+                <div className='main'>
+                
+                </div>
+                <Footer />
+            </div>
+
+        </div>
+        
+    );
+}
+export default Training;
+>>>>>>> c8957ca (메인페이지 구현)

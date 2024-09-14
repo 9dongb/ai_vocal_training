@@ -70,13 +70,8 @@ def upload():
         file.save(file_path)
         return jsonify({"message": "File saved successfully", "file_path": file_path}), 200
     
-@app.route("/vocal_analysis", methods=["GET", "POST"])
-def vocal_analysis():
-    va = VocalAnalysis('flower')
-    
-    result = va.pitch_comparison()
-    print(result)
-
-    return 'hi'
 if __name__ == "__main__":
     app.run(debug=True)
+
+
+

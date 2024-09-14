@@ -9,6 +9,7 @@ import Join_member from "./join_member.js";
 import Feedbacklist_member from "./feedbacklist_member.js";
 import Immediate_feedback_final from "./immediate_feedback_final.js";
 import Feedback_final from "./feedback_final.js";
+import Training from "./training.js";
 
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
           <Route path="/immediate_feedback_final" element={<Immediate_feedback_final/>}></Route>
           <Route path="/feedback_final" element={<Feedback_final/>}></Route>
           <Route path="/" element={<Navigate to="/login" />} /> {/*기본 경로 /login으로 설정 */}
+          <Route path="/training" element={<Training/>}></Route>
 
         </Routes>
       </BrowserRouter>

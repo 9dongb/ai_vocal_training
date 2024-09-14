@@ -71,5 +71,21 @@ def upload():
         file.save(file_path)
         return jsonify({"message": "File saved successfully", "file_path": file_path}), 200
     
+ #랭킹 데이터 -- 민지원
+@app.route('/weekly_ranking', methods=['GET'])
+def get_weekly_ranking():
+    try:
+        data = db.get_weekly_ranking()
+
+        if data:
+            return jsonify({'status': 'success', 'data': data}), 200
+        else:
+            return jsonify({'status': 'fail', 'message': 'No ranking data found'}), 404
+    except Exception as e:
+        return jsonify({'status': 'fail', 'message': str(e)}), 500
+    
 if __name__ == "__main__":
     app.run(debug=True)
+
+
+

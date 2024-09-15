@@ -42,6 +42,55 @@
   font-size:25px;
   font-weight: bold;
   color: #525252;
+    margin-bottom: 50px;
+    padding: 40px 40px;
+    padding-bottom: 50px;
+    background: #EEF2F2;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+}
+
+.singking_battle_title ,.singking_grow_title, .singking_ability_title, .weekly_ranking_title{
+    font-size:32px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #737373;
+    /*color: #4A4A4A;*/
+    margin-left: 10px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.battle_component{
+    width:500px;
+    height: 130px;
+     background-color: #FFFFFF;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    border: 2px solid #BFCFEC;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease-in-out;
+}
+
+.battle_component:hover {
+    transform: translateY(-5px);
+}
+
+.battle_text{
+    margin-left: 60px;
+}
+
+.battle_text_1{
+    font-size:25px;
+    font-weight: bold;
+    color: #525252;
+}
+
+.battle_text_2{
+    font-size:15px;
+    color: #868686;
+    margin-top: -15px;
 }
 
 .battle_text_2{

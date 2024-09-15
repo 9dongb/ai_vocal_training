@@ -35,7 +35,7 @@ function Footer({ activeTab: propActiveTab }) {
         </div>
       </Link>
     </div>
-  );
+  ); 
 }
 
 export default Footer;

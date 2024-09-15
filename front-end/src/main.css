@@ -1,96 +1,94 @@
 .main {
-    margin-bottom: 50px;
-    padding: 40px 40px;
-    padding-bottom: 50px;
-    background: #fff;
+  margin-bottom: 50px;
+  padding: 40px 40px;
+  padding-bottom: 50px;
+  background: #fff;
 }
 
 /* 모든 타이틀에 적용 */
 .title {
-    padding-top: 20px;
-    padding-bottom: 10px;
-    display: flex;
+  padding-top: 20px;
+  padding-bottom: 10px;
+  display: flex;
 }
 
 .title .title_main {
-    font-size: 23px;
-    font-weight: 700;
+  font-size: 23px;
+  font-weight: 700;
 }
 
 .title .title_sub {
-    font-size: 15px;
-    color: #989898;
-    line-height: 40px;
-    
+  font-size: 15px;
+  color: #989898;
+  line-height: 40px;
 }
 
 /* 오디션 */
 #auditino .best_singer_apply {
-    position: relative;
+  position: relative;
 }
 
-#audition .best_singer_apply img{
-    width: 520px;
+#audition .best_singer_apply img {
+  width: 520px;
 }
 
 #audition .best_singer_apply span {
-    position: absolute;
-    top: 85%;
-    left: 86%;
-    font-size: 14px;
-    color: #fff;
-    text-decoration: underline;
-    cursor: pointer;
+  position: absolute;
+  top: 85%;
+  left: 86%;
+  font-size: 14px;
+  color: #fff;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 /* TOP100 */
 #top100_list #top100 {
-    padding: 20px;
-    padding-bottom: 0;
-    max-width: 500px;
-    height: fit-content;
-    background: #fff;
-    border: 2px solid #D5D5D5;
-    border-radius: 10px;
+  padding: 20px;
+  padding-bottom: 0;
+  max-width: 500px;
+  height: fit-content;
+  background: #fff;
+  border: 2px solid #d5d5d5;
+  border-radius: 10px;
 }
 
 #top100 .top100_more_btn {
-    float: right;
-    color: #8f8f8f;
-    cursor: pointer;
+  float: right;
+  color: #8f8f8f;
+  cursor: pointer;
 }
 
 #top100 .t_song_list {
-    padding-top: 20px;
+  padding-top: 20px;
 }
 
 #top100 .t_song_list .t_list {
-    margin: 20px 0px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
+  margin: 20px 0px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 #top100 .t_song_list .t_list .t_list_more {
-    display: flex;
+  display: flex;
 }
 
-#top100 .t_song_list .t_list .t_list_more .t_img img{
-    margin-right: 20px;
-    width: 60px;
+#top100 .t_song_list .t_list .t_list_more .t_img img {
+  margin-right: 20px;
+  width: 60px;
 }
 
 #top100 .t_song_list .t_list .t_list_more .t_info .t_title {
-    margin: 3px 0px;
+  margin: 3px 0px;
 }
 
 #top100 .t_song_list .t_list .t_list_more .t_info .t_artist {
-    margin: 5px 0px;
-} 
+  margin: 5px 0px;
+}
 
-#top100 .t_song_list .t_list .t_play img{
-    width: 40px;
+#top100 .t_song_list .t_list .t_play img {
+  width: 40px;
 }
 
 /* 현재 누적 인기곡 */
@@ -98,69 +96,70 @@
 }
 
 .song_list {
-    display: flex;
-    /* flex-direction: column; */
-    align-items: center;
-  }
-  
-  .song {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    margin: 10px 0;
-    transition: all 0.3s ease;
-  }
-  
-  .song img {
-    width: 70px;
-    margin-right: 20px;
-  }
-  
-  .song_info {
-    padding: 15px;
-    width: 140px;
-    height: 145px;
-    background-color: #9CB6E5;
-    border-radius: 10px;
-  }
+  display: flex;
+  /* flex-direction: column; */
+  align-items: center;
+}
 
-  .song_info h4, .song_info p {
-    margin: 0;
-  }
+.song {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin: 10px 0;
+  transition: all 0.3s ease;
+}
 
-  .song_info hr {
-    border-color: #000;
-  }
-  
-  .song.blurred {
-    filter: blur(5px);
-  }
+.song img {
+  width: 70px;
+  margin-right: 20px;
+}
+
+.song_info {
+  padding: 15px;
+  width: 140px;
+  height: 145px;
+  background-color: #9cb6e5;
+  border-radius: 10px;
+}
+
+.song_info h4,
+.song_info p {
+  margin: 0;
+}
+
+.song_info hr {
+  border-color: #000;
+}
+
+.song.blurred {
+  filter: blur(5px);
+}
 
 /* 추천곡 */
 #recommend_song_list #recommend_song {
-    padding: 20px;
-    max-width: 500px;
-    background: #EDF2FB;
-    border-radius: 10px;
+  padding: 20px;
+  max-width: 500px;
+  background: #edf2fb;
+  border-radius: 10px;
 }
 
 #recommend_song .r_song_list {
-    display: flex;
-    overflow-x: auto;
+  display: flex;
+  overflow-x: auto;
 }
 
 #recommend_song .r_song_list .r_list {
-    margin: 0px 10px;
+  margin: 0px 10px;
 }
 
 #recommend_song .r_song_list .r_list .r_list_more {
-    width: 120px;
+  width: 120px;
 }
 
 #recommend_song .r_song_list .r_list .r_list_more .r_img img {
-    width: 120px;
+  width: 120px;
 }
 
 #recommend_song .r_song_list .r_list .r_list_more .r_info .r_title {
-    font-size: 11px;
+  font-size: 11px;
 }

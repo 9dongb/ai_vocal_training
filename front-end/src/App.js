@@ -1,7 +1,10 @@
 import React from "react";
 import "./App.css";
-import { Route, Routes, BrowserRouter, Navigate } from 'react-router-dom';
+import { Route, Routes, BrowserRouter, Navigate } from "react-router-dom";
 import Main from "./main.js";
+import Training from "./training.js";
+import Matching from "./matching.js";
+import MyPage from "./myPage.js";
 import Login from "./login.js"; // Login 컴포넌트 임포트
 import Immediate_feedback_analyze from "./immediate_feedback_analyze.js";
 import Login_member from "./login_member.js";
@@ -22,13 +25,15 @@ function App() {
           <Route path="/login" element={<Login />}></Route>
           <Route path="/login_member" element={<Login_member />}></Route>
           <Route path="/join_member" element={<Join_member />}></Route>
-          <Route path='/main' element={<Main />}></Route>
-          <Route path="/immediate_feedback_analyze" element={<Immediate_feedback_analyze/>}></Route>
+          <Route path="/main" element={<Main />}></Route>
+          <Route path="/training" element={<Training />}></Route>
+          <Route path="/matching" element={<Matching />}></Route>
+          <Route path="/myPage" element={<MyPage />}></Route>
+          <Route path="/immediate_feedback_analyze" element={<Immediate_feedback_analyze />}></Route>
           <Route path="/Feedbacklist_member" element={<Feedbacklist_member />}></Route>
-          <Route path="/immediate_feedback_final" element={<Immediate_feedback_final/>}></Route>
-          <Route path="/feedback_final" element={<Feedback_final/>}></Route>
+          <Route path="/immediate_feedback_final" element={<Immediate_feedback_final />}></Route>
+          <Route path="/feedback_final" element={<Feedback_final />}></Route>
           <Route path="/" element={<Navigate to="/login" />} /> {/*기본 경로 /login으로 설정 */}
-
         </Routes>
       </BrowserRouter>
     </div>

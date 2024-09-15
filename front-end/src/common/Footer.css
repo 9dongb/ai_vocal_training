@@ -33,13 +33,27 @@
 .footer div .icon_name {
   margin: 0;
   font-size: 11px;
-  color: rgba(0, 0, 0);
 }
 
 .footer .icon_line {
   border: 1.5px solid;
-
-  height: 50px;
+  height: 30px;
   color: rgba(0, 0, 0, 0.1);
   border-radius: 5px;
+}
+
+.icon_area.active .icon_img {
+  opacity: 1;
+}
+
+.icon_area.inactive .icon_img {
+  opacity: 0.5;
+}
+
+.icon_area.active .icon_name {
+  color: #000000;
+}
+
+.icon_area.inactive .icon_name {
+  color: #737373;
 }

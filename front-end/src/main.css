@@ -1,412 +1,245 @@
 .main {
-<<<<<<< HEAD
   margin-bottom: 50px;
   padding: 40px 40px;
   padding-bottom: 50px;
-  background: #fff;
-}
-
-/* 모든 타이틀에 적용 */
-.title {
-  padding-top: 20px;
-  padding-bottom: 10px;
-  display: flex;
-}
-
-.title .title_main {
-  font-size: 23px;
-  font-weight: 700;
-}
-
-.title .title_sub {
-  font-size: 15px;
-  color: #989898;
-  line-height: 40px;
-}
-
-/* 오디션 */
-#auditino .best_singer_apply {
-  position: relative;
-}
-
-#audition .best_singer_apply img {
-  width: 520px;
-}
-
-#audition .best_singer_apply span {
-  position: absolute;
-  top: 85%;
-  left: 86%;
-  font-size: 14px;
-  color: #fff;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-/* TOP100 */
-#top100_list #top100 {
-  padding: 20px;
-  padding-bottom: 0;
-  max-width: 500px;
-  height: fit-content;
-  background: #fff;
-  border: 2px solid #d5d5d5;
-  border-radius: 10px;
-}
-
-#top100 .top100_more_btn {
-  float: right;
-  color: #8f8f8f;
-  cursor: pointer;
-}
-
-#top100 .t_song_list {
-  padding-top: 20px;
-}
-
-#top100 .t_song_list .t_list {
-  margin: 20px 0px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-#top100 .t_song_list .t_list .t_list_more {
-  display: flex;
-}
-
-#top100 .t_song_list .t_list .t_list_more .t_img img {
-  margin-right: 20px;
-  width: 60px;
-}
-
-#top100 .t_song_list .t_list .t_list_more .t_info .t_title {
-  margin: 3px 0px;
-}
-
-#top100 .t_song_list .t_list .t_list_more .t_info .t_artist {
-  margin: 5px 0px;
-}
-
-#top100 .t_song_list .t_list .t_play img {
-  width: 40px;
-}
-
-/* 현재 누적 인기곡 */
-.popular_song {
-}
-
-.song_list {
-  display: flex;
-  /* flex-direction: column; */
-  align-items: center;
-}
-
-.song {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  margin: 10px 0;
-  transition: all 0.3s ease;
-}
-
-.song img {
-  width: 70px;
-  margin-right: 20px;
-}
-
-.song_info {
-  padding: 15px;
-  width: 140px;
-  height: 145px;
-  background-color: #9cb6e5;
-  border-radius: 10px;
-}
-
-.song_info h4,
-.song_info p {
-  margin: 0;
-}
-
-.song_info hr {
-  border-color: #000;
-}
-
-.song.blurred {
-  filter: blur(5px);
-}
-
-/* 추천곡 */
-#recommend_song_list #recommend_song {
-  padding: 20px;
-  max-width: 500px;
-  background: #edf2fb;
-  border-radius: 10px;
-}
-
-#recommend_song .r_song_list {
-  display: flex;
-  overflow-x: auto;
-}
-
-#recommend_song .r_song_list .r_list {
-  margin: 0px 10px;
-}
-
-#recommend_song .r_song_list .r_list .r_list_more {
-  width: 120px;
-}
-
-#recommend_song .r_song_list .r_list .r_list_more .r_img img {
-  width: 120px;
-}
-
-#recommend_song .r_song_list .r_list .r_list_more .r_info .r_title {
-  font-size: 11px;
-}
-=======
-    margin-bottom: 50px;
-    padding: 40px 40px;
-    padding-bottom: 50px;
-    background: #EEF2F2;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
+  background: #EEF2F2;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
 }
 
 .singking_battle_title ,.singking_grow_title, .singking_ability_title, .weekly_ranking_title{
-    font-size:32px;
-    font-weight: bold;
-    margin-bottom: 10px;
-    color: #737373;
-    /*color: #4A4A4A;*/
-    margin-left: 10px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  font-size:32px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #737373;
+  /*color: #4A4A4A;*/
+  margin-left: 10px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .battle_component{
-    width:500px;
-    height: 130px;
-     background-color: #FFFFFF;
-    border-radius: 12px;
-    margin-bottom: 30px;
-    display: flex;
-    align-items: center;
-    border: 2px solid #BFCFEC;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
-    transition: transform 0.2s ease-in-out;
+  width:500px;
+  height: 130px;
+   background-color: #FFFFFF;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  border: 2px solid #BFCFEC;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease-in-out;
 }
 
 .battle_component:hover {
-    transform: translateY(-5px);
+  transform: translateY(-5px);
 }
 
 .battle_text{
-    margin-left: 60px;
+  margin-left: 60px;
 }
 
 .battle_text_1{
-    font-size:25px;
-    font-weight: bold;
-    color: #525252;
+  font-size:25px;
+  font-weight: bold;
+  color: #525252;
 }
 
 .battle_text_2{
-    font-size:15px;
-    color: #868686;
-    margin-top: -15px;
+  font-size:15px;
+  color: #868686;
+  margin-top: -15px;
 }
 
 .battle_component img{
-    width:200px;
-    height: 90px;
-    margin-left: 50px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    
+  width:200px;
+  height: 90px;
+  margin-left: 50px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  
 }
 
 .grow_component{
-    display: flex;
-    margin-bottom: 30px;
-    
+  display: flex;
+  margin-bottom: 30px;
+  
 }
 
 .grow_component_1{
-    width:150px;
-    height: 200px;
-    background-color: white;
-    border-radius: 12px;
-    margin: 0 auto; 
-    text-align: center;
-    font-weight: bold;
-    font-size: 17px;
-    border:2px solid #BFCFEC;
-    transition: box-shadow 0.3s ease-in-out;
-    padding-top: 20px;
+  width:150px;
+  height: 200px;
+  background-color: white;
+  border-radius: 12px;
+  margin: 0 auto; 
+  text-align: center;
+  font-weight: bold;
+  font-size: 17px;
+  border:2px solid #BFCFEC;
+  transition: box-shadow 0.3s ease-in-out;
+  padding-top: 20px;
 }
 
 .grow_component_1:hover {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .key_score, .beat_score, .pronun_score{
-    width: 100px;
-    height: 80px;
-    border-radius: 10px;
-    line-height: 80px;
-    margin: 10px auto;
-    color: rgb(0, 0, 0);
-    font-size: 20px;
-    box-shadow: inset 0px 4px 10px rgba(0, 0, 0, 0.1);
-    
+  width: 100px;
+  height: 80px;
+  border-radius: 10px;
+  line-height: 80px;
+  margin: 10px auto;
+  color: rgb(0, 0, 0);
+  font-size: 20px;
+  box-shadow: inset 0px 4px 10px rgba(0, 0, 0, 0.1);
+  
 
 }
 
 .grow_component_1 img{
-    width: 50px;
-    height: 50px;
-    margin-top: 10px;
+  width: 50px;
+  height: 50px;
+  margin-top: 10px;
 }
 
 .ability_component{
-    width: 500px;
-    height: 400px;
-    background-color: white;
-    margin: 0 auto;
-    border-radius: 12px;
-    margin-bottom: 30px;
-    box-shadow: 0 6px 12px  rgba(228, 225, 225, 0.05);
-    border:2px solid #BFCFEC;
+  width: 500px;
+  height: 400px;
+  background-color: white;
+  margin: 0 auto;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  box-shadow: 0 6px 12px  rgba(228, 225, 225, 0.05);
+  border:2px solid #BFCFEC;
 }
 
 .ability_title{
-    font-size: 20px;
-    text-align: center;
-    font-weight: bold;
-    color: #525252;
-    margin-bottom: 50px;
+  font-size: 20px;
+  text-align: center;
+  font-weight: bold;
+  color: #525252;
+  margin-bottom: 50px;
 }
 
 .weekly_ranking_component{
-    width: 500px;
-    height: 500px;
-    background-color: white;
-    margin: 0 auto;
-    border-radius: 12px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
-    border:2px solid #BFCFEC;
-    
+  width: 500px;
+  height: 500px;
+  background-color: white;
+  margin: 0 auto;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+  border:2px solid #BFCFEC;
+  
 }
 
 /* Progress comparison container */
 .progress-comparison {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 /* 가운데 제목 스타일 */
 .progress-title {
-    font-size: 18px;
-    font-weight: bold;
-    color: #525252;
-    width: 80px;
-    text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  color: #525252;
+  width: 80px;
+  text-align: center;
 }
 
 /* 좌우 퍼센트 바 스타일 */
 .progress-container {
-    width: 50%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 50px;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 50px;
 }
 
 .progress-track {
-    width: 100%;
-    background-color: #e0e0e0;
-    height: 15px;
-    border-radius: 10px;
-    position: relative;
-    margin-bottom: 5px;
+  width: 100%;
+  background-color: #e0e0e0;
+  height: 15px;
+  border-radius: 10px;
+  position: relative;
+  margin-bottom: 5px;
 }
 
 .progress-last-week {
-    height: 100%;
-    background-color: #B0C4DE; /* 7일 전 기록의 색상 */
-    border-radius: 10px;
-    transition: width 0.3s ease-in-out;
+  height: 100%;
+  background-color: #B0C4DE; /* 7일 전 기록의 색상 */
+  border-radius: 10px;
+  transition: width 0.3s ease-in-out;
 }
 
 .progress-latest {
-    height: 100%;
-    background-color: #4682B4; /* 최신 기록의 색상 */
-    border-radius: 10px;
-    transition: width 0.3s ease-in-out;
+  height: 100%;
+  background-color: #4682B4; /* 최신 기록의 색상 */
+  border-radius: 10px;
+  transition: width 0.3s ease-in-out;
 }
 
 span {
-    font-size: 14px;
-    color: #737373;
+  font-size: 14px;
+  color: #737373;
 }
 
 /* 좌우 레이아웃 정렬 */
 .last-week {
-    text-align: right;
+  text-align: right;
 }
 
 .latest {
-    text-align: left;
+  text-align: left;
 }
 
 
 /* 1등 항목에 대한 스타일 */
 .ranking_item:first-child {
-    font-size: 20px;  /* 더 큰 글씨 */
-    
-    padding: 15px;
-    border-bottom: 1px solid #B1B1B1;
-    height: 60px;
-    
+  font-size: 20px;  /* 더 큰 글씨 */
+  
+  padding: 15px;
+  border-bottom: 1px solid #B1B1B1;
+  height: 60px;
+  
 }
 
 .ranking_container{
-    width: 100%;
+  width: 100%;
 }
 
 .ranking_item{
-    display: flex;
-    justify-content: center;  /* 중앙 정렬 */
-    align-items: center;      /* 수직 중앙 정렬 */
-    padding: 10px;
-    margin-bottom: 10px;
-    height: 40px;
-    gap: 20px;                /* 항목 간의 간격 */
+  display: flex;
+  justify-content: center;  /* 중앙 정렬 */
+  align-items: center;      /* 수직 중앙 정렬 */
+  padding: 10px;
+  margin-bottom: 10px;
+  height: 40px;
+  gap: 20px;                /* 항목 간의 간격 */
 }
 .rank {
-    font-weight: bold;
-    color: #525252;
-    font-size: 18px;
-    flex: 0 0 50px; /* 고정 너비 */
-    text-align: center; /* 중앙 정렬 */
+  font-weight: bold;
+  color: #525252;
+  font-size: 18px;
+  flex: 0 0 50px; /* 고정 너비 */
+  text-align: center; /* 중앙 정렬 */
 }
 
 .user_name {
-    font-size: 20px;
-    color: #333;
-    flex: 1; /* 가변 너비로 설정 */
-    text-align: center; /* 중앙 정렬 */
-    overflow: hidden;
-    text-overflow: ellipsis; /* 글자가 너무 길면 ...으로 표시 */
+  font-size: 20px;
+  color: #333;
+  flex: 1; /* 가변 너비로 설정 */
+  text-align: center; /* 중앙 정렬 */
+  overflow: hidden;
+  text-overflow: ellipsis; /* 글자가 너무 길면 ...으로 표시 */
 }
 
 .score {
-    font-size: 16px;
-    color: #525252;
-    font-weight: bold;
-    flex: 0 0 60px; /* 고정 너비 */
-    text-align: center; /* 중앙 정렬 */
+  font-size: 16px;
+  color: #525252;
+  font-weight: bold;
+  flex: 0 0 60px; /* 고정 너비 */
+  text-align: center; /* 중앙 정렬 */
 }
->>>>>>> c8957ca (메인페이지 구현)

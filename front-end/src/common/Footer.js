@@ -7,7 +7,6 @@ function Footer({ activeTab: propActiveTab }) {
 
   return (
     <div className="footer">
-<<<<<<< HEAD
       <Link to="/main" onClick={() => setActiveTab("home")}>
         <div className={`home icon_area ${activeTab === "home" ? "active" : "inactive"}`}>
           <img className="icon_img" src="./img/footer_icon/home.png" alt="홈" />
@@ -26,30 +25,6 @@ function Footer({ activeTab: propActiveTab }) {
         <div className={`matching icon_area ${activeTab === "matching" ? "active" : "inactive"}`}>
           <img className="icon_img" src="./img/footer_icon/matching.png" alt="매칭" />
           <p className="icon_name">매칭</p>
-=======
-      <Link to={"/main"}>
-        <div className='home'>
-          <img className='icon_img' src='./img/footer_icon/home.png'/>
-          <p className='icon_name'>홈</p>
-        </div>
-      </Link>
-        <hr/>
-      <Link to={"/training"}>
-        <div className='training'>
-          <img className='icon_img' src='.\img\footer_icon/training.png'/>
-          <p className='icon_name'>트레이닝</p>
-        </div>
-      </Link>
-        <hr/>
-        <div className='feedback'>
-          <img className='icon_img' src='./img/footer_icon/matching.png'/>
-          <p className='icon_name'>매칭</p>
-        </div>
-        <hr/>
-        <div className='mypage'>
-          <img className='icon_img' src='./img/footer_icon/mypage.png'/>
-          <p className='icon_name'>마이 페이지</p>
->>>>>>> c8957ca (메인페이지 구현)
         </div>
       </Link>
       <span className="icon_line"></span>
@@ -60,7 +35,7 @@ function Footer({ activeTab: propActiveTab }) {
         </div>
       </Link>
     </div>
-  ); 
+  );
 }
 
 export default Footer;

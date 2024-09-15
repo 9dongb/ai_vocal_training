@@ -1,14 +1,14 @@
 import Footer from "./common/Footer";
 import "./common/root.css";
-const Training = () => {
+const MyPage = () => {
   return (
     <div className="body">
       <div className="container">
-        트레이닝
-        <Footer activeTab="training" />
+        마이페이지
+        <Footer activeTab="myPage" />
       </div>
     </div>
   );
 };
 
-export default Training;
+export default MyPage;

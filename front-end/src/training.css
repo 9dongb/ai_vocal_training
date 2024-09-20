@@ -1,19 +1,26 @@
 .drag_menu_component {
-  margin-bottom: 25px;
+  padding-top: 20px;
+  padding-bottom: 25px;
+  justify-content: space-between;
+  overflow-x: auto; /* 가로 스크롤 활성화 */
+  white-space: nowrap; /* 내부 요소들이 한 줄에 위치하도록 설정 */
+}
+.drag_menu_component_ai {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  overflow-x: hidden;
 }
 
 .drag_menu_component_1 {
   width: 230px;
-  display: flex;
+  display: inline-flex; /* inline-flex로 변경하여 요소들이 한 줄에 나타나도록 설정 */
   flex-direction: column;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   padding: 10px;
   border-radius: 8px;
   background-color: #ffffff;
   transition: transform 0.3s ease;
+  margin-right: 15px; /* 요소 간 간격 추가 */
 }
 
 .drag_menu_component_1:hover {
@@ -28,6 +35,7 @@
 .drag_menu_component_1_long {
   padding: 20px 10px;
 }
+
 .drag_menu_component_1_short {
   padding-top: 20px;
   display: flex;
@@ -45,11 +53,17 @@
   width: 50px;
   height: 50px;
 }
+
 .ai_text {
   padding: 5px;
 }
 
 .ai_text_1 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
   font-size: 20px;
   font-weight: bold;
   color: #525252;

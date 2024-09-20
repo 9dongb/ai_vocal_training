@@ -1,6 +1,7 @@
 import Footer from "./common/Footer";
 import "./common/root.css";
 import "./training.css";
+import { Link } from "react-router-dom";
 const Training = () => {
   return (
     <div className="body">
@@ -9,7 +10,7 @@ const Training = () => {
           <div className="ai_training">
             <div className="header_title">AI 기초 진단</div>
 
-            <div className="drag_menu_component">
+            <div className="drag_menu_component drag_menu_component_ai">
               <div className="drag_menu_component_1">
                 <img className="ai_diagnosis_img" src=".\img\ai_diagnosis_img_1.png" alt="AI 진단 이미지1" />
                 <div className=" ai_text">
@@ -32,7 +33,7 @@ const Training = () => {
 
             <div className="header_title">AI 기초 트레이닝</div>
 
-            <div className="drag_menu_component ">
+            <div className="drag_menu_component drag_menu_component_ai">
               <div className="drag_menu_component_1 drag_menu_component_1_long">
                 <img className="ai_diagnosis_img" src=".\img\ai_training_img_1.png" alt="AI 트레이닝 이미지1" />
                 <div className=" ai_text">
@@ -55,19 +56,23 @@ const Training = () => {
 
             <div className="header_title">정밀 트레이닝</div>
 
-            <div className="drag_menu_component ">
-              <div className="drag_menu_component_1 drag_menu_component_1_short">
-                <img className="ai_precise_img" src=".\img\ai_precise_img_1.png" alt="정밀 이미지1" />
-                <div className=" ai_text">
-                  <p className="ai_text_1">실내 환경</p>
+            <div className="drag_menu_component drag_menu_component_ai">
+              <Link to="/precisionTraining">
+                <div className="drag_menu_component_1 drag_menu_component_1_short">
+                  <img className="ai_precise_img" src=".\img\ai_precise_img_1.png" alt="정밀 이미지1" />
+                  <div className=" ai_text">
+                    <p className="ai_text_1">실내 환경</p>
+                  </div>
                 </div>
-              </div>
-              <div className="drag_menu_component_1 drag_menu_component_1_short">
-                <img className="ai_precise_img" src=".\img\ai_precise_img_2.png" alt="정밀 이미지2" />
-                <div className=" ai_text">
-                  <p className="ai_text_1">노래방 환경</p>
+              </Link>
+              <Link to="/precisionTraining">
+                <div className="drag_menu_component_1 drag_menu_component_1_short">
+                  <img className="ai_precise_img" src=".\img\ai_precise_img_2.png" alt="정밀 이미지2" />
+                  <div className=" ai_text">
+                    <p className="ai_text_1">노래방 환경</p>
+                  </div>
                 </div>
-              </div>
+              </Link>
             </div>
           </div>
         </div>

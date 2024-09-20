@@ -119,10 +119,10 @@ class VocalAnalysis:
         in_wrong_segment = False
         start_idx = None
 
-        length = 2 if status == 1 else 1000
+        length = 2 if status == 1 else 15
         
         for i in range(len(result)):
-            if result[i] != 'Good':
+            if result[i] != 'Correct':
                 if not in_wrong_segment:
                     start_idx = i
                     in_wrong_segment = True

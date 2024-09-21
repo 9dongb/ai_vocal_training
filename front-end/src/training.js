@@ -74,6 +74,20 @@ const Training = () => {
                 </div>
               </Link>
             </div>
+
+            
+              <div className="header_title">AI COVER</div>
+
+              
+                <div className="training_ai_cover_component ">
+                  <img className="ai_cover_img" src=".\img\ai_cover.png" alt="ai cover 이미지"/>
+                  <p className="ai_text_2">
+                    AI가 유명 가수의 스타일로 커버해줍니다
+                  </p>
+                </div>
+              
+
+            
           </div>
         </div>
         <Footer activeTab="training" />

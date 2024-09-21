@@ -1,9 +1,9 @@
 import React, { useState, useRef } from 'react';
-import './immediate_feedback_analyze.css';
+import './recordingPage.css';
 import "./common/root.css";
-import Footer from "./common/Footer";
+import Header2 from './common/Header2.js';
 
-function Immediate_feedback_analyze() {
+function RecordingPage() {
   const [isPlaying, setIsPlaying] = useState(false); // 재생 상태
   const [isPaused, setIsPaused] = useState(false); // 녹음 일시 중지 상태
   const audioRef = useRef(null); // 오디오 요소 참조
@@ -99,32 +99,18 @@ function Immediate_feedback_analyze() {
   return (
     <div className="body">
       <div className='container'>
+        <Header2 />
         <div className='immediate_feedback_analyze'>
           <div className='song_container'>
-            <div className='recording_status'>
-              녹음 중
-            </div>
-
             <div className='song_info_container'>
               <div className='song_img'>
-                <img src='img\songs\cover_hug.png' alt="안아줘" />
+                <img src='./img/songs/supernova.png' alt="Supernova" />
               </div>
-              <div className='song_name'>안아줘</div>
-              <div className='song_artist'>정준일</div>
+              <div className='song_name'>Supernova</div>
+              <div className='song_artist'>aespa</div>
             </div>
 
-            <div className='song_lyrics_container'>
-              <div className='lyrics_text'>
-                서러운 맘을 못 이겨<br/>
-                잠 못 들던 어둔 밤을 또 견디고<br/>
-                내 절망관 상관없이<br/>
-                무심하게도 아침은 날 깨우네<br/><br/>
-                상처는 생각보다 쓰리고<br/>
-                아픔은 생각보다 깊어가<br/>
-                널 원망하던 수많은 밤이 내겐 지옥 같아
-              </div>
-              
-            </div>
+            <div className='song_lyrics_container'>가사</div>
 
             <div className='btn_container'>
               {/* Play 버튼: 녹음 시작 또는 재개 */}
@@ -134,11 +120,7 @@ function Immediate_feedback_analyze() {
                   alt="Play or Pause Button"
                   onClick={isPlaying ? handlePause : handleStart} // 상태에 따라 재생/일시정지
                 />
-                <p className='btn_text'>
-                  {isPlaying ? '일시정지' : (isPaused ? '재개' : '재생')}
-                </p> {/* 상태에 따라 텍스트 변경 */}
               </div>
-
 
               {/* Stop 버튼: 녹음 중지 및 서버 업로드 */}
               <div className='stopbtn_container'>
@@ -148,17 +130,14 @@ function Immediate_feedback_analyze() {
                   onClick={handleStop} // 녹음 중지
                   disabled={!isPlaying && !isPaused} // 녹음 중이 아니면 비활성화
                 />
-                <p className='btn_text'>정지</p>
               </div>
             </div>
-
             <audio ref={audioRef} src="./mr/hug_me.wav" />
           </div>
         </div>
-        <Footer activeTab="training" />
       </div>
     </div>
   );
 }
 
-export default Immediate_feedback_analyze;
+export default RecordingPage;

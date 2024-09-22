@@ -69,14 +69,35 @@ def upload():
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
         file.save(file_path)
         return jsonify({"message": "File saved successfully", "file_path": file_path}), 200
-    
+
 @app.route("/vocal_analysis", methods=["GET", "POST"])
 def vocal_analysis():
     va = VocalAnalysis('flower')
     
-    result = va.pitch_comparison()
-    print(result)
+    pitch_score, wrong_segments = va.pitch_comparison()
+    
+    print(pitch_score, wrong_segments)
 
-    return 'hi'
+    wrong_lyrics, _ = va.find_incorrect()
+
+    return jsonify({'음정 점수':pitch_score, '틀린 구간 초(시작, 끝)': wrong_segments, '틀린 가사':wrong_lyrics})
+
+
+ #랭킹 데이터 -- 민지원
+@app.route('/weekly_ranking', methods=['GET'])
+def get_weekly_ranking():
+    try:
+        data = db.get_weekly_ranking()
+
+        if data:
+            return jsonify({'status': 'success', 'data': data}), 200
+        else:
+            return jsonify({'status': 'fail', 'message': 'No ranking data found'}), 404
+    except Exception as e:
+        return jsonify({'status': 'fail', 'message': str(e)}), 500
+    
 if __name__ == "__main__":
     app.run(debug=True)
+
+
+

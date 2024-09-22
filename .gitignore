@@ -3,3 +3,6 @@ models/
 
 # 아래 확장자는 전체 무시
 *.h5
+*.wav
+*.webm
+*.lrc

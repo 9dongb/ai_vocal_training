@@ -48,3 +48,20 @@ class Database:
             return {'status':'success'}
         except:
             return {'message':'fail'}
+        
+        
+    #주간 랭킹 데이터를 가져오는 메서드 -- 민지원
+    def get_weekly_ranking(self):
+        try:
+            SQL='''
+            SELECT u.user_name, w.score, RANK() OVER (ORDER BY w.score DESC) As 'rank'
+            FROM weekly_ranking w
+            JOIN user_info u ON w.user_id = u.user_id
+            ORDER BY w.score DESC;
+            '''
+            self.cursor.execute(SQL)
+            data=self.cursor.fetchall()
+
+            return data # 데이터 반환
+        except Exception as e:
+            return{'message': 'fail','error':str(e)}

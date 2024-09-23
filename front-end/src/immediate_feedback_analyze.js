@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom'; // useNavigate 임포트
 import './immediate_feedback_analyze.css';
 import "./common/root.css";
 import Footer from "./common/Footer";
@@ -9,6 +10,7 @@ function Immediate_feedback_analyze() {
   const audioRef = useRef(null); // 오디오 요소 참조
   const [mediaRecorder, setMediaRecorder] = useState(null); // MediaRecorder 참조
   const [recordedChunks, setRecordedChunks] = useState([]); // 녹음된 데이터 저장
+  const navigate = useNavigate(); // useNavigate 훅 사용
 
   // 오디오 재생 및 녹음 시작
   const handleStart = async () => {
@@ -16,7 +18,6 @@ function Immediate_feedback_analyze() {
       audioRef.current.play();
     }
 
-    // 녹음 시작
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorder = new MediaRecorder(stream);
@@ -38,7 +39,7 @@ function Immediate_feedback_analyze() {
 
       recorder.start();
       setIsPlaying(true);
-      setIsPaused(false); // 처음 시작할 때는 중지 상태 아님
+      setIsPaused(false);
       console.log('녹음 및 재생 시작');
     } catch (error) {
       console.error('녹음 시작 오류:', error);
@@ -48,8 +49,8 @@ function Immediate_feedback_analyze() {
   // 녹음 일시 중지 함수
   const handlePause = () => {
     if (mediaRecorder && mediaRecorder.state === "recording") {
-      mediaRecorder.pause(); // 녹음 일시 중지
-      audioRef.current.pause(); // 오디오 재생 멈춤
+      mediaRecorder.pause();
+      audioRef.current.pause();
       setIsPaused(true);
       setIsPlaying(false);
       console.log('녹음 및 재생 일시 중지');
@@ -59,8 +60,8 @@ function Immediate_feedback_analyze() {
   // 녹음 재개 함수
   const handleResume = () => {
     if (mediaRecorder && mediaRecorder.state === "paused") {
-      mediaRecorder.resume(); // 녹음 재개
-      audioRef.current.play(); // 오디오 재생 재개
+      mediaRecorder.resume();
+      audioRef.current.play();
       setIsPaused(false);
       setIsPlaying(true);
       console.log('녹음 및 재생 재개');
@@ -70,12 +71,13 @@ function Immediate_feedback_analyze() {
   // 녹음 완전히 멈추는 함수 (업로드는 recorder.onstop에서 처리됨)
   const handleStop = () => {
     if (mediaRecorder && mediaRecorder.state !== "inactive") {
-      mediaRecorder.stop(); // 녹음 완전 중지
-      audioRef.current.pause(); // 오디오 재생 멈춤
-      audioRef.current.currentTime = 0; // 재생 위치 초기화
+      mediaRecorder.stop();
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
       setIsPlaying(false);
       setIsPaused(false);
       console.log('녹음 중지');
+      navigate("/feedback"); // 녹음이 중지되면 feedback 페이지로 이동
     }
   };
 
@@ -132,21 +134,20 @@ function Immediate_feedback_analyze() {
                 <img
                   src={isPlaying ? '/img/stopbtn.png' : '/img/playbtn.png'}
                   alt="Play or Pause Button"
-                  onClick={isPlaying ? handlePause : handleStart} // 상태에 따라 재생/일시정지
+                  onClick={isPlaying ? handlePause : handleStart}
                 />
                 <p className='btn_text'>
                   {isPlaying ? '일시정지' : (isPaused ? '재개' : '재생')}
-                </p> {/* 상태에 따라 텍스트 변경 */}
+                </p>
               </div>
-
 
               {/* Stop 버튼: 녹음 중지 및 서버 업로드 */}
               <div className='stopbtn_container'>
                 <img
                   src='/img/pausebtn.png'
                   alt="Stop Button"
-                  onClick={handleStop} // 녹음 중지
-                  disabled={!isPlaying && !isPaused} // 녹음 중이 아니면 비활성화
+                  onClick={handleStop} // 녹음 중지 후 feedback 페이지로 이동
+                  disabled={!isPlaying && !isPaused}
                 />
                 <p className='btn_text'>정지</p>
               </div>

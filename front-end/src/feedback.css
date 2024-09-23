@@ -1,0 +1,58 @@
+.feedback{
+    background-color: #EEF2F2;
+    padding: 30px;
+}
+
+.feedback_song_info{
+    background-color: white;
+    width: 100%;
+    height: 170px;
+    margin: 0 auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 30px;
+}
+
+.wrong_part{
+    background-color: white;
+    width: 100%;
+    height: 150px;
+    margin: 0 auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 30px;
+}
+
+.feedback_final_score{
+    background-color: white;
+    width: 100%;
+    height: 150px;
+    margin: 0 auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 30px;
+}
+
+.feedback_song_info_songname{
+    font-size: 28px;
+    font-weight: bold;
+    color: #525252;
+}
+
+.feedback_song_info_singer{
+    color: #737373;
+    font-size: 20px;
+}
+
+.feedback_song_info_container{
+    background-color: #d9d9d9;
+    width: 200px;
+    height: 100px;
+    text-align: center;
+    border-radius:10px;
+}
+
+.feedback_song_info_img{
+    width: 100px;
+    height: 100px;
+}

@@ -52,3 +52,7 @@
   object-fit: cover;
   height: 100px;
 }
+
+.wrong_part:hover {
+  transform: translateY(-10px);
+}

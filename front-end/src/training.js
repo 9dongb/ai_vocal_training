@@ -11,15 +11,18 @@ const Training = () => {
             <div className="header_title">AI 기초 진단</div>
 
             <div className="drag_menu_component drag_menu_component_ai">
-              <div className="drag_menu_component_1">
-                <img className="ai_diagnosis_img" src=".\img\ai_diagnosis_img_1.png" alt="AI 진단 이미지1" />
-                <div className=" ai_text">
-                  <p className="ai_text_1">음색 진단하기</p>
-                  <p className="ai_text_2">
-                    AI가 어떤 음색인지 분석해주고 <br></br> 노래추천까지 해줍니다
-                  </p>
+              <Link to="/toneDiagnostics">
+                <div className="drag_menu_component_1">
+                  <img className="ai_diagnosis_img" src=".\img\ai_diagnosis_img_1.png" alt="AI 진단 이미지1" />
+                  <div className=" ai_text">
+                    <p className="ai_text_1">음색 진단하기</p>
+                    <p className="ai_text_2">
+                      AI가 어떤 음색인지 분석해주고 <br></br> 노래추천까지 해줍니다
+                    </p>
+                  </div>
                 </div>
-              </div>
+              </Link>
+
               <div className="drag_menu_component_1">
                 <img className="ai_diagnosis_img" src=".\img\ai_diagnosis_img_2.png" alt="AI 진단 이미지2" />
                 <div className=" ai_text">

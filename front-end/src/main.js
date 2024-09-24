@@ -62,8 +62,8 @@ function Main() {
 
             <div className="battle_component">
               <div className="battle_text">
-                <p className="battle_text_1">배틀 참여하기</p>
-                <p className="battle_text_2">유저들과 경쟁해보세요</p>
+                <span className="battle_text_1">배틀 참여하기</span>
+                <span className="battle_text_2">유저들과 경쟁해보세요</span>
               </div>
               <img src=".\img\battle_img.png" className="battle_image" alt="배틀 이미지" />
             </div>

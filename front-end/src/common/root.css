@@ -18,13 +18,12 @@
   padding-bottom: 50px;
   background: #eef2f2;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
 }
 
 .header_title {
   font-size: 28px;
   font-weight: bold;
-  margin-bottom: 10px;
+
   color: #737373;
   /*color: #4A4A4A;*/
   margin-left: 10px;

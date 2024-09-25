@@ -12,7 +12,9 @@ CORS(app, supports_credentials=True)
 app.secret_key = "Um_AI_Diary_Hungry_BBC_BBQ_Chicken"
 
 UPLOAD_FOLDER = 'uploads'
+TONE_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, 'tone')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['TONE_UPLOAD_FOLDER'] = TONE_UPLOAD_FOLDER
 
 db = Database()
 
@@ -69,6 +71,33 @@ def upload():
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
         file.save(file_path)
         return jsonify({"message": "File saved successfully", "file_path": file_path}), 200
+
+# 톤 분석용 파일 업로드 처리 라우트
+@app.route("/uploads/tone", methods=["GET", "POST"])
+def upload_tone():
+    # 업로드 폴더 경로 설정
+    UPLOAD_FOLDER = 'uploads/tone'
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(TONE_UPLOAD_FOLDER)
+
+
+       # 'audio_file'은 JavaScript에서 전송한 FormData key와 일치해야 합니다.
+    if 'audio' not in request.files:
+        return jsonify({"error": "No audio file part"}), 400
+
+    file = request.files['audio']
+
+    # 파일이 비어있지 않은지 확인
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+
+    # 파일 저장
+    if file:
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+        file.save(file_path)
+        return jsonify({"message": "File saved successfully", "file_path": file_path}), 200
+
+
     
  #랭킹 데이터 -- 민지원
 @app.route('/weekly_ranking', methods=['GET'])

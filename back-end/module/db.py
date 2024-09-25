@@ -9,7 +9,7 @@ DATABASE_PORT = 3306
 
 DATABASE_HOST = "localhost"
 DATABASE_USER = "root"
-DATABASE_PASSWORD = "1234"
+DATABASE_PASSWORD = "1541"
 
 # Database 클래스는 MySQL 데이터베이스와 연결을 담당
 class Database:

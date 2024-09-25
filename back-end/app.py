@@ -47,7 +47,7 @@ def register():
         print(register_data)
         return register_data
 
-    
+
 @app.route("/uploads", methods=["GET", "POST"])
 def upload():
     # 업로드 폴더 경로 설정
@@ -72,6 +72,7 @@ def upload():
         file.save(file_path)
         return jsonify({"message": "File saved successfully", "file_path": file_path}), 200
 
+<<<<<<< HEAD
 # 톤 분석용 파일 업로드 처리 라우트
 @app.route("/uploads/tone", methods=["GET", "POST"])
 def upload_tone():
@@ -98,7 +99,31 @@ def upload_tone():
         return jsonify({"message": "File saved successfully", "file_path": file_path}), 200
 
 
+=======
+
+@app.route("/training", methods=["GET", "POST"])
+def training():
+    va = VocalAnalysis('정준일', '안아줘')
+    lrc = va.process_music_files()
+
+    return lrc 
+
+
+@app.route("/vocal_analysis", methods=["GET", "POST"])
+def vocal_analysis():
+    va = VocalAnalysis('정준일', '안아줘')
+>>>>>>> origin/main
     
+    pitch_score, wrong_segments = va.pitch_comparison()
+    
+    print(pitch_score, wrong_segments)
+
+    wrong_lyrics, _ = va.find_incorrect()
+
+
+    return jsonify({'음정 점수':pitch_score, '틀린 구간 초(시작, 끝)': wrong_segments, '틀린 가사':wrong_lyrics})
+
+
  #랭킹 데이터 -- 민지원
 @app.route('/weekly_ranking', methods=['GET'])
 def get_weekly_ranking():

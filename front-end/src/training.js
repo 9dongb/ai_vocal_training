@@ -12,7 +12,7 @@ const Training = () => {
 
             <div className="drag_menu_component drag_menu_component_ai">
               <Link to="/toneDiagnostics">
-                <div className="drag_menu_component_1">
+                <div className="drag_menu_component_1 drag_menu_component_1_mid">
                   <img className="ai_diagnosis_img" src=".\img\ai_diagnosis_img_1.png" alt="AI 진단 이미지1" />
                   <div className=" ai_text">
                     <p className="ai_text_1">음색 진단하기</p>
@@ -23,7 +23,7 @@ const Training = () => {
                 </div>
               </Link>
 
-              <div className="drag_menu_component_1">
+              <div className="drag_menu_component_1 drag_menu_component_1_mid">
                 <img className="ai_diagnosis_img" src=".\img\ai_diagnosis_img_2.png" alt="AI 진단 이미지2" />
                 <div className=" ai_text">
                   <p className="ai_text_1">음역대 진단하기</p>

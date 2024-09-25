@@ -1,236 +1,93 @@
-import glob
-import mutagen
-import requests
-from bs4 import BeautifulSoup
+# 곡을 아티스트명-곡명.확장자로 저장했을 경우
+
 import os
+import requests
+import glob
+from bs4 import BeautifulSoup
 import urllib
 import json
 
-FILE_LIST = []
-available_file = []
-available_artist = []
-available_first_artist = []
-available_second_artist = []
-available_album = []
-available_title = []
-track_artistid = []
-track_albumid = []
-track_trackid = []
-TIME = []
-LYRICS = []
-mm = []
-ss = []
-xx = []
-success = 0
-fail = 0
+API_KEY = '7f6a3f6a47d67acce54d297deb4298e2'  # Last.fm API 키
 
-def track_clear():
-    track_albumid.clear()
-    track_artistid.clear()
-    track_trackid.clear()
 
-def time_clear():
-    xx.clear()
-    ss.clear()
-    mm.clear()
-    LYRICS.clear()
-    TIME.clear()
-
-def lrc_maker():
-    global success
-    global data
-    global i
-    global available_file
-    TEXT = data['result']['lyrics']
-    TEXT = TEXT.replace("＃", "\n")
-    x = TEXT.count("|")
-    base_filename = available_file[i].rsplit('.', 1)[0]
-    with open(f'{base_filename}.lrc', 'w', encoding='UTF8') as file:
-        file.write(TEXT)
-    del TEXT
-    TEXT = []
-    with open(f'{base_filename}.lrc', 'r', encoding='UTF8') as file:
-        for j in range(x):
-            TEXT.append(file.readline().rstrip())
-    for j in range(x):
-        TIME.append(float(TEXT[j][:TEXT[j].rfind("|")]))
-        LYRICS.append(TEXT[j][TEXT[j].rfind("|") + 1:])
-    for j in range(x):
-        xx.append(str(round(TIME[j] - int(TIME[j]), 2)))
-        if int(TIME[j]) % 60 < 10:
-            ss.append("0" + str(int(TIME[j]) % 60))
-        else:
-            ss.append(str(int(TIME[j]) % 60))
-        if int(TIME[j]) // 60 < 10:
-            mm.append("0" + str(int(TIME[j]) // 60))
-        else:
-            mm.append(str(int(TIME[j]) // 60))
-    with open(f'{base_filename}.lrc', 'w', encoding='UTF8') as file:
-        file.write('')
-    for j in range(x):
-        with open(f'{base_filename}.lrc', 'a', encoding='UTF8') as file:
-            if j != x:
-                file.write(f"[{mm[j]}:{ss[j]}{xx[j][1:]}]{LYRICS[j]}\n")
-            else:
-                file.write(f"[{mm[j]}:{ss[j]}{xx[j][1:]}]{LYRICS[j]}")
-    time_clear()
-    track_clear()
-    del TEXT
-    print(f"{i}. {available_file[i]}의 lrc파일을 가져왔습니다.")
-    success += 1
-    return success
+def extract_artist_and_title(file_name):
+    #
+    base_name = os.path.splitext(file_name)[0]
     
-def lrc_delete():
-    global fail
-    global i
-    global available_file
-    fail += 1
-    track_clear()
-    base_filename = available_file[i].rsplit('.', 1)[0]
-    os.remove(f'{base_filename}.lrc')
-    print(f"{available_file[i]} 은(는) 싱크가사를 지원하지 않습니다.")
-    return fail
+    # 파일명에서 '-'로 구분된 아티스트와 곡명 추출
+    if '-' in base_name:
+        artist, title = base_name.split('-', 1)
+        return artist.strip(), title.strip()
+    else:
+        return None, None
 
-# flac, mp3, wav, webm 파일을 찾기
-for extension in ["*.flac", "*.mp3", "*.wav", "*.webm"]:
-    for file in glob.glob(extension):
-        FILE_LIST.append(file)
+# Bugs에서 아티스트와 트랙 ID 검색 (앨범명 없이 검색)
+def get_artist_track_id(artist_name, title):
+    search_url = f'https://music.bugs.co.kr/search/track?q={artist_name} {title}'
+    search_soup = BeautifulSoup(requests.get(search_url).text, 'html.parser')
+    
+    # 검색 결과에서 트랙 ID 추출
+    track_tag = search_soup.select_one("tr[trackid]")
+    if track_tag:
+        track_id = track_tag.get('trackid')
+        return track_id
+    return None
+
+# 가사 다운로드
+def download_lyrics(track_id, file_path):
+    lyrics_url = f'http://api.bugs.co.kr/3/tracks/{track_id}/lyrics?&api_key=b2de0fbe3380408bace96a5d1a76f800'
+
+    urllib.request.urlretrieve(lyrics_url, f"{file_path}.lrc")
+
+    with open(f'{file_path}.lrc', encoding='UTF8') as json_file:
+        data = json.load(json_file)
+    
+    return data.get('result', {}).get('lyrics', None)
+
+# LRC 파일 생성
+def lrc_maker(file_path, lyrics_text):
+    TIME = []
+    LYRICS = []
+    mm = []
+    ss = []
+    xx = []
+
+    lyrics_lines = lyrics_text.replace("＃", "\n").split("\n")
+    for line in lyrics_lines:
+        time_marker, lyric = line.rsplit("|", 1)
+        TIME.append(float(time_marker))
+        LYRICS.append(lyric)
+
+    for time in TIME:
+        xx.append(f"{time % 1:.2f}"[1:])
+        ss.append(f"{int(time) % 60:02}")
+        mm.append(f"{int(time) // 60:02}")
+
+    with open(f'{file_path}.lrc', 'w', encoding='UTF8') as file:
+        for i in range(len(TIME)):
+            file.write(f"[{mm[i]}:{ss[i]}{xx[i]}]{LYRICS[i]}\n")
+
+    print(f"{file_path}.lrc 파일을 생성했습니다.")
 
 
-if FILE_LIST:  # 오디오 파일이 있는지 확인하기
-    for i in range(len(FILE_LIST)):
-        file = mutagen.File(FILE_LIST[i])
-        if file is not None and all(tag in file for tag in ['album', 'artist', 'title']):  # 아티스트, 앨범, 타이틀 태그 있는지 확인
-            available_file.append(FILE_LIST[i])
-            available_album.append(file['album'][0])
-            available_title.append(file['title'][0])
-            available_artist.append(file['artist'][0])
-            if "," in file['artist'][0]:
-                available_first_artist.append(file['artist'][0].split(",")[0])
-                available_second_artist.append(file['artist'][0].split(",")[1])
-            else:
-                available_first_artist.append(file['artist'][0])
-                available_second_artist.append('')
-        else:
-            print(f"{FILE_LIST[i]}의 태그가 없습니다.")
-            print("태그를 수동으로 입력하세요:")
-            title = input("제목: ")
-            artist = input("아티스트: ")
-            album = input("앨범: ")
+def process_music_files(artist, title):
+    
+    file_path = 'back-end/assets/audio/artist/lrc/' + artist + '-' + title
 
-            available_file.append(FILE_LIST[i])
-            available_title.append(title)
-            available_artist.append(artist)
-            available_album.append(album)
-            if "," in artist:
-                available_first_artist.append(artist.split(",")[0])
-                available_second_artist.append(artist.split(",")[1])
-            else:
-                available_first_artist.append(artist)
-                available_second_artist.append('')
-            fail += 1
+    if os.path.isfile(file_path+'.lrc') != True:
+            
+        # Bugs에서 아티스트명과 곡명으로 트랙 ID 검색
+        track_id = get_artist_track_id(artist, title)
+        
+        if track_id:
+                
+            lyrics = download_lyrics(track_id, file_path)
+            if lyrics:
+            
+                lrc_maker(file_path, lyrics)
+    
 
-    for i in range(len(available_file)):
-        if available_second_artist[i] == '':
-            soup_artist = BeautifulSoup(requests.get(f'https://music.bugs.co.kr/search/artist?q={available_artist[i]}').text, 'html.parser')
-        else:
-            soup_first_artist = BeautifulSoup(requests.get(f'https://music.bugs.co.kr/search/artist?q={available_first_artist[i]}').text, 'html.parser')
-            soup_second_artist = BeautifulSoup(requests.get(f'https://music.bugs.co.kr/search/artist?q={available_second_artist[i]}').text, 'html.parser')
-        soup_album = BeautifulSoup(requests.get(f'https://music.bugs.co.kr/search/album?q={available_artist[i]} {available_album[i]}').text, 'html.parser')
-        soup_track = BeautifulSoup(requests.get(f'https://music.bugs.co.kr/search/track?q={available_artist[i]} {available_title[i]}').text, 'html.parser')
+if __name__ == '__main__':
 
-        if available_second_artist[i] == '':
-            if soup_artist.select('#container > section > div > ul > li:nth-of-type(1) > figure > figcaption > a.artistTitle'):
-                artist_artistid = soup_artist.select_one('#container > section > div > ul > li:nth-of-type(1) > figure > figcaption > a.artistTitle')['href'][32:-25]
-            else:
-                print(f"{available_file[i]}에 대한 검색 결과가 없습니다.")
-                fail += 1
-                continue
-        else:
-            if soup_first_artist.select('#container > section > div > ul > li:nth-of-type(1) > figure > figcaption > a.artistTitle'):
-                artist_first_artistid = soup_first_artist.select_one('#container > section > div > ul > li:nth-of-type(1) > figure > figcaption > a.artistTitle')['href'][32:-25]
-            else:
-                print(f"{available_file[i]}에 대한 검색 결과가 없습니다.")
-                fail += 1
-                continue
-            if soup_second_artist.select('#container > section > div > ul > li:nth-of-type(1) > figure > figcaption > a.artistTitle'):
-                artist_second_artistid = soup_second_artist.select_one('#container > section > div > ul > li:nth-of-type(1) > figure > figcaption > a.artistTitle')['href'][32:-25]
-            else:
-                print(f"{available_file[i]}에 대한 검색 결과가 없습니다.")
-                fail += 1
-                continue  
-        if soup_album.select('#container > section > div > ul > li:nth-of-type(1) > figure'):
-            album_artistid = soup_album.select_one('#container > section > div > ul > li:nth-of-type(1) > figure')['artistid']
-            album_albumid = soup_album.select_one('#container > section > div > ul > li:nth-of-type(1) > figure')['albumid']
-        else:
-            print(f"{available_file[i]}에 대한 검색 결과가 없습니다.")
-            fail += 1
-            continue
-
-        for id in soup_track.find_all("tr"):
-            if id.get('artistid'):
-                track_artistid.append(id.get('artistid'))
-            if id.get('albumid'):
-                track_albumid.append(id.get('albumid'))
-            if id.get('trackid'):
-                track_trackid.append(id.get('trackid'))
-
-        if available_second_artist[i] == '':
-            if artist_artistid == album_artistid and artist_artistid in track_artistid:
-                n = track_artistid.index(artist_artistid)
-                base_filename = available_file[i].rsplit('.', 1)[0]
-                urllib.request.urlretrieve(f'http://api.bugs.co.kr/3/tracks/{track_trackid[n]}/lyrics?&api_key=b2de0fbe3380408bace96a5d1a76f800', f"{base_filename}.lrc")
-                with open(f'{base_filename}.lrc', encoding='UTF8') as json_file:
-                    data = json.load(json_file)
-                if data['result'] is not None:  # 싱크 가사 있을 때,
-                    if "|" in data['result']['lyrics']:  # time이 있을 때,
-                        lrc_maker()
-                    else:  # time이 없을 때,
-                        lrc_delete()
-                else:  # 싱크 가사 없을 때,
-                    lrc_delete()
-            else:
-                print(f"{available_file[i]}에 대한 검색 결과가 없습니다.")
-                fail += 1
-                track_clear()
-        else:
-            if artist_first_artistid == album_artistid and artist_second_artistid in track_artistid:
-                n = track_artistid.index(artist_second_artistid)
-                base_filename = available_file[i].rsplit('.', 1)[0]
-                urllib.request.urlretrieve(f'http://api.bugs.co.kr/3/tracks/{track_trackid[n]}/lyrics?&api_key=b2de0fbe3380408bace96a5d1a76f800', f"{base_filename}.lrc")
-                with open(f'{base_filename}.lrc', encoding='UTF8') as json_file:
-                    data = json.load(json_file)
-                if data['result'] is not None:  # 싱크 가사 있을 때,
-                    if "|" in data['result']['lyrics']:  # time이 있을 때,
-                        lrc_maker()
-                    else:  # time이 없을 때,
-                        lrc_delete()
-                else:  # 싱크 가사 없을 때,
-                    lrc_delete()
-            elif artist_first_artistid == album_artistid and artist_first_artistid in track_artistid:
-                n = track_artistid.index(artist_first_artistid)
-                base_filename = available_file[i].rsplit('.', 1)[0]
-                urllib.request.urlretrieve(f'http://api.bugs.co.kr/3/tracks/{track_trackid[n]}/lyrics?&api_key=b2de0fbe3380408bace96a5d1a76f800', f"{base_filename}.lrc")
-                with open(f'{base_filename}.lrc', encoding='UTF8') as json_file:
-                    data = json.load(json_file)
-                if data['result'] is not None:  # 싱크 가사 있을 때,
-                    if "|" in data['result']['lyrics']:  # time이 있을 때,
-                        lrc_maker()
-                    else:  # time이 없을 때,
-                        lrc_delete()
-                else:  # 싱크 가사 없을 때,
-                    lrc_delete()
-            else:
-                print(f"{available_file[i]}에 대한 검색 결과가 없습니다.")
-                fail += 1
-                track_clear()
-
-    print("============완료============")
-    print(f"가져온 lrc파일 수 : {success} 개")
-    print(f"실패한 곡 수 : {fail} 개")
-    print("============================")
-
-else:  # 오디오 파일이 없을 때
-    print("==========ERROR===========")
-    print("오디오 파일을 찾을 수 없습니다.")
-    print("==========================")
+    directory_path = 'C:/Git/ai_vocal_training/back-end/assets/audio/artist' # 음악 파일이 있는 경로
+    process_music_files('아이유', '밤편지')

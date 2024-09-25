@@ -11,24 +11,29 @@ const Training = () => {
             <div className="header_title">AI 기초 진단</div>
 
             <div className="drag_menu_component drag_menu_component_ai">
-              <div className="drag_menu_component_1">
-                <img className="ai_diagnosis_img" src=".\img\ai_diagnosis_img_1.png" alt="AI 진단 이미지1" />
-                <div className=" ai_text">
-                  <p className="ai_text_1">음색 진단하기</p>
-                  <p className="ai_text_2">
-                    AI가 어떤 음색인지 분석해주고 <br></br> 노래추천까지 해줍니다
-                  </p>
+              <Link to="/toneDiagnostics">
+                <div className="drag_menu_component_1">
+                  <img className="ai_diagnosis_img" src=".\img\ai_diagnosis_img_1.png" alt="AI 진단 이미지1" />
+                  <div className=" ai_text">
+                    <p className="ai_text_1">음색 진단하기</p>
+                    <p className="ai_text_2">
+                      AI가 어떤 음색인지 분석해주고 <br></br> 노래추천까지 해줍니다
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <div className="drag_menu_component_1">
-                <img className="ai_diagnosis_img" src=".\img\ai_diagnosis_img_2.png" alt="AI 진단 이미지2" />
-                <div className=" ai_text">
-                  <p className="ai_text_1">음역대 진단하기</p>
-                  <p className="ai_text_2">
-                    AI를 통해 사용자의 안정적인 <br></br> 음역대를 확인할 수 있습니다
-                  </p>
+              </Link>
+
+              <Link to="/scale_analyze">
+                <div className="drag_menu_component_1">
+                  <img className="ai_diagnosis_img" src=".\img\ai_diagnosis_img_2.png" alt="AI 진단 이미지2" />
+                  <div className=" ai_text">
+                    <p className="ai_text_1">음역대 진단하기</p>
+                    <p className="ai_text_2">
+                      AI를 통해 사용자의 안정적인 <br></br> 음역대를 확인할 수 있습니다
+                    </p>
+                  </div>
                 </div>
-              </div>
+                </Link>
             </div>
 
             <div className="header_title">AI 기초 트레이닝</div>
@@ -75,19 +80,12 @@ const Training = () => {
               </Link>
             </div>
 
-            
-              <div className="header_title">AI COVER</div>
+            <div className="header_title">AI COVER</div>
 
-              
-                <div className="training_ai_cover_component ">
-                  <img className="ai_cover_img" src=".\img\ai_cover.png" alt="ai cover 이미지"/>
-                  <p className="ai_text_2">
-                    AI가 유명 가수의 스타일로 커버해줍니다
-                  </p>
-                </div>
-              
-
-            
+            <div className="training_ai_cover_component ">
+              <img className="ai_cover_img" src=".\img\ai_cover.png" alt="ai cover 이미지" />
+              <p className="ai_text_2">AI가 유명 가수의 스타일로 커버해줍니다</p>
+            </div>
           </div>
         </div>
         <Footer activeTab="training" />

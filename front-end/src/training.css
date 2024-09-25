@@ -1,7 +1,9 @@
 .drag_menu_component {
   padding-top: 20px;
   padding-bottom: 25px;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: center;
+  padding-left: 20px;
   overflow-x: auto; /* 가로 스크롤 활성화 */
   white-space: nowrap; /* 내부 요소들이 한 줄에 위치하도록 설정 */
 }
@@ -12,7 +14,7 @@
 }
 
 .drag_menu_component_1 {
-  width: 230px;
+  width: 220px;
   display: inline-flex; /* inline-flex로 변경하여 요소들이 한 줄에 나타나도록 설정 */
   flex-direction: column;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -33,6 +35,7 @@
 }
 
 .drag_menu_component_1_long {
+  height: 300px;
   padding: 20px 10px;
 }
 
@@ -69,8 +72,9 @@
   color: #525252;
 }
 
-.training_ai_cover_component{
-  width: 100%;
+.training_ai_cover_component {
+  margin: 0px 10px;
+  margin-top: 25px;
   height: 150px;
   background-color: #ffffff;
   text-align: center;
@@ -79,7 +83,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.ai_cover_img{
+.ai_cover_img {
   width: 80px;
   height: 80px;
   margin-top: 15px;

@@ -23,15 +23,17 @@ const Training = () => {
                 </div>
               </Link>
 
-              <div className="drag_menu_component_1">
-                <img className="ai_diagnosis_img" src=".\img\ai_diagnosis_img_2.png" alt="AI 진단 이미지2" />
-                <div className=" ai_text">
-                  <p className="ai_text_1">음역대 진단하기</p>
-                  <p className="ai_text_2">
-                    AI를 통해 사용자의 안정적인 <br></br> 음역대를 확인할 수 있습니다
-                  </p>
+              <Link to="/scale_analyze">
+                <div className="drag_menu_component_1">
+                  <img className="ai_diagnosis_img" src=".\img\ai_diagnosis_img_2.png" alt="AI 진단 이미지2" />
+                  <div className=" ai_text">
+                    <p className="ai_text_1">음역대 진단하기</p>
+                    <p className="ai_text_2">
+                      AI를 통해 사용자의 안정적인 <br></br> 음역대를 확인할 수 있습니다
+                    </p>
+                  </div>
                 </div>
-              </div>
+                </Link>
             </div>
 
             <div className="header_title">AI 기초 트레이닝</div>

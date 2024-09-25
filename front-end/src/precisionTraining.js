@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Footer from "./common/Footer";
 import "./common/root.css";
 import "./training.css";
@@ -11,12 +12,15 @@ const PrecisionTraining = () => {
             <div className="header_title">최근 연습한 노래</div>
 
             <div className="drag_menu_component">
+              
               <div className="drag_menu_component_1">
-                <img className="ai_diagnosis_img" src=".\img\songs\cover_hug.png" alt="안아줘" />
-                <div className=" ai_text">
-                  <p className="ai_text_1">안아줘</p>
-                  <p className="ai_text_2">정준일</p>
-                </div>
+                <Link to="/immediate_feedback_analyze">
+                  <img className="ai_diagnosis_img" src=".\img\songs\cover_hug.png" alt="안아줘" />
+                  <div className=" ai_text">
+                    <p className="ai_text_1">안아줘</p>
+                     <p className="ai_text_2">정준일</p>
+                  </div>
+                </Link>
               </div>
               <div className="drag_menu_component_1">
                 <img className="ai_diagnosis_img" src=".\img\songs\cover_if_it_is_you.png" alt="너였다면" />

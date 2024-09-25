@@ -12,11 +12,11 @@ function ScaleAnalyze() {
     E4: 329.63,
     F4: 349.23,
     "F#4": 369.99,
-    G4: 392.00,
-    "G#4": 415.30,
-    A4: 440.00,
+    G4: 392.0,
+    "G#4": 415.3,
+    A4: 440.0,
     "A#4": 466.16,
-    B4: 493.88
+    B4: 493.88,
   };
 
   const [activeNote, setActiveNote] = useState(null); // 현재 활성화된 노트
@@ -58,70 +58,34 @@ function ScaleAnalyze() {
 
         <div className="piano">
           {/* 흰 건반 */}
-          <div
-            className={`white-key ${activeNote === "C4" ? "active" : ""}`}
-            onClick={() => playNoteByName("C4", 1)}
-          >
+          <div className={`white-key ${activeNote === "C4" ? "key_active" : ""}`} onClick={() => playNoteByName("C4", 1)}>
             C4
           </div>
-          <div
-            className={`white-key ${activeNote === "D4" ? "active" : ""}`}
-            onClick={() => playNoteByName("D4", 1)}
-          >
+          <div className={`white-key ${activeNote === "D4" ? "key_active" : ""}`} onClick={() => playNoteByName("D4", 1)}>
             D4
           </div>
-          <div
-            className={`white-key ${activeNote === "E4" ? "active" : ""}`}
-            onClick={() => playNoteByName("E4", 1)}
-          >
+          <div className={`white-key ${activeNote === "E4" ? "key_active" : ""}`} onClick={() => playNoteByName("E4", 1)}>
             E4
           </div>
-          <div
-            className={`white-key ${activeNote === "F4" ? "active" : ""}`}
-            onClick={() => playNoteByName("F4", 1)}
-          >
+          <div className={`white-key ${activeNote === "F4" ? "key_active" : ""}`} onClick={() => playNoteByName("F4", 1)}>
             F4
           </div>
-          <div
-            className={`white-key ${activeNote === "G4" ? "active" : ""}`}
-            onClick={() => playNoteByName("G4", 1)}
-          >
+          <div className={`white-key ${activeNote === "G4" ? "key_active" : ""}`} onClick={() => playNoteByName("G4", 1)}>
             G4
           </div>
-          <div
-            className={`white-key ${activeNote === "A4" ? "active" : ""}`}
-            onClick={() => playNoteByName("A4", 1)}
-          >
+          <div className={`white-key ${activeNote === "A4" ? "key_active" : ""}`} onClick={() => playNoteByName("A4", 1)}>
             A4
           </div>
-          <div
-            className={`white-key ${activeNote === "B4" ? "active" : ""}`}
-            onClick={() => playNoteByName("B4", 1)}
-          >
+          <div className={`white-key ${activeNote === "B4" ? "key_active" : ""}`} onClick={() => playNoteByName("B4", 1)}>
             B4
           </div>
 
           {/* 검은 건반 */}
-          <div
-            className={`black-key key-C-sharp ${activeNote === "C#4" ? "active" : ""}`}
-            onClick={() => playNoteByName("C#4", 1)}
-          ></div>
-          <div
-            className={`black-key key-D-sharp ${activeNote === "D#4" ? "active" : ""}`}
-            onClick={() => playNoteByName("D#4", 1)}
-          ></div>
-          <div
-            className={`black-key key-F-sharp ${activeNote === "F#4" ? "active" : ""}`}
-            onClick={() => playNoteByName("F#4", 1)}
-          ></div>
-          <div
-            className={`black-key key-G-sharp ${activeNote === "G#4" ? "active" : ""}`}
-            onClick={() => playNoteByName("G#4", 1)}
-          ></div>
-          <div
-            className={`black-key key-A-sharp ${activeNote === "A#4" ? "active" : ""}`}
-            onClick={() => playNoteByName("A#4", 1)}
-          ></div>
+          <div className={`black-key key-C-sharp ${activeNote === "C#4" ? "key_active" : ""}`} onClick={() => playNoteByName("C#4", 1)}></div>
+          <div className={`black-key key-D-sharp ${activeNote === "D#4" ? "key_active" : ""}`} onClick={() => playNoteByName("D#4", 1)}></div>
+          <div className={`black-key key-F-sharp ${activeNote === "F#4" ? "key_active" : ""}`} onClick={() => playNoteByName("F#4", 1)}></div>
+          <div className={`black-key key-G-sharp ${activeNote === "G#4" ? "key_active" : ""}`} onClick={() => playNoteByName("G#4", 1)}></div>
+          <div className={`black-key key-A-sharp ${activeNote === "A#4" ? "key_active" : ""}`} onClick={() => playNoteByName("A#4", 1)}></div>
         </div>
 
         <Footer />

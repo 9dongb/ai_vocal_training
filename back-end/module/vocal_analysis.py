@@ -153,7 +153,6 @@ class VocalAnalysis:
                 wrong_segments.append((start_idx, end_idx))
         return wrong_segments
     
-
     def find_incorrect(self):                        # 틀린 구간의 가사를 찾아주는 함수 정의
 
         wrong_segment_file = []
@@ -206,7 +205,9 @@ class VocalAnalysis:
                 print(index, similarity)
                 incorrect_lyrics.append(lyrics[index])
                 incorrect_similar.append(similarity)
-        for w in wrong_segment_file:
+
+            
+        for w in wrong_segment_file:                # 분석 후 틀린 구간 오디오 삭제
             os.remove(f'assets/audio/artist/{w}')
 
         return incorrect_lyrics, incorrect_similar

@@ -234,10 +234,10 @@ def score_cover(original_audio_path, cover_audio_path, threshold=0.1, merge_tole
     
     return score
 
-title = 'flower'
+title = '장범준-흔들리는 꽃들 속에서 네 샴푸향이 느껴진거야'
 # 사용 예제
-original_audio_path = f'assets/audio/artist/{title}.wav'  # 원본 오디오 파일 경로
-cover_audio_path = f'assets/audio/user/{title}.wav'  # 커버 오디오 파일 경로
+original_audio_path = f'back-end/assets/audio/artist/test/{title}.wav'  # 원본 오디오 파일 경로
+cover_audio_path = f'back-end/assets/audio/user/{title}.wav'  # 커버 오디오 파일 경로
 threshold = 0.2  # 허용 오차 범위 (초 단위)
 merge_tolerance = 0.6  # 인접 음절 합치기 허용 오차 (초 단위)
 

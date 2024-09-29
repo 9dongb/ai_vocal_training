@@ -7,6 +7,7 @@ import tensorflow_hub as hub
 from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
 import matplotlib
+from pydub import AudioSegment
 matplotlib.use('Agg')  # GUI 없는 백엔드 사용
 
 import difflib
@@ -16,14 +17,29 @@ import urllib
 import json
 import re
 import requests
+import Levenshtein
+from flask import jsonify
+
+import librosa
+import soundfile as sf
+
+
 
 
 class VocalAnalysis:
-    def __init__(self, title, artist):
+    def __init__(self, artist, title):
         self.title = title
         self.artist = artist
+        self.artist_audio_path = f'assets/audio/artist/vocal/{self.artist}-{self.title}.wav'
+        self.user_audio_path = f'assets/audio/user/{self.artist}-{self.title}.wav'
+
+        self.lrc_path = f'assets/lrc/{self.artist}-{self.title}.lrc'
         self.sampling_rate = 16000
         self.model = self.model_load()
+
+        audio_data, sample_rate = librosa.load(self.user_audio_path, sr=None)
+        sf.write(self.user_audio_path, audio_data, sample_rate)
+
 
     def model_load(self):                           
         model_path = os.path.join(os.getcwd(), "models")  # 모델 경로
@@ -58,21 +74,18 @@ class VocalAnalysis:
         
         resampled_pitch_outputs = interp_func(resampled_time)                                       # 보간법 적용하여 음정 출력을 원래 신호의 길이에 맞춤
 
-        file_path = audio_path.replace('.wav', '.npy')                                              # 오디오 파일명과 같은 이름으로 npy 파일 생성
+        # file_path = audio_path.replace('.wav', '.npy')                                              # 오디오 파일명과 같은 이름으로 npy 파일 생성
 
-        np.save(file_path, resampled_pitch_outputs)                                                 # 오디오 배열 저장
+        # np.save(file_path, resampled_pitch_outputs)                                                 # 오디오 배열 저장
 
         return pitch_outputs, resampled_pitch_outputs, original_y, sr
     
     def pitch_comparison(self):
-        artist_audio_path = f'assets/audio/artist/{self.title}.wav'
-        user_audio_path = f'assets/audio/user/{self.title}.wav'
-
-        y, sr =  librosa.load(artist_audio_path, mono=True)
+        y, sr =  librosa.load(self.user_audio_path, mono=True)
         duration = len(y)/sr
 
-        artist_original, artist_resampled, artist_y, _  = self.extract_pitches(artist_audio_path, duration)
-        user_original, user_resampled, _, _ = self.extract_pitches(user_audio_path, duration)
+        artist_original, artist_resampled, artist_y, _  = self.extract_pitches(self.artist_audio_path, duration)
+        user_original, user_resampled, _, _ = self.extract_pitches(self.user_audio_path, duration)
 
         diff = artist_original - user_original         # 원곡 목소리와 사용자 음정 주파수 오차 계산
         resampled_diff = artist_resampled - user_resampled
@@ -126,7 +139,7 @@ class VocalAnalysis:
         for index, s in enumerate(resampled_wrong_segments):
             audio_segment = artist_y[s[0]*sr:(s[1]+1)*sr]
             
-            sf.write(f'{artist_audio_path.replace(".wav","")}_segment{index+1}.wav', audio_segment, sr)
+            sf.write(f'{self.artist_audio_path.replace(".wav","")}_segment{index+1}.wav', audio_segment, sr)
 
         correct_score = round((np.sum(result=='Correct') / len(result))*100, 2)
 
@@ -162,16 +175,16 @@ class VocalAnalysis:
     def find_incorrect(self):                        # 틀린 구간의 가사를 찾아주는 함수 정의
 
         wrong_segment_file = []
-        for s in os.listdir(f'assets/audio/artist'):
+        for s in os.listdir(f'assets/audio/artist/vocal'):
             if f'flower_segment' in s:
                 wrong_segment_file.append(s)
 
-        lyrics_path = f'assets/lyrics/{self.title}.txt'
+        lyrics_path = f'assets/lyrics/{self.artist}-{self.title}.txt'
         
         incorrect_lyrics = []
         incorrect_similar = []
         for w in wrong_segment_file:
-            audio_path = f'assets/audio/artist/{w}'
+            audio_path = f'assets/audio/artist/vocal/{w}'
                 
             r = s_r.Recognizer()
             
@@ -219,7 +232,6 @@ class VocalAnalysis:
         return incorrect_lyrics, incorrect_similar
 
 ##################################################################################################################################
-
 
     def extract_artist_and_title(self, file_name):
         #
@@ -284,7 +296,7 @@ class VocalAnalysis:
     def process_music_files(self):
         artist = self.artist
         title = self.title
-        file_path = 'assets/audio/artist/lrc/' + artist + '-' + title
+        file_path = 'assets/lrc/' + artist + '-' + title
 
         if os.path.isfile(file_path+'.lrc') != True:
                 
@@ -314,3 +326,279 @@ class VocalAnalysis:
                 lrc_data.append((minutes * 60 + seconds, text))
         return lrc_data
 ##################################################################################################################################
+
+    def load_audio(self, audio_path):
+        # 오디오 파일 로드, y는 오디오 타임 시리즈, sr은 샘플링 레이트
+        y, sr = librosa.load(audio_path, sr=None)
+        return y, sr
+
+# 오디오 파일에서 온셋(박자 시작점)을 추출하는 함수
+    def extract_onsets(self,y, sr):
+        # 온셋 강도(에너지) 계산
+        onset_env = librosa.onset.onset_strength(y=y, sr=sr)
+        # 온셋(박자 시작점) 검출
+        onsets = librosa.onset.onset_detect(onset_envelope=onset_env, sr=sr, units='time')
+        return onsets, onset_env
+
+
+    # 원본 온셋과 커버 온셋을 비교하여 차이를 계산하는 함수
+    def compare_onsets(self, onsets_original, onsets_cover, threshold=0.1):
+        differences = []  # 온셋 차이 리스트
+        diff_status = []  # 온셋 상태 리스트 ('good', 'bad', 'early', 'late')
+        
+        for onset in onsets_original:
+            # 커버 온셋이 없으면 무조건 bad로 처리
+            if len(onsets_cover) == 0:
+                differences.append(threshold + 1)
+                diff_status.append('bad')
+                continue
+
+            # 원본 온셋에 가장 가까운 커버 온셋을 찾고 차이를 계산
+            closest_onset = min(onsets_cover, key=lambda x: abs(x - onset))
+            difference = closest_onset - onset
+
+            # 차이가 threshold보다 크면 'bad', 작으면 'good'으로 분류
+            if abs(difference) > threshold:
+                differences.append(difference)
+                if difference > 0:
+                    diff_status.append('late')
+                else:
+                    diff_status.append('early')
+            else:
+                differences.append(difference)
+                diff_status.append('good')
+        
+        # 'good'과 'bad' 개수 계산
+        good_count = sum(1 for diff in differences if abs(diff) <= threshold)
+        bad_count = len(differences) - good_count
+
+        # 점수 계산
+        score = {
+            'good': good_count,
+            'bad': bad_count,
+            'accuracy': good_count / len(differences) * 100  # 정확도 계산
+        }
+
+        return differences, diff_status, score
+
+    # 음절 구분을 위한 에너지 기반 경계 추출 함수
+    def extract_syllable_boundaries(self, y, sr, hop_length=512, frame_length=2048):
+        # STFT와 RMS 에너지 계산
+        S = np.abs(librosa.stft(y, n_fft=frame_length, hop_length=hop_length))
+        rms = librosa.feature.rms(S=S)[0]
+        
+        # 음절 경계를 찾기 위해 집합적으로 세그먼트 분할
+        boundaries = librosa.segment.agglomerative(rms.reshape(1, -1), k=int(len(rms) // 50))
+        times = librosa.times_like(rms, sr=sr, hop_length=hop_length)
+        
+        syllable_boundaries = []  # 음절 경계 리스트
+        for i in range(len(boundaries) - 1):
+            start = times[boundaries[i]]
+            end = times[boundaries[i + 1] - 1]
+            syllable_boundaries.append((start, end))
+        
+        return syllable_boundaries
+
+    # 틀린 구간을 합치는 함수 정의
+    def merge_bad_segments(self, syllable_boundaries, onsets_original, diff_status, merge_tolerance=0.5):
+        bad_segments = []  # 틀린 구간 리스트
+        current_start = None  # 현재 구간 시작점
+        current_end = None  # 현재 구간 끝점
+
+        for start, end in syllable_boundaries:
+            # 온셋 상태가 'bad'인 경우 구간 병합
+            if any(onset >= start and onset <= end for onset, status in zip(onsets_original, diff_status) if status in ['bad', 'early', 'late']):
+                if current_start is None:
+                    current_start = start
+                    current_end = end
+                else:
+                    # 현재 구간과 인접하면 병합
+                    if start - current_end <= merge_tolerance:
+                        current_end = end
+                    else:
+                        bad_segments.append((current_start, current_end))
+                        current_start = start
+                        current_end = end
+            else:
+                if current_start is not None:
+                    bad_segments.append((current_start, current_end))
+                    current_start = None
+                    current_end = None
+
+        # 마지막 구간 추가
+        if current_start is not None:
+            bad_segments.append((current_start, current_end))
+
+        # 추가된 코드: 인접한 구간을 다시 한번 확인하여 병합
+        merged_segments = []
+        current_start = None
+        current_end = None
+
+        for start, end in bad_segments:
+            if current_start is None:
+                current_start = start
+                current_end = end
+            else:
+                if start - current_end <= merge_tolerance:
+                    current_end = end
+                else:
+                    merged_segments.append((current_start, current_end))
+                    current_start = start
+                    current_end = end
+
+        if current_start is not None:
+            merged_segments.append((current_start, current_end))
+
+        return merged_segments
+
+    # 틀린 구간을 잘라서 저장하는 함수
+    def save_bad_segments(self, audio_path, bad_segments, output_dir, output_prefix, padding=3.0):
+        # 폴더 생성
+        os.makedirs(output_dir, exist_ok=True)
+        
+        # 오디오 파일 로드
+        audio = AudioSegment.from_wav(audio_path)
+        for i, (start, end) in enumerate(bad_segments):
+            # 시작 시간 (밀리초), 0보다 작을 수 없음
+            start_ms = max((start - (padding - 1.25)) * 1000, 0)
+            # 끝 시간 (밀리초), 오디오 길이를 초과할 수 없음
+            end_ms = min((end + padding) * 1000, len(audio))
+            # 오디오 구간 잘라내기
+            segment = audio[start_ms:end_ms]
+            # 잘라낸 구간 저장
+            segment.export(os.path.join(output_dir, f"{output_prefix}_bad_segment_{i+1}.wav"), format="wav")
+
+    # 온셋 차이를 그래프로 시각화하는 함수
+    def plot_onset_differences(self, y_original, sr_original, onsets_original, bad_segments, diff_status):
+        plt.figure(figsize=(15, 5))  # 그래프 크기 설정
+        
+        # 시간 축 생성
+        time = np.linspace(0, len(y_original) / sr_original, num=len(y_original))
+        # 원본 음원의 파형 표시
+        plt.plot(time, y_original, label='원본 음원', color='blue', alpha=0.6)
+
+        # 온셋 차이가 나는 부분을 범위로 표시
+        for start, end in bad_segments:
+            plt.axvspan(start, end, color='red', alpha=0.5, label='차이 나는 부분' if start == bad_segments[0][0] else "")
+
+        # 온셋 상태에 따라 표시 (틀린 부분만 표시)
+        early_plotted = False
+        late_plotted = False
+        for onset, status in zip(onsets_original, diff_status):
+            if status in ['early', 'late']:
+                for start, end in bad_segments:
+                    if start <= onset <= end:
+                        if status == 'early':
+                            if not early_plotted:
+                                plt.axvline(onset, color='green', linestyle='--', label='early 박자')
+                                early_plotted = True
+                            else:
+                                plt.axvline(onset, color='green', linestyle='--')
+                        elif status == 'late':
+                            if not late_plotted:
+                                plt.axvline(onset, color='orange', linestyle='--', label='late 박자')
+                                late_plotted = True
+                            else:
+                                plt.axvline(onset, color='orange', linestyle='--')
+
+        # x축 라벨
+        plt.xlabel('시간 (초)')
+        # y축 라벨
+        plt.ylabel('진폭')
+        # 그래프 제목
+        plt.title('원본 음원의 파형과 온셋 차이')
+        # 범례 추가
+        plt.legend()
+        # 그리드 추가
+        plt.grid(True)
+        # 그래프 표시
+        plt.savefig(f'assets/graph/{self.artist}-{self.title}-beat.png')
+
+    # 원본 음원과 커버 음원을 비교하여 점수를 매기고 시각화하는 함수
+    def score_cover(self, threshold=0.2, merge_tolerance=0.6):
+        # threshold -> 허용 오차 범위 (초 단위) 
+        # merge_tolerance -> 인접 음절 합치기 허용 오차 (초 단위)
+
+        # 오디오 파일 로드
+        y_original, sr_original = self.load_audio(self.artist_audio_path)
+        y_cover, sr_cover = self.load_audio(self.user_audio_path)
+        
+        # 온셋 추출
+        onsets_original, onset_env_original = self.extract_onsets(y_original, sr_original)
+        onsets_cover, onset_env_cover = self.extract_onsets(y_cover, sr=sr_cover)
+        
+        # 온셋 비교
+        differences, diff_status, score = self.compare_onsets(onsets_original, onsets_cover, threshold)
+        
+        # 음절 경계 추출
+        syllable_boundaries = self.extract_syllable_boundaries(y_original, sr_original)
+        
+        # 틀린 구간 합치기
+        bad_segments = self.merge_bad_segments(syllable_boundaries, onsets_original, diff_status, merge_tolerance)
+        
+        # 차이 시각화
+        self.plot_onset_differences(y_original, sr_original, onsets_original, bad_segments, diff_status)
+        
+        # # 틀린 구간 저장
+        # self.save_bad_segments(self.artist_audio_path, bad_segments, "original_bad_segments", "original")
+        # self.save_bad_segments(self.user_audio_path, bad_segments, "cover_bad_segments", "cover")
+        
+        # 로그 출력
+        print("Detected bad segments (with padding):")
+        for start, end in bad_segments:
+            print(f"Start: {start:.2f} s, End: {end:.2f} s")
+        
+        # 박자가 빠른지 느린지 출력 (틀린 부분만 출력)
+        for onset, status in zip(onsets_original, diff_status):
+            if status in ['early', 'late']:
+                for start, end in bad_segments:
+                    if start <= onset <= end:
+                        print(f"Onset at {onset:.2f} s is {status}")
+        
+        return score
+#####################################################################################################################################################
+    def remove_brackets_and_text(self, text):
+        # 정규 표현식으로 [ ] 안의 텍스트와 괄호를 모두 제거
+        result = re.sub(r'\[.*?\]', '', text)
+        return result
+    
+    def calculate_levenshtein_similarity(self, target_string):
+        file_path = f'assets/lyrics/{self.artist}-{self.title}.txt'
+        # 텍스트 파일 불러오기
+        with open(file_path, 'r', encoding='utf-8') as file:
+            file_content = file.read()
+
+        # 레벤슈타인 유사도 계산
+        distance = Levenshtein.distance(file_content, target_string)
+        
+        # 레벤슈타인 거리를 유사도로 변환 (0~1 범위)
+        max_len = max(len(file_content), len(target_string))
+        similarity = round(1 - (distance / max_len), 2)
+
+        return str(similarity)
+    
+    def pronunciation_score(self):
+        r = s_r.Recognizer()  # 객체 생성
+        text = ""  # 기본값 설정
+
+        # 오디오 파일에서 음성을 인식
+        with s_r.AudioFile(self.user_audio_path) as source:
+            audio = r.record(source)
+
+        try:
+            # 구글 음성 API로 인식 (하루 제한 50회)
+            text = r.recognize_google(audio, language="ko-KR")
+            print("말하고 있는 음성: " + text)
+        except s_r.UnknownValueError:
+            print("음성 인식을 이해하는데 실패했습니다.")
+        except s_r.RequestError as e:
+            print("요청 실패: {0}".format(e))  # API Key 오류, 네트워크 문제 등
+
+        if text:
+            # `text`가 제대로 인식된 경우에만 Levenshtein 유사도 계산
+            lyrics_score = self.calculate_levenshtein_similarity(text)
+            print(lyrics_score)
+            return lyrics_score
+        else:
+            print("텍스트가 비어 있으므로 유사도를 계산할 수 없습니다.")
+            return None  # 적절한 기본값을 반환

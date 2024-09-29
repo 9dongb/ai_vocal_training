@@ -6,26 +6,33 @@ from flask_cors import CORS, cross_origin  # Cross-Origin Resorce Sharing
                                            # 서로 다른 도메인 간에 리소스를 주고 받는 것을 허용해주거나 차단하는 설정
 
 from module.vocal_analysis import VocalAnalysis
+from module.range_check import extract_pitch
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 app.secret_key = "Um_AI_Diary_Hungry_BBC_BBQ_Chicken"
 
-UPLOAD_FOLDER = 'uploads'
+#UPLOAD_FOLDER = 'uploads'
+UPLOAD_FOLDER = 'assets/audio/user/'
 TONE_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, 'tone')
+
+
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['TONE_UPLOAD_FOLDER'] = TONE_UPLOAD_FOLDER
 
 db = Database()
 
+artist = '정준일'
+title = '안아줘'
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         data = request.get_json()
-        
+
         user_id = data['id']
         user_password = data['password']
-        
+
         login_data = db.db_login(user_id, user_password)
         return login_data
     else:
@@ -62,7 +69,6 @@ def upload():
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)
 
-
        # 'audio_file'은 JavaScript에서 전송한 FormData key와 일치해야 합니다.
     if 'audio' not in request.files:
         return jsonify({"error": "No audio file part"}), 400
@@ -75,7 +81,7 @@ def upload():
 
     # 파일 저장
     if file:
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], artist+'-'+title+'.wav')
         file.save(file_path)
         return jsonify({"message": "File saved successfully", "file_path": file_path}), 200
 
@@ -106,6 +112,7 @@ def upload_tone():
 
 
 
+# 가사 정보 반환
 @app.route("/training", methods=["GET", "POST"])
 def training():
     data = request.get_json()  # 프론트엔드에서 전달된 데이터 받기
@@ -130,8 +137,29 @@ def vocal_analysis():
     wrong_lyrics, _ = va.find_incorrect()
 
 
-    return jsonify({'음정 점수':pitch_score, '틀린 구간 초(시작, 끝)': wrong_segments, '틀린 가사':wrong_lyrics})
+    beat_score = round(va.score_cover()['accuracy'], 2)
 
+    pronunciation_score = va.pronunciation_score()
+
+    if pronunciation_score is None:
+        print("발음 점수를 계산할 수 없습니다.")
+        pronunciation_score = 0.0  # 기본값으로 설정하거나 다른 처리를 할 수 있음
+
+    return jsonify({
+        '음정 점수': pitch_score,
+        '박자 점수': beat_score,
+        '발음 점수': float(pronunciation_score),
+        '틀린 구간 초(시작, 끝)': wrong_segments,
+        '틀린 가사': wrong_lyrics
+    })
+
+@app.route("/range_check", methods=["GET", "POST"])
+def range_check():
+
+    audio_path = 'back-end/uploads/range/range_test.wav' # 음역대 녹음한 오디오 경로
+    frequency = extract_pitch(audio_path)
+
+    return jsonify({'frequency':frequency})
 
  #랭킹 데이터 -- 민지원
 @app.route('/weekly_ranking', methods=['GET'])

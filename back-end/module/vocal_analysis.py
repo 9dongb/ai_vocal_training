@@ -19,15 +19,26 @@ import re
 import requests
 import Levenshtein
 from flask import jsonify
+
+import librosa
+import soundfile as sf
+
+
+
+
 class VocalAnalysis:
     def __init__(self, artist, title):
         self.title = title
         self.artist = artist
-        self.artist_audio_path = f'assets/audio/artist/test/{self.artist}-{self.title}.wav'
+        self.artist_audio_path = f'assets/audio/artist/vocal/{self.artist}-{self.title}.wav'
         self.user_audio_path = f'assets/audio/user/{self.artist}-{self.title}.wav'
+
         self.lrc_path = f'assets/lrc/{self.artist}-{self.title}.lrc'
         self.sampling_rate = 16000
         self.model = self.model_load()
+
+        audio_data, sample_rate = librosa.load(self.user_audio_path, sr=None)
+        sf.write(self.user_audio_path, audio_data, sample_rate)
 
 
     def model_load(self):                           
@@ -63,14 +74,14 @@ class VocalAnalysis:
         
         resampled_pitch_outputs = interp_func(resampled_time)                                       # 보간법 적용하여 음정 출력을 원래 신호의 길이에 맞춤
 
-        file_path = audio_path.replace('.wav', '.npy')                                              # 오디오 파일명과 같은 이름으로 npy 파일 생성
+        # file_path = audio_path.replace('.wav', '.npy')                                              # 오디오 파일명과 같은 이름으로 npy 파일 생성
 
-        np.save(file_path, resampled_pitch_outputs)                                                 # 오디오 배열 저장
+        # np.save(file_path, resampled_pitch_outputs)                                                 # 오디오 배열 저장
 
         return pitch_outputs, resampled_pitch_outputs, original_y, sr
     
     def pitch_comparison(self):
-        y, sr =  librosa.load(self.artist_audio_path, mono=True)
+        y, sr =  librosa.load(self.user_audio_path, mono=True)
         duration = len(y)/sr
 
         artist_original, artist_resampled, artist_y, _  = self.extract_pitches(self.artist_audio_path, duration)
@@ -164,7 +175,7 @@ class VocalAnalysis:
     def find_incorrect(self):                        # 틀린 구간의 가사를 찾아주는 함수 정의
 
         wrong_segment_file = []
-        for s in os.listdir(f'assets/audio/artist/test'):
+        for s in os.listdir(f'assets/audio/artist/vocal'):
             if f'flower_segment' in s:
                 wrong_segment_file.append(s)
 
@@ -173,7 +184,7 @@ class VocalAnalysis:
         incorrect_lyrics = []
         incorrect_similar = []
         for w in wrong_segment_file:
-            audio_path = f'assets/audio/artist/test/{w}'
+            audio_path = f'assets/audio/artist/vocal/{w}'
                 
             r = s_r.Recognizer()
             
@@ -567,21 +578,27 @@ class VocalAnalysis:
         return str(similarity)
     
     def pronunciation_score(self):
-        r = s_r.Recognizer() # 객체 생성
+        r = s_r.Recognizer()  # 객체 생성
+        text = ""  # 기본값 설정
 
+        # 오디오 파일에서 음성을 인식
         with s_r.AudioFile(self.user_audio_path) as source:
             audio = r.record(source)
+
         try:
             # 구글 음성 API로 인식 (하루 제한 50회)
-            text=r.recognize_google(audio, language="ko-KR")
-            print("말하고 있는 음성: "+text)
+            text = r.recognize_google(audio, language="ko-KR")
+            print("말하고 있는 음성: " + text)
         except s_r.UnknownValueError:
             print("음성 인식을 이해하는데 실패했습니다.")
         except s_r.RequestError as e:
-            print("요청 실패: {0}".format(e)) # API Key 오류, 네트워크 문제 등
+            print("요청 실패: {0}".format(e))  # API Key 오류, 네트워크 문제 등
 
-        # lrc = self.read_lrc(self.lrc_path)
-
-        lyrics_score = self.calculate_levenshtein_similarity(text)
-        print(lyrics_score)
-        return lyrics_score
+        if text:
+            # `text`가 제대로 인식된 경우에만 Levenshtein 유사도 계산
+            lyrics_score = self.calculate_levenshtein_similarity(text)
+            print(lyrics_score)
+            return lyrics_score
+        else:
+            print("텍스트가 비어 있으므로 유사도를 계산할 수 없습니다.")
+            return None  # 적절한 기본값을 반환

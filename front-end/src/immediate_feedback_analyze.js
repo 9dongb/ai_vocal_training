@@ -183,7 +183,7 @@ function Immediate_feedback_analyze() {
               </div>
             </div>
 
-            <audio ref={audioRef} src="./mr/hug_me.wav" />
+            <audio ref={audioRef} src="/mr/hug_me.wav" />
           </div>
         </div>
         <Footer activeTab="training" />

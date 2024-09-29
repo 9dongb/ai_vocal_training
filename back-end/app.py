@@ -12,10 +12,14 @@ app = Flask(__name__)
 CORS(app, supports_credentials=True)
 app.secret_key = "Um_AI_Diary_Hungry_BBC_BBQ_Chicken"
 
-UPLOAD_FOLDER = 'uploads'
+UPLOAD_FOLDER = 'assets/audio/user/'
+
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 db = Database()
+
+artist = '정준일'
+title = '안아줘'
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -65,7 +69,7 @@ def upload():
 
     # 파일 저장
     if file:
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], artist+'-'+title+'.wav')
         file.save(file_path)
         return jsonify({"message": "File saved successfully", "file_path": file_path}), 200
 
@@ -73,18 +77,14 @@ def upload():
 # 가사 정보 반환
 @app.route("/training", methods=["GET", "POST"])
 def training():
-    va = VocalAnalysis('장범준', '흔들리는 꽃들 속에서 네 샴푸향이 느껴진거야')
+    va = VocalAnalysis(artist, title)
     lrc = va.process_music_files()
-
-  
-
-
     return lrc
 
 
 @app.route("/vocal_analysis", methods=["GET", "POST"])
 def vocal_analysis():
-    va = VocalAnalysis('장범준', '흔들리는 꽃들 속에서 네 샴푸향이 느껴진거야')
+    va = VocalAnalysis('정준일', '안아줘')
     
     pitch_score, wrong_segments = va.pitch_comparison()
     
@@ -92,9 +92,14 @@ def vocal_analysis():
 
     wrong_lyrics, _ = va.find_incorrect()
 
+
     beat_score = round(va.score_cover()['accuracy'], 2)
 
     pronunciation_score = va.pronunciation_score()
+
+    if pronunciation_score is None:
+        print("발음 점수를 계산할 수 없습니다.")
+        pronunciation_score = 0.0  # 기본값으로 설정하거나 다른 처리를 할 수 있음
 
     return jsonify({
         '음정 점수': pitch_score,

@@ -35,8 +35,8 @@ def convert_to_wav(input_file, output_file='output.wav'):
     print(f"WAV file saved as: {output_file}")
 
 # 가수와 곡 제목 입력
-artist = "임영웅"
-song_title = "사랑은 늘 도망가"
+artist = "정준일"
+song_title = "안아줘"
 
 # 유튜브에서 다운로드 후 WAV로 변환
 audio_file = download_audio_with_ytdlp(artist, song_title)

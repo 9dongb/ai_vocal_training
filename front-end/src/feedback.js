@@ -2,6 +2,7 @@ import React from "react";
 import "./feedback.css";
 import "./common/root.css";
 import Footer from "./common/Footer";
+import { Link } from "react-router-dom";
 
 function Feedback() {
   return (
@@ -19,7 +20,7 @@ function Feedback() {
               <img className="feedback_song_info_img" src=".\img\songs\cover_hug.png" alt="안아줘" />
             </div>
           </div>
-
+          <Link to="/wrongPart">
           <div className="header_title">틀린구간</div>
           <div className="wrong_part feedback_component">
             <div>
@@ -27,6 +28,7 @@ function Feedback() {
               <div className="feedback_text">부족한 부분을 다시 연습해보세요</div>
             </div>
           </div>
+          </Link>
 
           <div className="header_title">종합 점수</div>
           <div className="feedback_final_score feedback_component">

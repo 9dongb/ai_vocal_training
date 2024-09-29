@@ -79,7 +79,6 @@ def upload():
         file.save(file_path)
         return jsonify({"message": "File saved successfully", "file_path": file_path}), 200
 
-<<<<<<< HEAD
 # 톤 분석용 파일 업로드 처리 라우트
 @app.route("/uploads/tone", methods=["GET", "POST"])
 def upload_tone():
@@ -106,20 +105,23 @@ def upload_tone():
         return jsonify({"message": "File saved successfully", "file_path": file_path}), 200
 
 
-=======
 
 @app.route("/training", methods=["GET", "POST"])
 def training():
-    va = VocalAnalysis('정준일', '안아줘')
+    data = request.get_json()  # 프론트엔드에서 전달된 데이터 받기
+    artist = data.get("artist")  # 가수명
+    song_title = data.get("songTitle")  # 노래 제목
+
+    # 전달받은 가수명과 노래 제목을 기반으로 VocalAnalysis 사용
+    va = VocalAnalysis(artist, song_title)
     lrc = va.process_music_files()
 
-    return lrc 
+    return jsonify({"lyrics": lrc})  # JSON 형식으로 가사 데이터 반환
 
 
 @app.route("/vocal_analysis", methods=["GET", "POST"])
 def vocal_analysis():
     va = VocalAnalysis('정준일', '안아줘')
->>>>>>> origin/main
     
     pitch_score, wrong_segments = va.pitch_comparison()
     

@@ -47,7 +47,14 @@ def register():
         print(register_data)
         return register_data
 
+# 녹음 관련
+@app.route("/range_check", methods=["GET", "POST"])
+def range_check():
+    test = 369.99
 
+    return jsonify({'frequency':test})
+
+    
 @app.route("/uploads", methods=["GET", "POST"])
 def upload():
     # 업로드 폴더 경로 설정

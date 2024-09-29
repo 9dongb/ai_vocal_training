@@ -6,6 +6,7 @@ import Training from "./training.js";
 import PrecisionTraining from "./precisionTraining.js";
 import ToneDiagnostics from "./toneDiagnostics.js";
 import ToneDiagnosticsResult from "./toneDiagnosticsResult.js";
+import AiCover from "./aiCover.js";
 import Matching from "./matching.js";
 import MyPage from "./myPage.js";
 import Login from "./login.js"; // Login 컴포넌트 임포트
@@ -14,6 +15,7 @@ import Login_member from "./login_member.js";
 import Join_member from "./join_member.js";
 import Feedbacklist_member from "./feedbacklist_member.js";
 import Feedback from "./feedback.js";
+import FeedbackChart from "./feedbackChart.js";
 import ScaleAnalyze from "./scale_analyze.js";
 
 function App() {
@@ -33,11 +35,13 @@ function App() {
           <Route path="/precisionTraining" element={<PrecisionTraining />}></Route>
           <Route path="/toneDiagnostics" element={<ToneDiagnostics />}></Route>
           <Route path="/toneDiagnosticsResult" element={<ToneDiagnosticsResult />}></Route>
+          <Route path="/aiCover" element={<AiCover />}></Route>
           <Route path="/matching" element={<Matching />}></Route>
           <Route path="/myPage" element={<MyPage />}></Route>
           <Route path="/immediate_feedback_analyze" element={<Immediate_feedback_analyze />}></Route>
           <Route path="/Feedbacklist_member" element={<Feedbacklist_member />}></Route>
           <Route path="/feedback" element={<Feedback />}></Route>
+          <Route path="/feedbackChart" element={<FeedbackChart />}></Route>
           <Route path="/scale_analyze" element={<ScaleAnalyze />}></Route>
           <Route path="/" element={<Navigate to="/login" />} /> {/*기본 경로 /login으로 설정 */}
         </Routes>

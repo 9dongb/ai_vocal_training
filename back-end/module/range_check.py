@@ -2,8 +2,18 @@ import librosa
 import numpy as np
 
 def extract_pitch(audio_file):
+
+    print("불러온 오디오 파일: ", audio_file)
                                                             # 오디오 파일 불러오기
     y, sr = librosa.load(audio_file, duration=3.0)          # 3초만 로드
+
+    # 오소정 수정 코드
+    # try:
+    #     y, sr = librosa.load(audio_file, duration=3.0)  # 3초만 로드
+    #     print("오디오 파일이 성공적으로 로드되었습니다.")
+    # except Exception as e:
+    #     print(f"오디오 파일 로드 중 오류 발생: {e}")
+    # 오소정 수정 끝
 
     pitches, magnitudes = librosa.core.piptrack(y=y, sr=sr) # 음정 추출 (pyin 알고리즘 사용)
     pitches_frequencies = []                                # 가장 높은 에너지의 음정 추출
@@ -24,6 +34,8 @@ def extract_pitch(audio_file):
         return {'message':'error'}
 
 if __name__ == "__main__":    
-    audio_path = 'back-end/uploads/range/range_test.wav'        # 오디오 파일 경로
-    
+    # audio_path = 'back-end/uploads/range/range_test.wav'        # 오디오 파일 경로
+    # audio_path = '../assets/audio/user/jji-hugme.wav'        # 오디오 파일 경로 -- 오소정 수정함
+    audio_path = 'C:/Users/mnb52/Desktop/singking/ai_vocal_training/back-end/assets/audio/user/jji-hugme.wav' # 오디오 파일 경로 -- 오소정 수정함
+
     extract_pitch(audio_path)

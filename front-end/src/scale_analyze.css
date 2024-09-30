@@ -74,6 +74,13 @@
   border-radius: 5px;
   cursor: pointer;
 }
+
+.sa_playing_btn {
+  height: 72px;
+  line-height: 0;
+  padding: 13px 0;
+}
+
 .scale_analyze_textarea {
   text-align: center;
 }

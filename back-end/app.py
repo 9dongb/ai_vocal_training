@@ -18,8 +18,13 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 db = Database()
 
-artist = '정준일'
-title = '안아줘'
+# artist = '정준일'
+# title = '안아줘'
+
+# 오소정 수정 코드
+artist = 'jji'
+title = 'hugme'
+# 오소정 수정 코드 끝
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -112,7 +117,14 @@ def vocal_analysis():
 @app.route("/range_check", methods=["GET", "POST"])
 def range_check():
 
-    audio_path = 'back-end/uploads/range/range_test.wav' # 음역대 녹음한 오디오 경로
+    # audio_path = 'back-end/uploads/range/range_test.wav' # 음역대 녹음한 오디오 경로
+
+    # 내가 수정한 곳 -- 오소정
+    # audio_path = 'back-end/assets/audio/user/jji-hugme.wav' # 음역대 녹음한 오디오 경로
+    audio_path = 'C:/Users/mnb52/Desktop/singking/ai_vocal_training/back-end/assets/audio/user/jji-hugme.wav'  # 오디오 파일 경로
+    # frequency = 369.99
+    # 오소정 수정 코드 끝
+
     frequency = extract_pitch(audio_path)
 
     return jsonify({'frequency':frequency})

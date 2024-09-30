@@ -1,19 +1,24 @@
-import numpy as np
-import tensorflow as tf
+from sklearn.metrics.pairwise import cosine_similarity
 
-def tone_classification():
+from tensorflow import keras
+import numpy 
 
-    labels = ['뭐', '뭐뭐','뭐', '뭐']
+def extract_features(model, data):
+    intermediate_layer_model = keras.Model(inputs=model.input, outputs=model.get_layer(index=-2).output)
+    features = intermediate_layer_model.predict(data)
+    return features
 
-    model = tf.keras.models.load('models/tone_classification.h5')
+database_data = X
+database_labels = yy
+title = df.title.tolist()
 
-    x_test = np.array([0, 0])
-    y_predict = model.predict(x_test)
+input_features = extract_features(model, test_data)
+database_features = extract_features(model, database_data)
 
+similarity_scores = cosine_similarity(input_features, database_features)
 
-    label = labels[y_predict[0].argmax()]
-    confidence = y_predict(x_test)
+recommended_indices = np.argsort(similarity_scores[0])[::-1]
+recommended_songs = [title[i] for i in recommended_indices[:5]]
 
-    return label, confidence
-
-
+for i,j in enumerate(recommended_songs):
+    print(f"{i+1}번째 추천곡 -> {j}")

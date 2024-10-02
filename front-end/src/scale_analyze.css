@@ -2,6 +2,7 @@
   display: flex;
   position: relative;
   margin: 0 auto;
+  padding-top: 20px;
   width: 420px; /* 전체 피아노의 너비 */
   height: 200px; /* 전체 피아노의 높이 */
 }
@@ -88,7 +89,14 @@
 .scale_analyze_textarea textarea {
   outline: none;
   resize: none;
-  width: 300px;
-  height: 100px;
+  width: 420px;
+  height: 150px;
   cursor: default;
+
+  padding: 10px 0px;
+    background-color: #ffffff;
+    text-align: center;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }

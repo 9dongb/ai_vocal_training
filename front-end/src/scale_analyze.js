@@ -34,7 +34,6 @@ function ScaleAnalyze() {
   const [isPaused, setIsPaused] = useState(false); // 녹음 일시 중지 상태
   const [mediaRecorder, setMediaRecorder] = useState(null); // MediaRecorder 참조
   const [recordedChunks, setRecordedChunks] = useState([]); // 녹음된 데이터 저장
-  const navigate = useNavigate(); // useNavigate 훅 사용
   //녹음 끝
 
 
@@ -70,7 +69,7 @@ function ScaleAnalyze() {
 
       setNoteMessage(`현재 건반 음역대: ${note.info}`);
       // 사용자 주파수 가져오기
-      fetchUserFrequency(noteName);
+      // fetchUserFrequency(noteName);
     
       // setTimeout(() => setActiveNote(null), duration * 1000); // 음이 끝나면 시각화 해제
     } else {
@@ -109,139 +108,137 @@ function ScaleAnalyze() {
 
   // 녹음 관련
   // // 오디오 재생 및 녹음 시작
-  const handleStart = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
-      setMediaRecorder(recorder);
+  // const handleStart = async () => {
+  //   try {
+  //     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  //     const recorder = new MediaRecorder(stream);
+  //     setMediaRecorder(recorder);
 
-      const chunks = [];
-      recorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          chunks.push(event.data);
-        }
-      };
+  //     const chunks = [];
+  //     recorder.ondataavailable = (event) => {
+  //       if (event.data.size > 0) {
+  //         chunks.push(event.data);
+  //       }
+  //     };
 
-      recorder.onstop = () => {
-        const blob = new Blob(chunks, { type: "audio/wav" });
-        setRecordedChunks(chunks);
-        console.log("녹음된 데이터 Blob:", blob);
-        uploadToServer(blob); // 녹음이 멈추면 서버로 업로드
-      };
+  //     recorder.onstop = () => {
+  //       const blob = new Blob(chunks, { type: "audio/wav" });
+  //       setRecordedChunks(chunks);
+  //       console.log("녹음된 데이터 Blob:", blob);
+  //       uploadToServer(blob); // 녹음이 멈추면 서버로 업로드
+  //     };
 
-      recorder.start();
-      setIsPlaying(true);
-      setIsPaused(false);
-      console.log("녹음 및 재생 시작");
-    } catch (error) {
-      console.error("녹음 시작 오류:", error);
-    }
-  };
+  //     recorder.start();
+  //     setIsPlaying(true);
+  //     setIsPaused(false);
+  //     console.log("녹음 및 재생 시작");
+  //   } catch (error) {
+  //     console.error("녹음 시작 오류:", error);
+  //   }
+  // };
 
-  // // 녹음 일시 중지 함수
-  const handlePause = () => {
-    if (mediaRecorder && mediaRecorder.state === "recording") {
-      mediaRecorder.pause();
-      setIsPaused(true);
-      setIsPlaying(false);
-      console.log("녹음 및 재생 일시 중지");
-    }
-  };
+  // // // 녹음 일시 중지 함수
+  // const handlePause = () => {
+  //   if (mediaRecorder && mediaRecorder.state === "recording") {
+  //     mediaRecorder.pause();
+  //     setIsPaused(true);
+  //     setIsPlaying(false);
+  //     console.log("녹음 및 재생 일시 중지");
+  //   }
+  // };
 
-  // // 녹음 재개 함수
-  const handleResume = () => {
-    if (mediaRecorder && mediaRecorder.state === "paused") {
-      mediaRecorder.resume();
-      setIsPaused(false);
-      setIsPlaying(true);
-      console.log("녹음 및 재생 재개");
-    }
-  };
+  // // // 녹음 재개 함수
+  // const handleResume = () => {
+  //   if (mediaRecorder && mediaRecorder.state === "paused") {
+  //     mediaRecorder.resume();
+  //     setIsPaused(false);
+  //     setIsPlaying(true);
+  //     console.log("녹음 및 재생 재개");
+  //   }
+  // };
 
-  // // 녹음 완전히 멈추는 함수 (업로드는 recorder.onstop에서 처리됨)
-  const handleStop = () => {
-    if (mediaRecorder && mediaRecorder.state !== "inactive") {
-      mediaRecorder.stop();
-      setIsPlaying(false);
-      setIsPaused(false);
-      console.log("녹음 중지");
-    }
-  };
+  // // // 녹음 완전히 멈추는 함수 (업로드는 recorder.onstop에서 처리됨)
+  // const handleStop = () => {
+  //   if (mediaRecorder && mediaRecorder.state !== "inactive") {
+  //     mediaRecorder.stop();
+  //     setIsPlaying(false);
+  //     setIsPaused(false);
+  //     console.log("녹음 중지");
+  //   }
+  // };
 
   // // 서버로 녹음된 파일 전송 함수
-  const uploadToServer = async (blob, noteName) => {
-    const formData = new FormData();
-    formData.append("audio", blob, "jji-hugme.wav"); // 서버에 파일로 전송
+  // const uploadToServer = async (blob, noteName) => {
+  //   const formData = new FormData();
+  //   formData.append("audio", blob, "jji-hugme.wav"); // 서버에 파일로 전송
   
-    try {
-      const response = await fetch("http://localhost:5000/uploads", {
-        method: "POST",
-        body: formData,
-      });
+  //   try {
+  //     const response = await fetch("http://localhost:5000/uploads", {
+  //       method: "POST",
+  //       body: formData,
+  //     });
   
-      if (response.ok) {
-        const result = await response.json();
-        console.log("서버 응답:", result);
+  //     if (response.ok) {
+  //       const result = await response.json();
+  //       console.log("서버 응답:", result);
         
-        // 업로드 성공 후 사용자 주파수 가져오기 함수 호출
-        await fetchUserFrequency(noteName);
-      } else {
-        console.error("서버 응답 실패:", response.statusText);
-      }
-    } catch (error) {
-      console.error("서버로 파일 업로드 실패:", error);
-    }
-  };
+  //       // 업로드 성공 후 사용자 주파수 가져오기 함수 호출
+  //       await fetchUserFrequency(noteName);
+  //     } else {
+  //       console.error("서버 응답 실패:", response.statusText);
+  //     }
+  //   } catch (error) {
+  //     console.error("서버로 파일 업로드 실패:", error);
+  //   }
+  // };
   
-  const fetchUserFrequency = async (noteName) => {
-    try {
-      const response = await fetch("http://localhost:5000/range_check");
-      if (response.ok) {
-        const data = await response.json();
-        
-        // 서버에서 받아온 주파수 저장 및 비교
-        setUserFrequency(data.frequency);
-        compareFrequencies(data.frequency, noteName);
-      } else {
-        console.error("주파수 가져오기 실패:", response.statusText);
-      }
-    } catch (error) {
-      console.error("주파수 가져오기 에러:", error);
-    }
-  };
+  
 // 녹음 관련 끝
 
 // gpt 실시간으로 3초간 녹음 후 음역대 진단
-// const recordAudio = async () => {
-//   setIsRecording(true);
-//   const mediaRecorder = new MediaRecorder(await navigator.mediaDevices.getUserMedia({ audio: true }));
-//   const audioChunks = [];
+const recordAudio = async () => {
+  setIsRecording(true);
+  const mediaRecorder = new MediaRecorder(await navigator.mediaDevices.getUserMedia({ audio: true }));
+  const audioChunks = [];
 
-//   mediaRecorder.ondataavailable = event => {
-//     audioChunks.push(event.data);
-//   };
+  mediaRecorder.ondataavailable = event => {
+    if (event.data.size > 0) {
+      audioChunks.push(event.data);
+    }
+  };
 
-//   mediaRecorder.start();
-//   setTimeout(() => {
-//     mediaRecorder.stop();
-//   }, 3000);
+  mediaRecorder.start();
+  console.log("녹음 시작");
+  setTimeout(() => {
+    mediaRecorder.stop();
+  }, 3000);
+  console.log("녹음 끝");
 
-//   mediaRecorder.onstop = async () => {
-//     const audioBlob = new Blob(audioChunks);
-//     const formData = new FormData();
-//     formData.append("audio", audioBlob);
+  mediaRecorder.onstop = () => {
+    const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+    console.log("녹음된 데이터 audioBlob: ", audioBlob);
+    uploadToServer(audioBlob);
+  }
+};
 
-//     // Python 서버에 음성을 전송하여 주파수 분석
-//     const response = await fetch("http://localhost:5000/range_check", {
-//       method: "POST",
-//       body: formData,
-//     });
+const uploadToServer = async (audioBlob, noteName) => {
+  const formData = new FormData();
+  formData.append("audio", audioBlob, "range_test.wav");  // 서버에 파일로 전송
+  console.log("formData: ", formData);
 
-//     const data = await response.json();
-//     setUserFrequency(data.frequency);
-//     compareFrequencies(data.frequency);
-//   };
-// };
+  try {
+    const response = await fetch("http://localhost:5000/range_check", {
+      method: "POST",
+      body: formData,
+    });
+    const result = await response.json();
+      console.log("서버 응답:", result);
+    setUserFrequency(result.frequency);
+    compareFrequencies(result.frequency, noteName);
+  } catch (error) {
+    console.error("서버로 파일 업로드 실패:", error);
+  }
+};
 
 // const compareFrequencies = (frequency) => {
 //   const closestNote = notes.reduce((prev, curr) =>
@@ -277,7 +274,8 @@ const compareFrequencies = (userFreq, noteName) => {
   return (
     <div className="body">
       <div className="container">
-        <h1>음역대 진단 페이지</h1>
+        <div className="main">
+        <div className="header_title">음역대 진단 페이지</div>
 
         <div className="piano">
           {/* 흰 건반 */}
@@ -318,11 +316,11 @@ const compareFrequencies = (userFreq, noteName) => {
               src={isPlaying ? "/img/stopbtn.png" : "/img/playbtn.png"}
               style={{width : "40px", cursor : "pointer"}}
               alt="Play or Pause Button"
-              onClick={isPlaying ? handlePause : handleStart}
+              onClick={recordAudio}
             />
-            <p style={{cursor : "default"}}>{isPlaying ? "일시정지" : isPaused ? "재개" : "재생"}</p>
+            <p style={{cursor : "default"}}>시작</p>
           </div>
-          <div className="sa_btn sa_playing_btn">
+          {/* <div className="sa_btn sa_playing_btn">
             <img
               src="/img/pausebtn.png"
               style={{width : "40px", cursor : "pointer"}}
@@ -331,7 +329,7 @@ const compareFrequencies = (userFreq, noteName) => {
               disabled={!isPlaying && !isPaused}
             />
             <p style={{cursor : "default"}}>정지</p>
-            </div>
+            </div> */}
         </div>
         {/* gpt 실시간으로 3초간 녹음 후 음역대 진단 */}
         <div className="scale_analyze_btn">
@@ -362,6 +360,7 @@ const compareFrequencies = (userFreq, noteName) => {
         </div>
 
         <Footer />
+        </div>
       </div>
     </div>
   );

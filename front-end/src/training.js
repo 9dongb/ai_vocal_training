@@ -12,7 +12,7 @@ const Training = () => {
 
             <div className="drag_menu_component drag_menu_component_ai">
               <Link to="/toneDiagnostics">
-                <div className="drag_menu_component_1">
+                <div className="drag_menu_component_1 drag_menu_component_1_mid">
                   <img className="ai_diagnosis_img" src=".\img\ai_diagnosis_img_1.png" alt="AI 진단 이미지1" />
                   <div className=" ai_text">
                     <p className="ai_text_1">음색 진단하기</p>
@@ -24,7 +24,7 @@ const Training = () => {
               </Link>
 
               <Link to="/scale_analyze">
-                <div className="drag_menu_component_1">
+                <div className="drag_menu_component_1 drag_menu_component_1_mid">
                   <img className="ai_diagnosis_img" src=".\img\ai_diagnosis_img_2.png" alt="AI 진단 이미지2" />
                   <div className=" ai_text">
                     <p className="ai_text_1">음역대 진단하기</p>
@@ -33,7 +33,7 @@ const Training = () => {
                     </p>
                   </div>
                 </div>
-                </Link>
+              </Link>
             </div>
 
             <div className="header_title">AI 기초 트레이닝</div>
@@ -81,11 +81,12 @@ const Training = () => {
             </div>
 
             <div className="header_title">AI COVER</div>
-
-            <div className="training_ai_cover_component ">
-              <img className="ai_cover_img" src=".\img\ai_cover.png" alt="ai cover 이미지" />
-              <p className="ai_text_2">AI가 유명 가수의 스타일로 커버해줍니다</p>
-            </div>
+            <Link to="/aiCover">
+              <div className="training_ai_cover_component ">
+                <img className="ai_cover_img" src=".\img\ai_cover.png" alt="ai cover 이미지" />
+                <p className="ai_text_2">AI가 유명 가수의 스타일로 커버해줍니다</p>
+              </div>
+            </Link>
           </div>
         </div>
         <Footer activeTab="training" />

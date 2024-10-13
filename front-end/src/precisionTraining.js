@@ -1,9 +1,18 @@
-import { Link } from "react-router-dom";
+import {useNavigate } from "react-router-dom";
 import Footer from "./common/Footer";
 import "./common/root.css";
 import "./training.css";
 
 const PrecisionTraining = () => {
+  const navigate=useNavigate();
+  
+  // 노래 클릭 시 제목, 가수, 이미지 경로 정보를 전달하는 함수
+  const handleSongClick = (songTitle, artist, imagePath) => {
+    navigate("/immediate_feedback_analyze", {
+      state: { songTitle, artist, imagePath },
+    });
+  };
+
   return (
     <div className="body">
       <div className="container">
@@ -13,26 +22,26 @@ const PrecisionTraining = () => {
 
             <div className="drag_menu_component">
               
-              <div className="drag_menu_component_1">
-                <Link to="/immediate_feedback_analyze">
-                  <img className="ai_diagnosis_img" src=".\img\songs\cover_hug.png" alt="안아줘" />
-                  <div className=" ai_text">
-                    <p className="ai_text_1">안아줘</p>
-                     <p className="ai_text_2">정준일</p>
-                  </div>
-                </Link>
+              <div className="drag_menu_component_1" onClick={() =>handleSongClick("안아줘", "정준일", "./img/songs/cover_hug.png")}>
+                <img className="ai_diagnosis_img" src="./img/songs/cover_hug.png" alt="안아줘" />
+                <div className="ai_text">
+                  <p className="ai_text_1">안아줘</p>
+                  <p className="ai_text_2">정준일</p>
+                </div>
               </div>
-              <div className="drag_menu_component_1">
-                <img className="ai_diagnosis_img" src=".\img\songs\cover_if_it_is_you.png" alt="너였다면" />
-                <div className=" ai_text">
+
+              <div className="drag_menu_component_1" onClick={() =>handleSongClick("너였다면", "정승환", "./img/songs/cover_if_it_is_you.png")}>
+                <img className="ai_diagnosis_img" src="./img/songs/cover_if_it_is_you.png" alt="안아줘" />
+                <div className="ai_text">
                   <p className="ai_text_1">너였다면</p>
                   <p className="ai_text_2">정승환</p>
                 </div>
               </div>
-              <div className="drag_menu_component_1">
-                <img className="ai_diagnosis_img" src=".\img\songs\cover_wobbly_flowers.png" alt="흔들리는 꽃들 속 에서 네 샴푸 향이 느껴진 거야" />
-                <div className=" ai_text">
-                  <p className="ai_text_1">흔들리는 꽃들 속 에서 네 샴푸 향이 느껴진 거야</p>
+
+              <div className="drag_menu_component_1" onClick={() =>handleSongClick("흔들리는 꽃들 속에서","장범준","./img/songs/cover_wobbly_flowers.png" )}>
+                <img className="ai_diagnosis_img" src="./img/songs/cover_wobbly_flowers.png" alt="흔들리는 꽃들 속에서 네 샴푸 향이 느껴진 거야" />
+                <div className="ai_text">
+                  <p className="ai_text_1">흔들리는 꽃들 속에서 네 샴푸 향이 느껴진 거야</p>
                   <p className="ai_text_2">장범준</p>
                 </div>
               </div>

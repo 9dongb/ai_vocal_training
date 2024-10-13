@@ -37,9 +37,9 @@ class VocalAnalysis:
         self.sampling_rate = 16000
         self.model = self.model_load()
 
+    def recording_result(self):
         audio_data, sample_rate = librosa.load(self.user_audio_path, sr=None)
         sf.write(self.user_audio_path, audio_data, sample_rate)
-
 
     def model_load(self):                           
         model_path = os.path.join(os.getcwd(), "models")  # 모델 경로
@@ -602,3 +602,21 @@ class VocalAnalysis:
         else:
             print("텍스트가 비어 있으므로 유사도를 계산할 수 없습니다.")
             return None  # 적절한 기본값을 반환
+
+    def change_pitch_without_speed(self, semitones):
+
+        # 파일 경로
+        inst_file = f"assets/audio/artist/inst/{self.artist}-{self.title}.wav"
+        input = [self.artist_audio_path, inst_file]
+
+        for i in input:
+            y, sr = librosa.load(i)
+
+            # Change pitch without changing speed
+            y_shifted = librosa.effects.pitch_shift(y, sr=sr, n_steps=semitones)
+
+            pm = '+'if semitones > 0 else '-'
+            output_file = f"{i.replace('.wav','')}{pm}{semitones}.wav"
+
+            # Save the pitch-shifted audio
+            sf.write(output_file, y_shifted, sr)

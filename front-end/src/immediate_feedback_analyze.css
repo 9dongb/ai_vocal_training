@@ -126,3 +126,9 @@
   font-size: 17px;
   margin-top: 5px;
 }
+
+.highlighted-lyric {
+  background-color: #f0f0f0; /* 하이라이팅된 가사의 배경 색상 */
+  color: #d9534f; /* 하이라이팅된 가사 색상 */
+  font-weight: bold; /* 하이라이팅된 가사는 굵게 표시 */
+}

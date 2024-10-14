@@ -41,7 +41,7 @@ class VocalAnalysis:
         self.artist_audio_path = f'assets/audio/artist/vocal/{self.artist}-{self.title}.wav'
         self.user_audio_path = f'assets/audio/user/{self.artist}-{self.title}.wav'
         self.lrc_path = f'assets/lrc/{self.artist}-{self.title}.lrc'
-        
+
         self.sampling_rate = 16000
         self.model = self.model_load()
 
@@ -638,13 +638,17 @@ class VocalAnalysis:
         return features
     
     def tone_classification(self):
-        model = load_model('voice_char.h5')
+        labels = ['발라드', '락', '트로트', '댄스']
+
+        model = load_model('models/voice_char.h5')
         now = datetime.now()
         le = LabelEncoder()
 
         max_pad_len = 10000
 
-        file_name = 'my_voice.wav' # 변경할 부분
+
+                    
+        file_name = 'assets/audio/user/tone/user_tone.wav' # 변경할 부분
         y, sr = librosa.load(file_name, sr=None) 
         test_data = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
 
@@ -663,7 +667,7 @@ class VocalAnalysis:
 
         # ------DB에서 데이터 읽어들이는 작업 필요--------
         # 지금은 샘플의 파일을 넣어 작성
-        df = pd.read_pickle('voice_data.pkl')
+        df = pd.read_pickle('models/voice_data.pkl')
 
         x = np.array(df.feature.tolist())
         y = np.array(df.label.tolist())
@@ -681,7 +685,9 @@ class VocalAnalysis:
         recommended_indices = np.argsort(similarity_scores[0])[::-1]
         recommended_songs = [title[i] for i in recommended_indices[:5]]
         class_labels = int(np.argmax(model.predict(test_data)))
+        
+        label = labels[class_labels]
 
-        recommend_dict = {'input_song' : file_name, 'recommend' : recommended_songs, 'label' : int(class_labels)}
+        recommend_dict = {'label' : label, 'recommend' : recommended_songs}
 
-        return jsonify(recommend_dict)
+        return recommend_dict

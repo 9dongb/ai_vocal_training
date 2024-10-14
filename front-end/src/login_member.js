@@ -23,6 +23,7 @@ function Login_member() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ id, password }),
+                credentials: "include",
             });
 
             const data = await response.json();

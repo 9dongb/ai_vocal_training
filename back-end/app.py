@@ -1,181 +1,136 @@
 import os
 from module.db import Database
-
 from flask import Flask, request, session, jsonify, redirect
-from flask_cors import CORS, cross_origin  # Cross-Origin Resorce Sharing 
-                                           # 서로 다른 도메인 간에 리소스를 주고 받는 것을 허용해주거나 차단하는 설정
-
+from flask_cors import CORS
 from module.vocal_analysis import VocalAnalysis
 from module.range_check import extract_pitch
 
+# Flask 앱 초기화 및 설정
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
-app.secret_key = "Um_AI_Diary_Hungry_BBC_BBQ_Chicken"
+app.secret_key = os.getenv("SECRET_KEY", "Um_AI_Diary_Hungry_BBC_BBQ_Chicken")
 
 UPLOAD_FOLDER = 'assets/audio/user/'
-RANGE_FOLDER = 'uploads'
-TONE_UPLOAD_FOLDER = os.path.join(UPLOAD_FOLDER, 'tone')
-RANGE_UPLOAD_FOLDER = os.path.join(RANGE_FOLDER, 'range')
-
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['TONE_UPLOAD_FOLDER'] = TONE_UPLOAD_FOLDER
-app.config['RANGE_UPLOAD_FOLDER'] = RANGE_UPLOAD_FOLDER
-
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['TONE_UPLOAD_FOLDER'] = os.path.join(UPLOAD_FOLDER, 'tone')
+app.config['RANGE_UPLOAD_FOLDER'] = os.path.join(UPLOAD_FOLDER, 'range')
 
 db = Database()
 
+# 테스트용 아티스트와 곡명 설정
 artist = '정준일'
 title = '안아줘'
+
+
+# 공통 함수: 폴더가 존재하지 않으면 생성
+def ensure_folder_exists(folder_path):
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+
+# 공통 함수: 업로드된 파일 저장
+def save_uploaded_file(request, folder_path, filename):
+    ensure_folder_exists(folder_path)
+    if 'audio' not in request.files:
+        return jsonify({"error": "No audio file part"}), 400
+    file = request.files['audio']
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+    file_path = os.path.join(folder_path, filename)
+    file.save(file_path)
+    return file_path
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         data = request.get_json()
-
         user_id = data['id']
         user_password = data['password']
-
-        login_data = db.db_login(user_id, user_password)
-        return login_data
-    else:
-        return {"message":"로그인 에러"}
+        return db.db_login(user_id, user_password)
+    return jsonify({"message": "로그인 에러"}), 400
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
         data = request.get_json()
-    
         user_id = data['id']
+        user_name = data['name']
         user_age = data['age']
         user_gender = data['gender']
-        user_name = data['name']
         user_pw = data['password']
-
-        register_data = db.db_register(user_id, user_name, user_age, user_gender, user_pw)
-        print(register_data)
-        return register_data
+        return db.db_register(user_id, user_name, user_age, user_gender, user_pw)
+    return jsonify({"message": "회원가입 에러"}), 400
 
 @app.route("/uploads", methods=["GET", "POST"])
 def upload():
-    # 업로드 폴더 경로 설정
-    UPLOAD_FOLDER = 'uploads/'
-    if not os.path.exists(UPLOAD_FOLDER):
-        os.makedirs(UPLOAD_FOLDER)
+    filename = f"{artist}-{title}.wav"
+    file_path = save_uploaded_file(request, app.config['UPLOAD_FOLDER'], filename)
+    if isinstance(file_path, tuple):
+        return file_path  # 에러 응답 처리
 
-       # 'audio_file'은 JavaScript에서 전송한 FormData key와 일치해야 합니다.
-    if 'audio' not in request.files:
-        return jsonify({"error": "No audio file part"}), 400
+    va = VocalAnalysis(artist, title)
+    va.recording_result()
+    return jsonify({"message": "File saved successfully", "file_path": file_path}), 200
 
-    file = request.files['audio']
-
-    # 파일이 비어있지 않은지 확인
-    if file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
-
-    # 파일 저장
-    if file:
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], artist+'-'+title+'.wav')
-        file.save(file_path)
-        
-        va = VocalAnalysis(artist, title)
-        va.recording_result()
-
-        return jsonify({"message": "File saved successfully", "file_path": file_path}), 200
-    
 @app.route("/test", methods=["GET", "POST"])
 def test():
-    return {'title':session['title']}
+    if 'title' in session:
+        return {'title': session['title']}
+    return jsonify({"message": "세션에 제목이 없습니다."}), 400
 
-# 가사 정보 반환
 @app.route("/training", methods=["GET", "POST"])
 def training():
-
-    data = request.get_json()  # 프론트엔드에서 전달된 데이터 받기
-    artist = data.get("artist")  # 가수명
-    title = data.get("songTitle")  # 노래 제목
-
+    data = request.get_json()
+    artist = data.get("artist", "")
+    title = data.get("songTitle", "")
     session['artist'] = artist
     session['title'] = title
 
-    print(session['artist'], session['title'])
-
     va = VocalAnalysis(artist, title)
     lrc = va.process_music_files()
-
-    print(lrc)
-    return jsonify({'lyrics':lrc})
-
+    return jsonify({'lyrics': lrc})
 
 @app.route("/vocal_analysis", methods=["GET", "POST"])
 def vocal_analysis():
-    va = VocalAnalysis('정준일', '안아줘')
-    
+    va = VocalAnalysis(artist, title)
     pitch_score, wrong_segments = va.pitch_comparison()
-    
-    print(pitch_score, wrong_segments)
-
     wrong_lyrics, _ = va.find_incorrect()
-
-
     beat_score = round(va.score_cover()['accuracy'], 2)
-
-    pronunciation_score = va.pronunciation_score()
-
-    if pronunciation_score is None:
-        print("발음 점수를 계산할 수 없습니다.")
-        pronunciation_score = 0.0  # 기본값으로 설정하거나 다른 처리를 할 수 있음
+    pronunciation_score = va.pronunciation_score() or 0.0
 
     return jsonify({
         '음정 점수': pitch_score,
         '박자 점수': beat_score,
-        '발음 점수': float(pronunciation_score),
+        '발음 점수': pronunciation_score,
         '틀린 구간 초(시작, 끝)': wrong_segments,
         '틀린 가사': wrong_lyrics
     })
 
 @app.route("/range_check", methods=["GET", "POST"])
 def range_check():
-    # audio_path = 'uploads/range/range_test.wav' # 음역대 녹음한 오디오 경로
-    file_path = os.path.join(app.config["RANGE_UPLOAD_FOLDER"], 'user_tone.wav')
+    file_path = save_uploaded_file(request, app.config["RANGE_UPLOAD_FOLDER"], 'user_range.wav')
+    if isinstance(file_path, tuple):
+        return file_path  # 에러 응답 처리
 
-    # 업로드 폴더 경로 설정
-    if not os.path.exists(app.config["RANGE_UPLOAD_FOLDER"]):
-        os.makedirs(app.config["RANGE_UPLOAD_FOLDER"])
+    frequency = round(float(extract_pitch(file_path)), 2)
+    return jsonify({'frequency': frequency})
 
-    # 'audio_file'은 JavaScript에서 전송한 FormData key와 일치해야 합니다.
-    if 'audio' not in request.files:
-        return jsonify({"error": "No audio file part"}), 400
+@app.route("/uploads/tone", methods=["GET", "POST"])
+def tone_check():
+    file_path = save_uploaded_file(request, app.config["TONE_UPLOAD_FOLDER"], 'user_tone.wav')
+    if isinstance(file_path, tuple):
+        return file_path  # 에러 응답 처리
 
-    file = request.files['audio']
+    return jsonify({'Result': '발라드'})
 
-    # 파일이 비어있지 않은지 확인
-    if file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
-    
-    # 파일 저장
-    if file:
-        file.save(file_path)
-        print(f"File saved at: {file_path}")  # 파일 경로 출력
-        # return jsonify({"message": "File saved successfully", "file_path": file_path}), 200
-        frequency = extract_pitch(file_path)
-        frequency = round(float(frequency),2)
-
-        print(frequency)
-        return jsonify({'frequency':frequency})
-
- #랭킹 데이터 -- 민지원
-@app.route('/weekly_ranking', methods=['GET'])
+@app.route("/weekly_ranking", methods=["GET"])
 def get_weekly_ranking():
     try:
         data = db.get_weekly_ranking()
-
         if data:
             return jsonify({'status': 'success', 'data': data}), 200
-        else:
-            return jsonify({'status': 'fail', 'message': 'No ranking data found'}), 404
+        return jsonify({'status': 'fail', 'message': 'No ranking data found'}), 404
     except Exception as e:
         return jsonify({'status': 'fail', 'message': str(e)}), 500
-    
+
 if __name__ == "__main__":
     app.run(debug=True)

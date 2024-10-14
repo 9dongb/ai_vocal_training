@@ -23,6 +23,14 @@ from flask import jsonify
 import librosa
 import soundfile as sf
 
+import pandas as pd
+from tensorflow import keras
+from datetime import datetime
+from keras.models import load_model
+from keras.utils import to_categorical
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics.pairwise import cosine_similarity
+
 
 
 
@@ -32,8 +40,8 @@ class VocalAnalysis:
         self.artist = artist
         self.artist_audio_path = f'assets/audio/artist/vocal/{self.artist}-{self.title}.wav'
         self.user_audio_path = f'assets/audio/user/{self.artist}-{self.title}.wav'
-
         self.lrc_path = f'assets/lrc/{self.artist}-{self.title}.lrc'
+        
         self.sampling_rate = 16000
         self.model = self.model_load()
 
@@ -605,6 +613,9 @@ class VocalAnalysis:
 
     def change_pitch_without_speed(self, semitones):
 
+
+
+
         # 파일 경로
         inst_file = f"assets/audio/artist/inst/{self.artist}-{self.title}.wav"
         input = [self.artist_audio_path, inst_file]
@@ -620,3 +631,57 @@ class VocalAnalysis:
 
             # Save the pitch-shifted audio
             sf.write(output_file, y_shifted, sr)
+
+    def extract_features(self, model, data):
+        intermediate_layer_model = keras.Model(inputs=model.inputs, outputs=model.get_layer(index=-2).output)
+        features = intermediate_layer_model.predict(data)
+        return features
+    
+    def tone_classification(self):
+        model = load_model('voice_char.h5')
+        now = datetime.now()
+        le = LabelEncoder()
+
+        max_pad_len = 10000
+
+        file_name = 'my_voice.wav' # 변경할 부분
+        y, sr = librosa.load(file_name, sr=None) 
+        test_data = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
+
+        pad_width = max_pad_len - test_data.shape[1]
+
+        if pad_width > 0:
+            test_data = np.pad(test_data, pad_width=((0, 0), (0, pad_width)), mode='constant')
+        else:
+            test_data = test_data[:, :max_pad_len]
+
+        n_columns = 10000
+        n_row = 40
+        n_channels = 1
+
+        test_data = tf.reshape(test_data, [-1, n_row, n_columns, n_channels])
+
+        # ------DB에서 데이터 읽어들이는 작업 필요--------
+        # 지금은 샘플의 파일을 넣어 작성
+        df = pd.read_pickle('voice_data.pkl')
+
+        x = np.array(df.feature.tolist())
+        y = np.array(df.label.tolist())
+        yy = to_categorical(le.fit_transform(y))
+        # -----------------------------------------------
+        database_data = x
+        database_labels = yy
+        title = df.title.tolist()
+
+        input_features = self.extract_features(model, test_data)
+        database_features = self.extract_features(model, database_data)
+
+        similarity_scores = cosine_similarity(input_features, database_features)
+
+        recommended_indices = np.argsort(similarity_scores[0])[::-1]
+        recommended_songs = [title[i] for i in recommended_indices[:5]]
+        class_labels = int(np.argmax(model.predict(test_data)))
+
+        recommend_dict = {'input_song' : file_name, 'recommend' : recommended_songs, 'label' : int(class_labels)}
+
+        return jsonify(recommend_dict)

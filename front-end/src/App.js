@@ -18,6 +18,8 @@ import Feedback from "./feedback.js";
 import WrongPart from "./wrongPart.js";
 import FeedbackChart from "./feedbackChart.js";
 import ScaleAnalyze from "./scale_analyze.js";
+import Training_Splash from "./training_splash.js";
+import Training_Tone from "./training_tone.js";
 
 function App() {
   //임시 변수: 로그인 아닌 경우 메인페이지 이전에 로그인 페이지 실행되도록 하기 위함: 조호연
@@ -45,6 +47,8 @@ function App() {
           <Route path="/wrongPart" element={<WrongPart />}></Route>
           <Route path="/feedbackChart" element={<FeedbackChart />}></Route>
           <Route path="/scale_analyze" element={<ScaleAnalyze />}></Route>
+          <Route path="/training_splash" element={<Training_Splash />}></Route>
+          <Route path="/training_tone" element={<Training_Tone/>}></Route>
           <Route path="/" element={<Navigate to="/login" />} /> {/*기본 경로 /login으로 설정 */}
         </Routes>
       </BrowserRouter>

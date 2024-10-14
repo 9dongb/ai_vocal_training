@@ -3,14 +3,29 @@ import { useNavigate, useLocation } from "react-router-dom"; // useLocation 추�
 import "./immediate_feedback_analyze.css";
 import "./common/root.css";
 import Footer from "./common/Footer";
+import Training_Splash from "./training_splash";
+import Training_Tone from "./training_tone";
 
 function Immediate_feedback_analyze() {
-  const [isPlaying, setIsPlaying] = useState(false); // 재생 상태
-  const [isPaused, setIsPaused] = useState(false); // 녹음 일시 중지 상태
-  const audioRef = useRef(null); // 오디오 요소 참조
-  const [mediaRecorder, setMediaRecorder] = useState(null); // MediaRecorder 참조
-  const [recordedChunks, setRecordedChunks] = useState([]); // 녹음된 데이터 저장
-  const navigate = useNavigate(); // useNavigate 훅 사용
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const audioRef = useRef(null);
+  const [mediaRecorder, setMediaRecorder] = useState(null);
+  const [recordedChunks, setRecordedChunks] = useState([]);
+  const navigate = useNavigate();
+  const [showToneAdjuster, setShowToneAdjuster] = useState(true);
+  const [showSplash, setShowSplash] = useState(false);
+  const [showMainContent, setShowMainContent] = useState(false);
+
+  const handleToneAdjusterFinish = () => {
+    setShowToneAdjuster(false);
+    setShowSplash(true);
+  };
+
+  const handleSplashFinish = () => {
+    setShowSplash(false);
+    setShowMainContent(true);
+  };
 
   // useLocation으로 전달된 state에서 songTitle, artist, imagePath 받아오기
   const location = useLocation();
@@ -22,7 +37,6 @@ function Immediate_feedback_analyze() {
 
   const [lyrics, setLyrics] = useState([]); // 가사 데이터 상태
   const [currentLyricIndex, setCurrentLyricIndex] = useState(0); // 현재 하이라이팅할 가사 인덱스
-  const currentLyricRefs=useRef([]); //각 가사에 대한 참조 배열
 
   // 백엔드에서 가사 파일을 불러오는 함수
   const fetchLyrics = async () => {
@@ -66,49 +80,35 @@ function Immediate_feedback_analyze() {
     }
   };
 
-  //currentLyricIndex가 변경될 때마다 하이라이팅된 가사로 스크롤 이동
-  useEffect(()=>{
-    if(currentLyricRefs.current[currentLyricIndex]){
-      currentLyricRefs.current[currentLyricIndex].scrollIntoView({
-        behavior:"smooth",
-        block:"center",
-      });
-    }
-  },[currentLyricIndex]);
-
   // 오디오 재생 및 녹음 시작
   const handleStart = async () => {
     if (audioRef.current) {
       // 오디오가 로드될 때까지 기다린 후 재생
       audioRef.current.addEventListener("canplay", () => {
-        if (audioRef.current) {
-          audioRef.current.play();
-        }
+        audioRef.current.play();
       });
       audioRef.current.load(); // 오디오 로드
-    } else {
-      console.error("오디오 요소가 존재하지 않습니다.");
     }
-  
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorder = new MediaRecorder(stream);
       setMediaRecorder(recorder);
-  
+
       const chunks = [];
       recorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           chunks.push(event.data);
         }
       };
-  
+
       recorder.onstop = () => {
         const blob = new Blob(chunks, { type: "audio/wav" });
         setRecordedChunks(chunks);
         console.log("녹음된 데이터 Blob:", blob);
         uploadToServer(blob); // 녹음이 멈추면 서버로 업로드
       };
-  
+
       recorder.start();
       setIsPlaying(true);
       setIsPaused(false);
@@ -117,7 +117,6 @@ function Immediate_feedback_analyze() {
       console.error("녹음 시작 오류:", error);
     }
   };
-  
 
   // 녹음 일시 중지 함수
   const handlePause = () => {
@@ -196,10 +195,9 @@ function Immediate_feedback_analyze() {
               <div className="lyrics_text">
                 {lyrics.map((lyric, index) => (
                   <p
-                  key={index}
-                  ref={(el) => (currentLyricRefs.current[index] = el)}
-                  className={index === currentLyricIndex ? "highlighted-lyric" : ""}
-                >
+                    key={index}
+                    className={index === currentLyricIndex ? "highlighted-lyric" : ""}
+                  >
                     {lyric[1]} {/* 가사 텍스트 */}
                   </p>
                 ))}
@@ -236,6 +234,7 @@ function Immediate_feedback_analyze() {
               onTimeUpdate={handleTimeUpdate} // 오디오 재생 시간 업데이트 핸들러 등록
             />
           </div>
+          {<Training_Tone onFinish={handleSplashFinish} />}
         </div>
         <Footer activeTab="training" />
       </div>

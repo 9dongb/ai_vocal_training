@@ -7,7 +7,7 @@ const Matching = () => {
     level: 0,
     pitch: 0,
     beat: 0,
-    tone: "진단표시",
+    tone: "진단필요",
   });
 
   const [userName, setUserName] = useState("조호연");

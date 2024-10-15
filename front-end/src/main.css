@@ -77,7 +77,7 @@
 
 .grow_component_1 {
   width: 150px;
-  height: 240px;
+  height: 240px; /* Total height of the container */
   background-color: white;
   border-radius: 12px;
   margin: 0 auto;
@@ -87,7 +87,9 @@
   border: 2px solid rgba(0, 0, 0, 0.1);
   transition: box-shadow 0.3s ease-in-out;
   padding-top: 20px;
+  position: relative; /* Set position to relative for graph bar positioning */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  overflow: hidden; /* Ensure anything overflowing is hidden */
 }
 
 .grow_component_1:hover {
@@ -98,13 +100,53 @@
 .beat_score,
 .pronun_score {
   width: 100px;
-  height: 80px;
+  height: 80px; /* Total height of the score container */
   border-radius: 10px;
-  line-height: 80px;
+  line-height: 80px; /* Center text vertically */
   margin: 30px auto;
   color: rgb(0, 0, 0);
   font-size: 20px;
   box-shadow: inset 0px 4px 10px rgba(0, 0, 0, 0.1);
+  position: relative; /* Set position to relative for graph bar positioning */
+  overflow: hidden; /* Ensure anything overflowing is hidden */
+}
+
+.graph_area {
+  height: 120px;
+}
+
+.graph_bar {
+  position: absolute; /* Position absolutely */
+  bottom: 0; /* Align to the bottom of the container */
+  left: 0; /* Start from the left */
+  z-index: 1; /* Keep the graph bar behind the text */
+  width: 100%; /* Full width of the container */
+  background-color: rgba(255, 179, 193, 0.7); /* Example color */
+  height: 0; /* Start height from 0 for animation */
+  transition: height 0.5s ease-in-out; /* Smooth transition for height */
+}
+
+.graph_text {
+  position: absolute; /* Position absolutely */
+  bottom: 5px; /* Slightly above the bottom for better visibility */
+  left: 50%; /* Center horizontally */
+  transform: translateX(-50%); /* Center the text */
+  z-index: 2; /* Bring the text in front of the graph bar */
+  color: #727272; /* Text color */
+  font-weight: bold; /* Make the text bold */
+  font-size: 22px; /* Adjust font size if needed */
+}
+
+.grow_component_1:nth-child(1) .graph_bar {
+  background-color: rgba(255, 179, 193, 0.7); /* Pastel pink with slight transparency */
+}
+
+.grow_component_1:nth-child(2) .graph_bar {
+  background-color: rgba(197, 225, 165, 0.7); /* Pastel green with slight transparency */
+}
+
+.grow_component_1:nth-child(3) .graph_bar {
+  background-color: rgba(255, 229, 153, 0.7); /* Light yellow with slight transparency */
 }
 
 .grow_component_1 img {

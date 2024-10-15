@@ -32,7 +32,7 @@ const MyPage = () => {
             <div className="singking_battle_title">MYPAGE</div>
 
             <div className="mypage_component">
-              <div className=" mypage_tone_area">
+              <div className="mypage_tone_area">
                 <div>
                   <div className="battle_text_1">{userName}</div>
                   <div className="mypage_tone_logo"># {userData.tone}</div>
@@ -48,19 +48,43 @@ const MyPage = () => {
                   <br />
                   <span className="battle_text_1">레벨</span>
                   <br />
-                  <div className="key_score">{userData.level}</div>
+                  <div className="key_score graph_area">
+                    <div className="graph_text">{userData.level}</div>
+                    <div
+                      className="graph_bar"
+                      style={{
+                        height: `${(userData.level / 100) * 100}%`, // Calculate height based on level
+                      }}
+                    ></div>
+                  </div>
                 </div>
                 <div className="grow_component_1">
                   <br />
                   <span className="battle_text_1">음정</span>
                   <br />
-                  <div className="beat_score">{userData.pitch}</div>
+                  <div className="beat_score graph_area">
+                    <div className="graph_text">{userData.pitch}</div>
+                    <div
+                      className="graph_bar"
+                      style={{
+                        height: `${(userData.pitch / 100) * 100}%`, // Calculate height based on pitch
+                      }}
+                    ></div>
+                  </div>
                 </div>
                 <div className="grow_component_1">
                   <br />
                   <span className="battle_text_1">박자</span>
                   <br />
-                  <div className="pronun_score">{userData.beat}</div>
+                  <div className="pronun_score graph_area">
+                    <div className="graph_text">{userData.beat}</div>
+                    <div
+                      className="graph_bar"
+                      style={{
+                        height: `${(userData.beat / 100) * 100}%`, // Calculate height based on beat
+                      }}
+                    ></div>
+                  </div>
                 </div>
               </div>
             </div>

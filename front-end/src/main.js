@@ -37,7 +37,7 @@ function Main() {
   // Flask 서버로부터 주간 랭킹 데이터를 가져오는 함수
   const fetchWeeklyRanking = async () => {
     try {
-      const response = await fetch("http://localhost:5000/weekly_ranking");
+      const response = await fetch("http://localhost:5000/index", {credentials: "include"});
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }

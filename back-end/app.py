@@ -19,7 +19,6 @@ app.config['RANGE_UPLOAD_FOLDER'] = os.path.join(UPLOAD_FOLDER, 'range')
 
 db = Database()
 
-
 # 공통 함수: 폴더가 존재하지 않으면 생성
 def ensure_folder_exists(folder_path):
     if not os.path.exists(folder_path):
@@ -37,6 +36,28 @@ def save_uploaded_file(request, folder_path, filename):
     file.save(file_path)
     return file_path
 
+
+# @app.route("/weekly_ranking", methods=["GET"])
+# def get_weekly_ranking():
+#     try:
+#         data = db.get_weekly_ranking()
+#         if data:
+#             return jsonify({'status': 'success', 'data': data}), 200
+#         return jsonify({'status': 'fail', 'message': 'No ranking data found'}), 404
+#     except Exception as e:
+#         return jsonify({'status': 'fail', 'message': str(e)}), 500
+
+@app.route("/index", methods=["GET", "POST"])
+def index():
+    print(session['user_id'])
+    if session['user_id']:
+        weekly_data = db.get_weekly_ranking()
+
+        return jsonify({'status':'success', 'data':weekly_data}), 200
+    else:
+        return jsonify({'status':'fail', 'message':'로그인 상태가 아닙니다.'}), 404
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -46,6 +67,11 @@ def login():
 
         return db.db_login(session['user_id'], session['user_password'])
     return jsonify({"message": "로그인 에러"}), 400
+
+@app.route("/logout", methods=["GET", "POST"])
+def logout():
+    if session:
+        session.clear()
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -99,6 +125,8 @@ def vocal_analysis():
     pronunciation_score = va.pronunciation_score() or 0.0
 
     total_score = (pitch_score+beat_score+pronunciation_score)/3
+    db.vocal_data(session['user_id'], 0, 80.25, 50.25, 70.25)
+
     return jsonify({
         '종합 점수': total_score,
         '음정 점수': pitch_score,
@@ -135,16 +163,6 @@ def tone_check():
     
 
     return jsonify({'Result': tone, 'recommend': recommend})
-
-@app.route("/weekly_ranking", methods=["GET"])
-def get_weekly_ranking():
-    try:
-        data = db.get_weekly_ranking()
-        if data:
-            return jsonify({'status': 'success', 'data': data}), 200
-        return jsonify({'status': 'fail', 'message': 'No ranking data found'}), 404
-    except Exception as e:
-        return jsonify({'status': 'fail', 'message': str(e)}), 500
 
 @app.route("/my_page", methods=["GET", "POST"])
 def my_page():

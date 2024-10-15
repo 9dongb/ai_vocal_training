@@ -259,5 +259,23 @@ span {
 .mypage_user_icon {
   width: 110px;
   height: 118px;
-  margin-left: 200px;
+}
+
+.mypage_tone_logo {
+  border-radius: 20px;
+  padding: 8px 20px;
+  font-size: 16px;
+  text-align: center;
+  font-weight: 600;
+  background-color: #525252;
+  color: #fff;
+}
+
+.mypage_tone_area {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 20px 0px 30px;
+  width: 100%;
 }

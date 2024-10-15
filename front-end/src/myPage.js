@@ -1,7 +1,29 @@
+import { useState, useEffect } from "react";
 import Footer from "./common/Footer";
 import "./common/root.css";
 import "./main.css";
+
 const MyPage = () => {
+  const [userData, setUserData] = useState({
+    level: 0,
+    pitch: 0,
+    beat: 0,
+    tone: "진단표시",
+  });
+
+  const [userName, setUserName] = useState("조호연");
+
+  useEffect(() => {
+    fetch("http://localhost:5000/my_page")
+      .then((response) => response.json())
+      .then((data) => {
+        setUserData(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching vocal data:", error);
+      });
+  }, []);
+
   return (
     <div className="body">
       <div className="container">
@@ -10,11 +32,13 @@ const MyPage = () => {
             <div className="singking_battle_title">MYPAGE</div>
 
             <div className="mypage_component">
-              <div className="battle_text">
-                <span className="battle_text_1">나는윤혜빈</span>
-                <span className="battle_text_2">yhb1129</span>
+              <div className=" mypage_tone_area">
+                <div>
+                  <div className="battle_text_1">{userName}</div>
+                  <div className="mypage_tone_logo"># {userData.tone}</div>
+                </div>
+                <img src=".\img\mypage_user_icon.png" className="mypage_user_icon" alt="배틀 이미지" />
               </div>
-              <img src=".\img\mypage_user_icon.png" className="mypage_user_icon" alt="배틀 이미지" />
             </div>
 
             <div className="singking_grow">
@@ -24,19 +48,19 @@ const MyPage = () => {
                   <br />
                   <span className="battle_text_1">레벨</span>
                   <br />
-                  <div className="key_score">12</div>
+                  <div className="key_score">{userData.level}</div>
                 </div>
                 <div className="grow_component_1">
                   <br />
-                  <span className="battle_text_1">음역</span>
+                  <span className="battle_text_1">음정</span>
                   <br />
-                  <div className="beat_score">83점</div>
+                  <div className="beat_score">{userData.pitch}</div>
                 </div>
                 <div className="grow_component_1">
                   <br />
-                  <span className="battle_text_1">음색</span>
+                  <span className="battle_text_1">박자</span>
                   <br />
-                  <div className="pronun_score">96점</div>
+                  <div className="pronun_score">{userData.beat}</div>
                 </div>
               </div>
             </div>

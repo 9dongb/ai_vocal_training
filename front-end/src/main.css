@@ -129,8 +129,18 @@
   text-align: center;
   font-weight: bold;
   color: #525252;
-  margin-top: 20px;
-  margin-bottom: 50px;
+  margin-top: 25px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-evenly;
+
+  align-items: center;
+  width: 100%;
+}
+
+.ability_title .first,
+.ability_title .last {
+  flex: 1; /* 같은 비율로 1씩 차지 */
 }
 
 .weekly_ranking_component {
@@ -193,6 +203,47 @@
   background-color: #4682b4; /* 최신 기록의 색상 */
   border-radius: 5px;
   transition: width 0.3s ease-in-out;
+}
+
+/*색상 정의 */
+.progress-comparison.pitch .progress-last-week {
+  background-color: #ffb3c1; /* 연한 핑크 (음정 7일 전 기록) */
+}
+
+.progress-comparison.pitch .progress-latest {
+  background-color: #a5d8ff; /* 연한 블루 (음정 최신 기록) */
+}
+
+.progress-comparison.rhythm .progress-last-week {
+  background-color: #ffd6a5; /* 연한 오렌지 (박자 7일 전 기록) */
+}
+
+.progress-comparison.rhythm .progress-latest {
+  background-color: #c5e1a5; /* 연한 그린 (박자 최신 기록) */
+}
+
+.progress-comparison.pronunciation .progress-last-week {
+  background-color: #ffe599; /* 연한 노랑 (발음 7일 전 기록) */
+}
+
+.progress-comparison.pronunciation .progress-latest {
+  background-color: #d7afff; /* 연한 라벤더 (발음 최신 기록) */
+}
+
+.progress-comparison.tempo .progress-last-week {
+  background-color: #a5d8ff; /* 연한 블루 (템포 7일 전 기록) */
+}
+
+.progress-comparison.tempo .progress-latest {
+  background-color: #ffb3c1; /* 연한 핑크 (템포 최신 기록) */
+}
+
+.progress-comparison.volume .progress-last-week {
+  background-color: #c5e1a5; /* 연한 그린 (볼륨 7일 전 기록) */
+}
+
+.progress-comparison.volume .progress-latest {
+  background-color: #ffd6a5; /* 연한 오렌지 (볼륨 최신 기록) */
 }
 
 span {

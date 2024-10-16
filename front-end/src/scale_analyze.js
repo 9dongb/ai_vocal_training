@@ -3,7 +3,6 @@ import "./scale_analyze.css";
 import "./common/root.css";
 import "./main.css";
 import Footer from "./common/Footer";
-import Header2 from "./common/Header2";
 
 function ScaleAnalyze() {
   const notes = [
@@ -263,7 +262,6 @@ function ScaleAnalyze() {
   return (
     <div className="body">
       <div className="container">
-      <Header2/>
         <div className="main">
           <div className="header_title">음역대 진단 페이지</div>
           <div className="octave_label">

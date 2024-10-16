@@ -153,7 +153,7 @@ function Main() {
 
             <div className="weekly_ranking">
               <div className="weekly_ranking_title">주간 랭킹</div>
-              <div className="weekly_ranking_component">
+              <div className="weekly_ranking_component battle_text_2">
                 <WeeklyRanking rankingData={rankingData} />
               </div>
             </div>

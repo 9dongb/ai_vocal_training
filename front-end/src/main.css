@@ -194,9 +194,9 @@
   border: 2px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
-.weekly_ranking_component div {
+/* .weekly_ranking_component div {
   padding: 20px 20px;
-}
+} */
 /* Progress comparison container */
 .progress-comparison {
   display: flex;
@@ -303,13 +303,11 @@ span {
 }
 
 /* 1등 항목에 대한 스타일 */
-.ranking_item:first-child {
-  font-size: 20px; /* 더 큰 글씨 */
-
+/* .ranking_item:first-child {
+  font-size: 20px; 
   padding: 15px;
-  border-bottom: 1px solid #b1b1b1;
   height: 60px;
-}
+} */
 
 .ranking_container {
   width: 100%;
@@ -323,26 +321,29 @@ span {
   margin-bottom: 10px;
   height: 40px;
   gap: 20px; /* 항목 간의 간격 */
+  font-size: 20px;
+    padding: 15px;
+    height: 60px;
 }
-.rank {
+.ranking_item .rank {
   font-weight: bold;
   color: #525252;
-  font-size: 18px;
+  font-size: 23px;
   flex: 0 0 50px; /* 고정 너비 */
   text-align: center; /* 중앙 정렬 */
 }
 
-.user_name {
-  font-size: 20px;
+.ranking_item .user_name {
+  font-size: 23px;
   color: #333;
-  flex: 1; /* 가변 너비로 설정 */
+  flex: 0.9; /* 가변 너비로 설정 */
   text-align: center; /* 중앙 정렬 */
   overflow: hidden;
   text-overflow: ellipsis; /* 글자가 너무 길면 ...으로 표시 */
 }
 
-.score {
-  font-size: 16px;
+.ranking_item .rank_score {
+  font-size: 23px;
   color: #525252;
   font-weight: bold;
   flex: 0 0 60px; /* 고정 너비 */

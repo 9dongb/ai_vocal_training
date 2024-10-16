@@ -7,7 +7,6 @@ import { useLocation } from "react-router-dom";
 
 function Feedback() {
   const location = useLocation();
-
   // location.state로 전달된 값을 받습니다.
   const { songTitle, artist, imagePath } = location.state || {
     songTitle: "기본 제목",

@@ -185,9 +185,17 @@ function Immediate_feedback_analyze() {
       setIsPlaying(false);
       setIsPaused(false);
       console.log("녹음 중지");
-      navigate("/feedback"); // 녹음이 중지되면 feedback 페이지로 이동
-    }
+      // navigate로 feedback 페이지로 이동, 노래 정보를 state로 전달
+      navigate("/feedback", {
+        state: {
+          songTitle: songTitle,
+          artist: artist,
+          imagePath: imagePath,
+        },
+      });
+    } 
   };
+
 
   // 서버로 녹음된 파일 전송 함수
   const uploadToServer = async (blob) => {

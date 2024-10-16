@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./scale_analyze.css";
 import "./common/root.css";
+import "./main.css";
 import Footer from "./common/Footer";
 
 function ScaleAnalyze() {
@@ -226,7 +227,7 @@ function ScaleAnalyze() {
       const highestNote = findClosestNote(highestNoteResult);
 
       if (closestNote) {
-        const message = `사용자의 주파수: ${result.frequency} Hz\n음역대: ${closestNote.info}\n\n\n\n 최고 음역대 : ${highestNote.info}`;
+        const message = `사용자의 주파수: ${result.frequency} Hz\n현재 음역대: ${closestNote.info}\n\n\n\n 최고 음역대: ${highestNote.info}`;
         setNoteMessage(message);
       }
 
@@ -308,20 +309,19 @@ function ScaleAnalyze() {
 
           <div className="scale_analyze_btn">
 
-            <div className="sa_btn sa_playing_btn">
+            <div className="sa_btn sa_playing_btn" onClick={recordAudio}>
               <img
                 src={isPlaying ? "/img/pausebtn.png" : "/img/playbtn.png"}
-                style={{ width: "40px", cursor: "pointer" }}
+                style={{ width: "40px"}}
                 alt="Play or Pause Button"
-                onClick={recordAudio}
               />
-              <p style={{ cursor: "default" }}>{isPlaying ? "녹음중" : "시작"}</p>
+              <p>{isPlaying ? "녹음중" : "시작"}</p>
             </div>
           </div>
           <div className="scale_analyze_btn">
           </div>
           <div className="scale_analyze_textarea">
-            <textarea readOnly value={noteMessage}></textarea>
+            <textarea className="battle_text_1" readOnly value={noteMessage}></textarea>
           </div>
 
           <Footer />

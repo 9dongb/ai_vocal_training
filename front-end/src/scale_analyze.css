@@ -55,7 +55,7 @@
 .black-key:hover,
 .white-key:hover {
   z-index: 5;
-  background-color: #f1870f;
+  background-color: #908374;
   /* 호버할 때 노란색으로 변경 */
 
   cursor: pointer;
@@ -98,21 +98,22 @@
 }
 
 .sa_btn {
-  margin: 20px;
-  background-color: #f1c40f;
+  margin: 30px;
+  background-color: #fff;
   font-size: 20px;
   line-height: 50px;
   text-align: center;
-  width: 100px;
+  width: 150px;
   height: 50px;
   border-radius: 5px;
-  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .sa_playing_btn {
   height: 72px;
   line-height: 0;
   padding: 13px 0;
+  cursor: pointer;
 }
 
 .scale_analyze_textarea {
@@ -122,12 +123,11 @@
 .scale_analyze_textarea textarea {
   outline: none;
   resize: none;
-  width: 420px;
-  height: 155px;
+  width: 450px;
+  height: 200px;
   cursor: default;
-  font-size: 22px;
-
-  padding: 10px 0px;
+  border: none;
+  padding: 30px 0px;
   background-color: #ffffff;
   text-align: center;
   border-radius: 10px;

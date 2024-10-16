@@ -5,7 +5,7 @@
 }
 .header_section {
   display: flex;
-  padding-right: 30px;
+  padding-right: 20px;
   justify-content: space-between;
   align-items: center;
 }
@@ -67,12 +67,12 @@
   height: 170px;
 }
 
-.header_section{
-  display:flex;
+.header_section {
+  display: flex;
   align-items: center;
 }
 
-.detail_link{
+.detail_link {
   margin-left: 300px;
 }
 

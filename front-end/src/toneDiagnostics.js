@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Footer from "./common/Footer";
 import "./common/root.css";
@@ -10,6 +10,7 @@ const ToneDiagnostics = () => {
   const mediaRecorderRef = useRef(null); // MediaRecorder 참조
   const [recordedChunks, setRecordedChunks] = useState([]); // 녹음된 데이터 저장
   const navigate = useNavigate(); // 페이지 이동을 위한 훅
+  const [result, setResult] = useState(null);
 
   // 녹음 시작 함수
   const handleStart = async () => {
@@ -48,7 +49,7 @@ const ToneDiagnostics = () => {
       mediaRecorderRef.current.stop();
       setIsPlaying(false);
       console.log("녹음이 종료되었습니다.");
-      navigate("/toneDiagnosticsResult"); // 결과 페이지로 이동
+      // useEffect를 사용해 result가 업데이트되면 navigate를 호출 // result가 변경될 때마다 실행
     }
   };
 
@@ -73,13 +74,23 @@ const ToneDiagnostics = () => {
       const response = await fetch("http://localhost:5000/uploads/tone", {
         method: "POST",
         body: formData,
+        credentials: "include",
       });
+      
       const result = await response.json();
       console.log("서버 응답:", result);
+      setResult(result);
     } catch (error) {
       console.error("서버로 파일 업로드 실패:", error);
     }
   };
+
+  useEffect(() => {
+    if (result) {
+      // result가 있을 경우에만 페이지를 이동
+      navigate("/toneDiagnosticsResult", { state: { result } });
+    }
+  }, [result]);
 
   return (
     <div className="body">

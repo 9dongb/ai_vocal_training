@@ -32,7 +32,10 @@ class Database:
             data = self.cursor.fetchall()
 
             if data!=():
-                return {'status':'success', 'user_id': data}
+                user_id = data[0]['user_id']
+                user_name = data[0]['user_name']
+                print(user_id, user_name)
+                return {'status':'success', 'user_id': user_id, 'user_name':user_name}
             else:
                 return {'status':'fail'}
         except:
@@ -49,6 +52,18 @@ class Database:
         except:
             return {'message':'fail'}
         
+    
+    def vocal_data(self, user_id, user_level, pitch_score, beat_score, pronunciation_score):
+        try:
+            SQL = '''INSERT INTO singking_db.user_scores (user_id, user_level, pitch_score, beat_score, pronunciation_score)
+
+            VALUES (%s, %s, %s, %s,  %s)'''
+
+            self.cursor.execute(SQL, (user_id, 0, 80.25, 50.25, 70.25))
+            self.conn.commit()
+            return {'status':'success'}
+        except:
+            return {'message':'fail'}
         
     #주간 랭킹 데이터를 가져오는 메서드 -- 민지원
     def get_weekly_ranking(self):
@@ -65,3 +80,8 @@ class Database:
             return data # 데이터 반환
         except Exception as e:
             return{'message': 'fail','error':str(e)}
+        
+if __name__ == '__main__':
+    dd = Database()
+
+    dd.vocal_data('9dongb', 0, 80.25, 50.25, 70.25)

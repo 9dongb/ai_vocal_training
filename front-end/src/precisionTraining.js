@@ -50,21 +50,21 @@ const PrecisionTraining = () => {
             <div className="header_title">추천 곡</div>
 
             <div className="drag_menu_component">
-              <div className="drag_menu_component_1">
+            <div className="drag_menu_component_1" onClick={() =>handleSongClick("밤편지","아이유","./img/songs/cover_letter_at_night.png" )}>
                 <img className="ai_diagnosis_img" src=".\img\songs\cover_letter_at_night.png" alt="밤편지" />
                 <div className=" ai_text">
                   <p className="ai_text_1">밤편지</p>
                   <p className="ai_text_2">아이유</p>
                 </div>
               </div>
-              <div className="drag_menu_component_1">
+              <div className="drag_menu_component_1" onClick={() =>handleSongClick("야생화","박효신","./img/songs/cover_wild_flower.png" )}>
                 <img className="ai_diagnosis_img" src=".\img\songs\cover_wild_flower.png" alt="야생화" />
                 <div className=" ai_text">
                   <p className="ai_text_1">야생화</p>
                   <p className="ai_text_2">박효신</p>
                 </div>
               </div>
-              <div className="drag_menu_component_1">
+              <div className="drag_menu_component_1" onClick={() =>handleSongClick("흰수염고래","YB","./img/songs/cover_a_blue_whale.png" )}>
                 <img className="ai_diagnosis_img" src=".\img\songs\cover_a_blue_whale.png" alt="흰수염고래" />
                 <div className=" ai_text">
                   <p className="ai_text_1">흰수염고래</p>

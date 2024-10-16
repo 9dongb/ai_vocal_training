@@ -6,14 +6,47 @@ import WeeklyRanking from "./WeeklyRanking.js"; //주간 랭킹 컴포넌트
 
 // ProgressComparison 컴포넌트 정의
 function ProgressComparison({ title, lastWeekValue, latestValue }) {
+  // 초기값은 0으로 설정
+  const [animatedLastWeekValue, setAnimatedLastWeekValue] = useState(0);
+  const [animatedLatestValue, setAnimatedLatestValue] = useState(0);
+
+  // 한글 제목을 영문 CSS 클래스명으로 매핑
+  const titleClassMap = {
+    음정: "pitch",
+    박자: "rhythm",
+    발음: "pronunciation",
+    템포: "tempo",
+    볼륨: "volume",
+  };
+
+  const className = titleClassMap[title] || "default";
+
+  // 컴포넌트가 마운트된 후 실제 값으로 애니메이션
+  useEffect(() => {
+    const timer1 = setTimeout(() => setAnimatedLastWeekValue(lastWeekValue), 300); // 300ms 후 실행
+    const timer2 = setTimeout(() => setAnimatedLatestValue(latestValue), 300); // 300ms 후 실행
+
+    // 컴포넌트가 언마운트될 때 타이머 정리
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
+  }, [lastWeekValue, latestValue]);
+
   return (
-    <div className={`progress-comparison ${title.toLowerCase()}`}>
+    <div className={`progress-comparison ${className}`}>
       {/* 7일 전 기록 */}
       <div className="progress-container last-week">
         <div className="progress-track">
-          <div className={`progress-last-week ${title.toLowerCase()}`} style={{ width: `${lastWeekValue}%` }}></div>
+          <div
+            className={`progress-last-week ${className}`}
+            style={{
+              width: `${animatedLastWeekValue}%`,
+              transition: "width 1.5s ease-in-out", // 애니메이션 효과
+            }}
+          ></div>
         </div>
-        <span>{lastWeekValue}%</span>
+        <span>{animatedLastWeekValue}%</span>
       </div>
 
       {/* 가운데 항목 이름 */}
@@ -22,9 +55,15 @@ function ProgressComparison({ title, lastWeekValue, latestValue }) {
       {/* 최신 기록 */}
       <div className="progress-container latest">
         <div className="progress-track">
-          <div className={`progress-latest ${title.toLowerCase()}`} style={{ width: `${latestValue}%` }}></div>
+          <div
+            className={`progress-latest ${className}`}
+            style={{
+              width: `${animatedLatestValue}%`,
+              transition: "width 1.5s ease-in-out", // 애니메이션 효과
+            }}
+          ></div>
         </div>
-        <span>{latestValue}%</span>
+        <span>{animatedLatestValue}%</span>
       </div>
     </div>
   );
@@ -37,7 +76,7 @@ function Main() {
   // Flask 서버로부터 주간 랭킹 데이터를 가져오는 함수
   const fetchWeeklyRanking = async () => {
     try {
-      const response = await fetch("http://localhost:5000/weekly_ranking");
+      const response = await fetch("http://localhost:5000/index", { credentials: "include" });
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -98,7 +137,11 @@ function Main() {
             <div className="singking_ability">
               <div className="singking_ability_title">나의 실력은?</div>
               <div className="ability_component">
-                <div className="ability_title">7일 전 VS 최신 기록</div>
+                <div className="ability_title">
+                  <div className="battle_text_1 first">7일 전 </div>
+                  <div className="ability_text_vs middle"> VS </div>
+                  <div className="battle_text_1 last">최신 기록</div>
+                </div>
 
                 <ProgressComparison title="음정" lastWeekValue={62} latestValue={72} />
                 <ProgressComparison title="박자" lastWeekValue={54} latestValue={80} />

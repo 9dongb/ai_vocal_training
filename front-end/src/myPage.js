@@ -1,3 +1,4 @@
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Footer from "./common/Footer";
 import "./common/root.css";
@@ -12,6 +13,7 @@ const MyPage = () => {
   });
 
   const [userName, setUserName] = useState("조호연");
+  const navigate = useNavigate(); // To programmatically navigate
 
   useEffect(() => {
     fetch("http://localhost:5000/my_page")
@@ -23,6 +25,24 @@ const MyPage = () => {
         console.error("Error fetching vocal data:", error);
       });
   }, []);
+
+  const handleLogout = () => {
+    fetch("http://localhost:5000/logout", {
+      method: "POST",
+      credentials: "include", // Include credentials (if any like cookies)
+    })
+      .then((response) => {
+        if (response.ok) {
+          // Redirect to login page on successful logout
+          navigate("/login");
+        } else {
+          console.error("Logout failed");
+        }
+      })
+      .catch((error) => {
+        console.error("Error during logout:", error);
+      });
+  };
 
   return (
     <div className="body">
@@ -105,12 +125,15 @@ const MyPage = () => {
 
             <div className="battle_component">
               <div className="battle_text">
-                <span className="battle_text_1">로그아웃</span>
+                <span className="battle_text_1" onClick={handleLogout}>
+                  로그아웃
+                </span>
                 <span className="battle_text_2">서비스 사용 종료</span>
               </div>
             </div>
           </div>
         </div>
+
         <Footer activeTab="myPage" />
       </div>
     </div>

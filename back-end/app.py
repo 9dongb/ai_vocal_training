@@ -67,11 +67,14 @@ def login():
 
         return db.db_login(session['user_id'], session['user_password'])
     return jsonify({"message": "로그인 에러"}), 400
+from flask import jsonify
 
-@app.route("/logout", methods=["GET", "POST"])
+@app.route('/logout', methods=['POST'])
 def logout():
-    if session:
-        session.clear()
+    # 세션 또는 토큰을 삭제하여 로그아웃 처리
+    session.clear()
+    # 성공적인 로그아웃 응답을 JSON 형태로 반환
+    return jsonify({"message": "Logged out successfully!"}), 200
 
 @app.route("/register", methods=["GET", "POST"])
 def register():

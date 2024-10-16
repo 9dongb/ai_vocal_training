@@ -144,7 +144,7 @@ def vocal_analysis():
 
 @app.route("/range_check", methods=["GET", "POST"])
 def range_check():
-    file_path = save_uploaded_file(request, app.config["RANGE_UPLOAD_FOLDER"], 'user_range.wav')
+    file_path = save_uploaded_file(request, app.config["RANGE_UPLOAD_FOLDER"], 'user_range.wav').replace("\\", "/")
     if isinstance(file_path, tuple):
         return file_path  # 에러 응답 처리
 

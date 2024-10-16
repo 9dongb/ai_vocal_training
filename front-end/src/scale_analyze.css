@@ -1,31 +1,9 @@
-.octave_label {
-  margin: 20px 50px 0;
-  font-size: 25px;
-  font-weight: 700;
-}
-
-.piano_set {
-  display: flex;
-  align-items: center;
-}
-
-.piano_set .piano_octave_arrow {
-  cursor: pointer;
-}
-
-.piano_set .piano_octave_arrow img {
-  width: 20px;
-}
-
 .piano {
   display: flex;
   position: relative;
   margin: 0 auto;
-  padding-top: 20px;
-  width: 420px;
-  /* 전체 피아노의 너비 */
-  height: 200px;
-  /* 전체 피아노의 높이 */
+  width: 420px; /* 전체 피아노의 너비 */
+  height: 200px; /* 전체 피아노의 높이 */
 }
 
 .white-key {
@@ -35,10 +13,8 @@
   border: 1px solid black;
   position: relative;
   z-index: 1;
-  margin-right: -1px;
-  /* 키 사이의 경계선 */
-  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  /* 약간의 그림자 */
+  margin-right: -1px; /* 키 사이의 경계선 */
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* 약간의 그림자 */
 }
 
 .black-key {
@@ -47,49 +23,39 @@
   background-color: black;
   position: absolute;
   z-index: 10;
-  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-  /* 약간의 그림자 */
-
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* 약간의 그림자 */
 }
 
 .black-key:hover,
 .white-key:hover {
   z-index: 5;
-  background-color: #f1870f;
-  /* 호버할 때 노란색으로 변경 */
-
+  background-color: #f1870f; /* 호버할 때 노란색으로 변경 */
   cursor: pointer;
 }
 
 .key_active {
-  background-color: #f1c40f;
-  /* 눌린 키의 색상 */
+  background-color: #f1c40f ; /* 눌린 키의 색상 */
 }
 
 /* 검은 건반의 위치 조정 (C4~B4 사이의 건반 배치) */
-.key-C_-sharp {
-  left: 40px;
-  /* C4 위의 C# 건반 위치 */
+.key-C_4-sharp {
+  left: 40px; /* C4 위의 C# 건반 위치 */
 }
 
-.key-D_-sharp {
-  left: 100px;
-  /* D4 위의 D# 건반 위치 */
+.key-D_4-sharp {
+  left: 100px; /* D4 위의 D# 건반 위치 */
 }
 
-.key-F_-sharp {
-  left: 220px;
-  /* F4 위의 F# 건반 위치 */
+.key-F_4-sharp {
+  left: 220px; /* F4 위의 F# 건반 위치 */
 }
 
-.key-G_-sharp {
-  left: 280px;
-  /* G4 위의 G# 건반 위치 */
+.key-G_4-sharp {
+  left: 280px; /* G4 위의 G# 건반 위치 */
 }
 
-.key-A_-sharp {
-  left: 340px;
-  /* A4 위의 A# 건반 위치 */
+.key-A_4-sharp {
+  left: 340px; /* A4 위의 A# 건반 위치 */
 }
 
 .scale_analyze_btn {
@@ -108,13 +74,6 @@
   border-radius: 5px;
   cursor: pointer;
 }
-
-.sa_playing_btn {
-  height: 72px;
-  line-height: 0;
-  padding: 13px 0;
-}
-
 .scale_analyze_textarea {
   text-align: center;
 }
@@ -122,15 +81,7 @@
 .scale_analyze_textarea textarea {
   outline: none;
   resize: none;
-  width: 420px;
-  height: 155px;
+  width: 300px;
+  height: 100px;
   cursor: default;
-  font-size: 22px;
-
-  padding: 10px 0px;
-  background-color: #ffffff;
-  text-align: center;
-  border-radius: 10px;
-  transition: transform 0.3s ease;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }

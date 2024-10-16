@@ -3,53 +3,14 @@ import { useNavigate, useLocation } from "react-router-dom"; // useLocation 추�
 import "./immediate_feedback_analyze.css";
 import "./common/root.css";
 import Footer from "./common/Footer";
-import Training_Splash from "./training_splash";
-import Training_Tone from "./training_tone";
 
 function Immediate_feedback_analyze() {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const audioRef = useRef(null);
-  const [mediaRecorder, setMediaRecorder] = useState(null);
-  const [recordedChunks, setRecordedChunks] = useState([]);
-  const navigate = useNavigate();
-  const [showToneAdjuster, setShowToneAdjuster] = useState(true);
-  const [showSplash, setShowSplash] = useState(false);
-  const [showMainContent, setShowMainContent] = useState(false);
-
-  const handleToneAdjusterFinish = () => {
-    setShowToneAdjuster(false);
-    setShowSplash(true);
-  };
-
-  const handleSplashFinish = () => {
-    setShowSplash(false);
-    setShowMainContent(true);
-  };
-
-  const handlePitchChange = async (pitch) => {
-    try {
-      const response = await fetch("http://localhost:5000/pitch_change", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ pitch }),
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      console.log("Pitch 값이 성공적으로 전송되었습니다.", result);
-      setShowToneAdjuster(false);
-      setShowSplash(true);
-    } catch (error) {
-      console.error("서버 통신 오류:", error);
-    }
-  };
+  const [isPlaying, setIsPlaying] = useState(false); // 재생 상태
+  const [isPaused, setIsPaused] = useState(false); // 녹음 일시 중지 상태
+  const audioRef = useRef(null); // 오디오 요소 참조
+  const [mediaRecorder, setMediaRecorder] = useState(null); // MediaRecorder 참조
+  const [recordedChunks, setRecordedChunks] = useState([]); // 녹음된 데이터 저장
+  const navigate = useNavigate(); // useNavigate 훅 사용
 
   // useLocation으로 전달된 state에서 songTitle, artist, imagePath 받아오기
   const location = useLocation();
@@ -72,17 +33,16 @@ function Immediate_feedback_analyze() {
         },
         body: JSON.stringify({
           songTitle: songTitle,  // 선택된 노래 제목
-          artist: artist        // 선택된 가수명
+          artist: artist,        // 선택된 가수명
         }),
-        credentials: "include",
       });
-
       const data = await response.json();
       setLyrics(data.lyrics); // 받아온 배열을 바로 상태에 저장
     } catch (error) {
       console.error("Failed to fetch lyrics:", error);
     }
   };
+
 
   // 컴포넌트가 마운트될 때 가사 불러오기
   useEffect(() => {
@@ -91,7 +51,6 @@ function Immediate_feedback_analyze() {
 
   // 오디오 시간 업데이트 이벤트 핸들러
   const handleTimeUpdate = () => {
-    if (!audioRef.current) return; // audioRef가 초기화되지 않았으면 리턴
     const currentTime = audioRef.current.currentTime;
 
     // 현재 재생 시간에 맞는 가사를 찾기
@@ -109,24 +68,11 @@ function Immediate_feedback_analyze() {
   // 오디오 재생 및 녹음 시작
   const handleStart = async () => {
     if (audioRef.current) {
-      // 오디오 로드가 완료되었을 때만 재생
-      if (audioRef.current.readyState >= 3) {
+      // 오디오가 로드될 때까지 기다린 후 재생
+      audioRef.current.addEventListener("canplay", () => {
         audioRef.current.play();
-        setIsPlaying(true);
-        setIsPaused(false);
-        console.log("오디오 재생 시작");
-      } else {
-        audioRef.current.addEventListener("canplay", () => {
-          audioRef.current.play();
-          setIsPlaying(true);
-          setIsPaused(false);
-          console.log("오디오 재생 시작");
-        });
-        audioRef.current.load(); // 오디오 파일을 로드
-      }
-    } else {
-      console.error("오디오 참조가 null입니다.");
-      return;
+      });
+      audioRef.current.load(); // 오디오 로드
     }
 
     try {
@@ -149,7 +95,9 @@ function Immediate_feedback_analyze() {
       };
 
       recorder.start();
-      console.log("녹음 시작");
+      setIsPlaying(true);
+      setIsPaused(false);
+      console.log("녹음 및 재생 시작");
     } catch (error) {
       console.error("녹음 시작 오류:", error);
     }
@@ -159,7 +107,7 @@ function Immediate_feedback_analyze() {
   const handlePause = () => {
     if (mediaRecorder && mediaRecorder.state === "recording") {
       mediaRecorder.pause();
-      if (audioRef.current) audioRef.current.pause();
+      audioRef.current.pause();
       setIsPaused(true);
       setIsPlaying(false);
       console.log("녹음 및 재생 일시 중지");
@@ -170,7 +118,7 @@ function Immediate_feedback_analyze() {
   const handleResume = () => {
     if (mediaRecorder && mediaRecorder.state === "paused") {
       mediaRecorder.resume();
-      if (audioRef.current) audioRef.current.play();
+      audioRef.current.play();
       setIsPaused(false);
       setIsPlaying(true);
       console.log("녹음 및 재생 재개");
@@ -181,10 +129,8 @@ function Immediate_feedback_analyze() {
   const handleStop = () => {
     if (mediaRecorder && mediaRecorder.state !== "inactive") {
       mediaRecorder.stop();
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-      }
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
       setIsPlaying(false);
       setIsPaused(false);
       console.log("녹음 중지");
@@ -201,7 +147,6 @@ function Immediate_feedback_analyze() {
       const response = await fetch("http://localhost:5000/uploads", {
         method: "POST",
         body: formData,
-        credentials: "include",
       });
       const result = await response.json();
       console.log("서버 응답:", result);
@@ -219,7 +164,7 @@ function Immediate_feedback_analyze() {
 
             <div className="song_info_container">
               <div className="song_img">
-                <img src={imagePath} alt={songTitle} />
+              <img src={imagePath} alt={songTitle} />
               </div>
               <div>
                 <div className="song_name ">{songTitle}</div> {/* 제목 표시 */}
@@ -273,13 +218,7 @@ function Immediate_feedback_analyze() {
               preload="auto"
               onTimeUpdate={handleTimeUpdate} // 오디오 재생 시간 업데이트 핸들러 등록
             />
-            
           </div>
-          {showToneAdjuster && <Training_Tone onPitchChange={handlePitchChange} />}
-          {showSplash && <Training_Splash onFinish={handleSplashFinish} />}
-          {/*<Training_Tone onFinish={handleSplashFinish} />*/}
-          {/* showToneAdjuster && <Training_Tone onFinish={handleSplashFinish} onPitchChange={handlePitchChange} />}
-          {showSplash && <Training_Splash onFinish={handleSplashFinish} />*/}
         </div>
         <Footer activeTab="training" />
       </div>

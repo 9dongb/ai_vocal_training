@@ -5,6 +5,7 @@ import "./common/root.css";
 import Footer from "./common/Footer";
 import Training_Splash from "./training_splash";
 import Training_Tone from "./training_tone";
+import Header2 from "./common/Header2";
 
 function Immediate_feedback_analyze() {
   const [isPlaying, setIsPlaying] = useState(false);

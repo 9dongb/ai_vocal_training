@@ -102,7 +102,10 @@ def upload():
 def test():
     if 'user_id' in session:
         print(session['user_id'])
+        return {'user_id': session['user_id']}
+    elif 'user_id' and 'artist' in session:
         return {'user_id': session['user_id'], 'artist':session['artist']}
+    
     return jsonify({"message": "세션에 아이디가 없습니다."}), 400
 
 @app.route("/training", methods=["GET", "POST"])
@@ -151,7 +154,7 @@ def tone_check():
     if isinstance(file_path, tuple):
         return file_path  # 에러 응답 처리
 
-    va = VocalAnalysis(session['artist'], session['title'])
+    va = VocalAnalysis()
     tone = va.tone_classification()['label']
     
     test_list = {'발라드':['안아줘', '너였다면', '밤편지'],
@@ -162,20 +165,38 @@ def tone_check():
     recommend = random.choice(test_list[tone])
     
 
-    return jsonify({'Result': tone, 'recommend': recommend})
+    return jsonify({'result': tone, 'recommend': recommend})
 
 @app.route("/my_page", methods=["GET", "POST"])
 def my_page():
 
     # 임시로 정보 보냅니다
     return {'level':10, 'pitch':80, 'beat':70, 'tone':'발라드'}
-    
+
+ #음역대 데이터(pitch)
 @app.route("/pitch_change", methods=["GET", "POST"])
 def pitch_change():
-
-    data = request.get_json()
-    pitch = data['pitch']
-    print(f'음정을 {pitch}해주세요')
+    try:
+        data = request.json
+        if data is None:
+            return jsonify({"error": "No JSON data received"}), 400
+        
+        pitch = data.get('pitch')
+        if pitch is None:
+            return jsonify({"error": "Pitch value is missing"}), 400
+        
+        pitch = int(pitch)
+        print(f"음정을 {pitch}해주세요")
+        
+        return jsonify({
+            "message": "Pitch value received successfully",
+            "pitch": pitch
+        })
+    except ValueError:
+        return jsonify({"error": "Invalid pitch value"}), 400
+    except Exception as e:
+        print(f"Error in pitch_change: {str(e)}")
+        return jsonify({"error": "Internal server error"}), 500
     
 
 if __name__ == "__main__":

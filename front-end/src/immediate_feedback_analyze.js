@@ -27,6 +27,30 @@ function Immediate_feedback_analyze() {
     setShowMainContent(true);
   };
 
+  const handlePitchChange = async (pitch) => {
+    try {
+      const response = await fetch("http://localhost:5000/pitch_change", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ pitch }),
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Pitch 값이 성공적으로 전송되었습니다.", result);
+      setShowToneAdjuster(false);
+      setShowSplash(true);
+    } catch (error) {
+      console.error("서버 통신 오류:", error);
+    }
+  };
+
   // useLocation으로 전달된 state에서 songTitle, artist, imagePath 받아오기
   const location = useLocation();
   const { songTitle, artist, imagePath } = location.state || {
@@ -249,8 +273,13 @@ function Immediate_feedback_analyze() {
               preload="auto"
               onTimeUpdate={handleTimeUpdate} // 오디오 재생 시간 업데이트 핸들러 등록
             />
+            
           </div>
-          {<Training_Tone onFinish={handleSplashFinish} />}
+          {showToneAdjuster && <Training_Tone onPitchChange={handlePitchChange} />}
+          {showSplash && <Training_Splash onFinish={handleSplashFinish} />}
+          {/*<Training_Tone onFinish={handleSplashFinish} />*/}
+          {/* showToneAdjuster && <Training_Tone onFinish={handleSplashFinish} onPitchChange={handlePitchChange} />}
+          {showSplash && <Training_Splash onFinish={handleSplashFinish} />*/}
         </div>
         <Footer activeTab="training" />
       </div>

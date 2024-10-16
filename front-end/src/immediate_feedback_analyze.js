@@ -59,6 +59,9 @@ function Immediate_feedback_analyze() {
     imagePath: "./img/songs/default.png", // 기본 이미지 경로
   };
 
+  //오디오 경로 설정
+  const audioFilePath = `./mr/${artist}-${songTitle}.wav`;
+
   const [lyrics, setLyrics] = useState([]); // 가사 데이터 상태
   const [currentLyricIndex, setCurrentLyricIndex] = useState(0); // 현재 하이라이팅할 가사 인덱스
 
@@ -277,7 +280,7 @@ function Immediate_feedback_analyze() {
 
             <audio
               ref={audioRef}
-              src="./mr/hug_me.wav"
+              src={audioFilePath} // Dynamic audio path
               preload="auto"
               onTimeUpdate={handleTimeUpdate} // 오디오 재생 시간 업데이트 핸들러 등록
             />

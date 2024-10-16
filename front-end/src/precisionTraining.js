@@ -38,11 +38,59 @@ const PrecisionTraining = () => {
                 </div>
               </div>
 
-              <div className="drag_menu_component_1" onClick={() =>handleSongClick("흔들리는 꽃들 속에서","장범준","./img/songs/cover_wobbly_flowers.png" )}>
+              <div className="drag_menu_component_1" onClick={() =>handleSongClick("흔들리는 꽃들 속에서 네 샴푸 향이 느껴진 거야","장범준","./img/songs/cover_wobbly_flowers.png" )}>
                 <img className="ai_diagnosis_img" src="./img/songs/cover_wobbly_flowers.png" alt="흔들리는 꽃들 속에서 네 샴푸 향이 느껴진 거야" />
                 <div className="ai_text">
                   <p className="ai_text_1">흔들리는 꽃들 속에서 네 샴푸 향이 느껴진 거야</p>
                   <p className="ai_text_2">장범준</p>
+                </div>
+              </div>
+
+              <div className="drag_menu_component_1" onClick={() =>handleSongClick("기억해줘요내모든날과그때를","거미","./img/songs/cover_remember.png" )}>
+                <img className="ai_diagnosis_img" src="./img/songs/cover_remember.png" alt="기억해줘요내모든날과그때를" />
+                <div className="ai_text">
+                  <p className="ai_text_1">기억해줘요내모든날과그때를</p>
+                  <p className="ai_text_2">거미</p>
+                </div>
+              </div>
+
+              <div className="drag_menu_component_1" onClick={() =>handleSongClick("아모르 파티","김연자","./img/songs/cover_amo.png" )}>
+                <img className="ai_diagnosis_img" src="./img/songs/cover_amo.png" alt="아모르 파티" />
+                <div className="ai_text">
+                  <p className="ai_text_1">아모르 파티</p>
+                  <p className="ai_text_2">김연자</p>
+                </div>
+              </div>
+
+              <div className="drag_menu_component_1" onClick={() =>handleSongClick("사랑, 결코 시들지 않는","서문탁","./img/songs/cover_love_never.png" )}>
+                <img className="ai_diagnosis_img" src="./img/songs/cover_love_never.png" alt="흔들사랑, 결코 시들지 않는" />
+                <div className="ai_text">
+                  <p className="ai_text_1">사랑, 결코 시들지 않는</p>
+                  <p className="ai_text_2">서문탁</p>
+                </div>
+              </div>
+
+              <div className="drag_menu_component_1" onClick={() =>handleSongClick("밤편지","아이유","./img/songs/cover_letter_at_night.png" )}>
+                <img className="ai_diagnosis_img" src="./img/songs/cover_letter_at_night.png" alt="밤편지" />
+                <div className="ai_text">
+                  <p className="ai_text_1">밤편지</p>
+                  <p className="ai_text_2">아이유</p>
+                </div>
+              </div>
+
+              <div className="drag_menu_component_1" onClick={() =>handleSongClick("Supernova","에스파","./img/songs/cover_supernova.png" )}>
+                <img className="ai_diagnosis_img" src="./img/songs/cover_supernova.png" alt="Supernova" />
+                <div className="ai_text">
+                  <p className="ai_text_1">Supernova</p>
+                  <p className="ai_text_2">에스파</p>
+                </div>
+              </div>
+
+              <div className="drag_menu_component_1" onClick={() =>handleSongClick("사랑은 늘 도망가","임영웅","./img/songs/cover_love_run.png" )}>
+                <img className="ai_diagnosis_img" src="./img/songs/cover_love_run.png" alt="사랑은 늘 도망가" />
+                <div className="ai_text">
+                  <p className="ai_text_1">사랑은 늘 도망가</p>
+                  <p className="ai_text_2">임영웅</p>
                 </div>
               </div>
             </div>

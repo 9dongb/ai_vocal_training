@@ -35,7 +35,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 
 class VocalAnalysis:
-    def __init__(self, artist, title):
+    def __init__(self, artist=None, title=None):
         self.title = title
         self.artist = artist
         self.artist_audio_path = f'assets/audio/artist/vocal/{self.artist}-{self.title}.wav'
@@ -646,8 +646,6 @@ class VocalAnalysis:
 
         max_pad_len = 10000
 
-
-                    
         file_name = 'assets/audio/user/tone/user_tone.wav' # 변경할 부분
         y, sr = librosa.load(file_name, sr=None) 
         test_data = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)

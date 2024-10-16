@@ -13,14 +13,19 @@ function Training_Splash({ onFinish }) {
           return prevCount - 1;
         } else {
           clearInterval(timer);
-          onFinish(); // 즉시 onFinish 호출
           return 0; // 카운트를 0으로 설정
         }
       });
     }, 1000);
 
-    return () => clearInterval(timer);
-  }, [onFinish]);
+    return () => clearInterval(timer); // 타이머를 정리하는 cleanup 함수
+  }, []);
+
+  useEffect(() => {
+    if (count === 0) {
+      onFinish(); // 카운트가 0일 때 onFinish 호출
+    }
+  }, [count, onFinish]); // count가 0이 되었을 때만 onFinish를 호출
 
   return (
     <div className="splash_div">

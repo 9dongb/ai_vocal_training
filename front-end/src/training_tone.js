@@ -5,7 +5,7 @@ import "./training_splash.css";
 import Footer from "./common/Footer";
 import Training_Splash from "./training_splash";
 
-function Training_Tone({ onFinish }) { // onFinish prop 추가
+function Training_Tone({ onFinish, onPitchChange}) { // onFinish prop 추가
   const [tone, setTone] = useState(0);
   const [showAdjuster, setShowAdjuster] = useState(true);
   const [showCountdown, setShowCountdown] = useState(false);
@@ -20,13 +20,13 @@ function Training_Tone({ onFinish }) { // onFinish prop 추가
   };
 
   const handleConfirm = () => {
-    setShowAdjuster(false);
-    setShowCountdown(true);
+    onPitchChange(tone);
   };
 
   const handleCountdownFinish = () => {
     setShowCountdown(false);
     setShowImmediateFeedback(true);
+    onFinish();
   };
 
   if (showAdjuster) {
@@ -52,6 +52,7 @@ function Training_Tone({ onFinish }) { // onFinish prop 추가
     return <Training_Splash onFinish={handleCountdownFinish} />;
   }
 
+  return null;  //기본 반환값
 }
 
 export default Training_Tone;

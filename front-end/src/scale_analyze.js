@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "./scale_analyze.css";
 import "./common/root.css";
+import "./main.css";
 import Footer from "./common/Footer";
 
 function ScaleAnalyze() {
@@ -26,7 +27,7 @@ function ScaleAnalyze() {
   const [noteMessage, setNoteMessage] = useState("");
   const [userFrequency, setUserFrequency] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
-  
+
   console.log("초기 noteIndex : ", noteIndex);
 
   // 녹음 관련
@@ -37,7 +38,6 @@ function ScaleAnalyze() {
   // const [recordedChunks, setRecordedChunks] = useState([]); // 녹음된 데이터 저장
   // const navigate = useNavigate(); // useNavigate 훅 사용
   //녹음 끝
-
 
   // 주어진 주파수의 음을 재생하는 함수
   function playTone(frequency, duration) {
@@ -58,7 +58,7 @@ function ScaleAnalyze() {
 
   // 음 이름으로 재생하는 함수 (C4, D4, 등)
   function playNoteByName(noteName, duration) {
-    const note = notes.find(note => note.name === noteName); // 눌린 음의 정보를 찾음
+    const note = notes.find((note) => note.name === noteName); // 눌린 음의 정보를 찾음
     const frequency = note?.frequency; // 해당 음의 주파수를 가져옴
     if (frequency) {
       setActiveNote(noteName); // 눌린 음 시각화
@@ -72,7 +72,7 @@ function ScaleAnalyze() {
       setNoteMessage(`현재 건반 음역대: ${note.info}`);
       // 사용자 주파수 가져오기
       fetchUserFrequency(noteName);
-    
+
       // setTimeout(() => setActiveNote(null), duration * 1000); // 음이 끝나면 시각화 해제
     } else {
       console.log("해당 음을 찾을 수 없습니다.");
@@ -102,11 +102,101 @@ function ScaleAnalyze() {
   }
 
   // 음 시작
-  function playNote() {
-    console.log("시작하는 noteIndex : ", noteIndex);
-    playNoteByName(notes[noteIndex].name, 1);
-  }
+  // function playNote() {
+  //   console.log("시작하는 noteIndex : ", noteIndex);
+  //   playNoteByName(notes[noteIndex].name, 1);
+  // }
 
+  // 실시간으로 5초간 녹음 후 음역대 진단
+  const recordAudio = async () => {
+    try {
+      setIsRecording(true);
+      const mediaRecorder = new MediaRecorder(await navigator.mediaDevices.getUserMedia({ audio: true }));
+      const audioChunks = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunks.push(event.data);
+        }
+      };
+
+      mediaRecorder.start();
+      setIsPlaying(true);
+      console.log("녹음 시작");
+      setTimeout(() => {
+        mediaRecorder.stop();
+      }, 5000);
+
+      mediaRecorder.onstop = () => {
+        setIsRecording(false);
+        setIsPlaying(false);
+        console.log("녹음 끝");
+
+        const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+        console.log("녹음된 데이터 audioBlob: ", audioBlob);
+        uploadToServer(audioBlob);
+      };
+    } catch (error) {
+      console.error("녹음 중 오류 발생 : ", error);
+      setIsRecording(false);
+      setIsPlaying(false);
+    }
+  };
+
+  const uploadToServer = async (audioBlob) => {
+    // 파일 형식이 'audio/wav'인지 확인
+    if (audioBlob.type !== "audio/wav") {
+      console.error("올바르지 않은 파일 형식입니다. WAV 파일만 전송 가능합니다.");
+      return; // WAV 파일이 아니면 전송하지 않음
+    }
+
+    const formData = new FormData();
+    formData.append("audio", audioBlob, "user_tone.wav"); // 서버에 파일로 전송
+    console.log("formData: ", formData);
+
+    try {
+      const response = await fetch("http://localhost:5000/range_check", {
+        method: "POST",
+        body: formData,
+      });
+      const result = await response.json();
+      console.log("서버 응답:", result);
+      console.log("음역대 결과 : ", result.frequency);
+      const closestNote = findClosestNote(result.frequency);
+      findHighestNote(result.frequency);
+      const highestNote = findClosestNote(highestNoteResult);
+
+      if (closestNote) {
+        const message = `사용자의 주파수: ${result.frequency} Hz\n현재 음역대: ${closestNote.info}\n\n\n\n 최고 음역대: ${highestNote.info}`;
+        setNoteMessage(message);
+      }
+
+      console.log("사용자 음역대 비교 결과 : ", closestNote);
+    } catch (error) {
+      console.error("서버로 파일 업로드 실패:", error);
+    }
+  };
+
+  // 주파수를 비교하는 함수
+  const findClosestNote = (userFrequency) => {
+    let closestNote = null;
+    let minDifference = Infinity;
+
+    notes.forEach((note) => {
+      const difference = Math.abs(userFrequency - note.frequency);
+      if (difference < minDifference) {
+        minDifference = difference;
+        closestNote = note;
+      }
+    });
+
+    return closestNote;
+  };
+
+  // 최고 주파수를 찾는 함수
+  const findHighestNote = (userFrequency) => {
+    if (highestNoteResult < userFrequency) setHighestNoteResult(userFrequency);
+  };
 
   // 녹음 관련
   // // 오디오 재생 및 녹음 시작
@@ -194,72 +284,69 @@ function ScaleAnalyze() {
   //     console.error("서버로 파일 업로드 실패:", error);
   //   }
   // };
-// 녹음 관련 끝
+  // 녹음 관련 끝
 
-// gpt 실시간으로 3초간 녹음 후 음역대 진단
-// const recordAudio = async () => {
-//   setIsRecording(true);
-//   const mediaRecorder = new MediaRecorder(await navigator.mediaDevices.getUserMedia({ audio: true }));
-//   const audioChunks = [];
+  // gpt 실시간으로 3초간 녹음 후 음역대 진단
+  // const recordAudio = async () => {
+  //   setIsRecording(true);
+  //   const mediaRecorder = new MediaRecorder(await navigator.mediaDevices.getUserMedia({ audio: true }));
+  //   const audioChunks = [];
 
-//   mediaRecorder.ondataavailable = event => {
-//     audioChunks.push(event.data);
-//   };
+  //   mediaRecorder.ondataavailable = event => {
+  //     audioChunks.push(event.data);
+  //   };
 
-//   mediaRecorder.start();
-//   setTimeout(() => {
-//     mediaRecorder.stop();
-//   }, 3000);
+  //   mediaRecorder.start();
+  //   setTimeout(() => {
+  //     mediaRecorder.stop();
+  //   }, 3000);
 
-//   mediaRecorder.onstop = async () => {
-//     const audioBlob = new Blob(audioChunks);
-//     const formData = new FormData();
-//     formData.append("audio", audioBlob);
+  //   mediaRecorder.onstop = async () => {
+  //     const audioBlob = new Blob(audioChunks);
+  //     const formData = new FormData();
+  //     formData.append("audio", audioBlob);
 
-//     // Python 서버에 음성을 전송하여 주파수 분석
-//     const response = await fetch("http://localhost:5000/range_check", {
-//       method: "POST",
-//       body: formData,
-//     });
+  //     // Python 서버에 음성을 전송하여 주파수 분석
+  //     const response = await fetch("http://localhost:5000/range_check", {
+  //       method: "POST",
+  //       body: formData,
+  //     });
 
-//     const data = await response.json();
-//     setUserFrequency(data.frequency);
-//     compareFrequencies(data.frequency);
-//   };
-// };
+  //     const data = await response.json();
+  //     setUserFrequency(data.frequency);
+  //     compareFrequencies(data.frequency);
+  //   };
+  // };
 
-// const compareFrequencies = (frequency) => {
-//   const closestNote = notes.reduce((prev, curr) =>
-//     Math.abs(curr.frequency - frequency) < Math.abs(prev.frequency - frequency) ? curr : prev
-//   );
+  // const compareFrequencies = (frequency) => {
+  //   const closestNote = notes.reduce((prev, curr) =>
+  //     Math.abs(curr.frequency - frequency) < Math.abs(prev.frequency - frequency) ? curr : prev
+  //   );
 
-//   setNoteMessage(`사용자의 주파수: ${frequency.toFixed(2)} Hz, 가장 가까운 음: ${closestNote.name}`);
-// };
+  //   setNoteMessage(`사용자의 주파수: ${frequency.toFixed(2)} Hz, 가장 가까운 음: ${closestNote.name}`);
+  // };
 
-// 사용자 주파수를 가져오는 함수
-const fetchUserFrequency = async (noteName) => {
-  const response = await fetch("http://localhost:5000/range_check");
-  const data = await response.json();
+  // 사용자 주파수를 가져오는 함수
+  const fetchUserFrequency = async (noteName) => {
+    const response = await fetch("http://localhost:5000/range_check");
+    const data = await response.json();
 
-  setUserFrequency(data.frequency);
-  compareFrequencies(data.frequency, noteName);
-};
+    setUserFrequency(data.frequency);
+    compareFrequencies(data.frequency, noteName);
+  };
 
-// 주파수를 비교하는 함수
-const compareFrequencies = (userFreq, noteName) => {
-  const note = notes.find(note => note.name === noteName);
-  if (note) {
-    const frequencyDifference = Math.abs(userFreq - note.frequency);
-    if (frequencyDifference < 5) {
-      setNoteMessage(`현재 건반 음역대는 ${note.info}인데, 현재 사용자의 주파수는 ${userFreq}, 사용자의 주파수는 ${note.info}에 가깝습니다!`);
-    } else {
-      setNoteMessage(`현재 건반 음역대는 ${note.info}인데, 현재 사용자의 주파수는 ${userFreq}, 사용자의 주파수는 ${note.info}와 거리가 있습니다.`);
+  // 주파수를 비교하는 함수
+  const compareFrequencies = (userFreq, noteName) => {
+    const note = notes.find((note) => note.name === noteName);
+    if (note) {
+      const frequencyDifference = Math.abs(userFreq - note.frequency);
+      if (frequencyDifference < 5) {
+        setNoteMessage(`현재 건반 음역대는 ${note.info}인데, 현재 사용자의 주파수는 ${userFreq}, 사용자의 주파수는 ${note.info}에 가깝습니다!`);
+      } else {
+        setNoteMessage(`현재 건반 음역대는 ${note.info}인데, 현재 사용자의 주파수는 ${userFreq}, 사용자의 주파수는 ${note.info}와 거리가 있습니다.`);
+      }
     }
-  }
-};
-
-
-
+  };
 
   return (
     <div className="body">
@@ -269,42 +356,52 @@ const compareFrequencies = (userFreq, noteName) => {
         <div className="piano">
           {/* 흰 건반 */}
           {notes
-            .filter(note => !note.name.includes("_")) // '_'이 없는 흰 건반 필터링
-            .map(note => (
-              <div
-                key={note.name}
-                className={`white-key ${activeNote === note.name ? "key_active" : ""}`}
-                onClick={() => playNoteByName(note.name, 1)}
-              >
+            .filter((note) => !note.name.includes("_")) // '_'이 없는 흰 건반 필터링
+            .map((note) => (
+              <div key={note.name} className={`white-key ${activeNote === note.name ? "key_active" : ""}`} onClick={() => playNoteByName(note.name, 1)}>
                 {/* {note.name} */}
               </div>
             ))}
 
-          {/* 검은 건반 */}
-          {notes
-            .filter(note => note.name.includes("_")) // '_'이 있는 검은 건반 필터링
-            .map(note => (
-              <div
-                key={note.name}
-                className={`black-key key-${note.name}-sharp ${activeNote === note.name ? "key_active" : ""}`}
-                onClick={() => playNoteByName(note.name, 1)}
-              ></div>
-            ))}
+          <div className="scale_analyze_btn">
+            {/* <div className="sa_btn" onClick={decreaseNote}>왼쪽</div> */}
+            {/* <div className="sa_btn" onClick={downOctaveList}>이전</div> */}
+            {/* <div className="sa_btn" onClick={playNote}>다시 듣기</div> */}
+            {/* <div className="sa_btn" onClick={increaseNote}>오른쪽</div> */}
+            {/* <div className="sa_btn" onClick={upOctaveList}>다음</div> */}
+          </div>
+
+          <div className="scale_analyze_btn">
+            <div className="sa_btn sa_playing_btn" onClick={recordAudio}>
+              <img src={isPlaying ? "/img/pausebtn.png" : "/img/playbtn.png"} style={{ width: "40px" }} alt="Play or Pause Button" />
+              <p>{isPlaying ? "녹음중" : "시작"}</p>
+            </div>
+          </div>
+          <div className="scale_analyze_btn"></div>
+          <div className="scale_analyze_textarea">
+            <textarea className="battle_text_1" readOnly value={noteMessage}></textarea>
+          </div>
+
+          <Footer />
         </div>
 
         <div className="scale_analyze_btn">
-          <div className="sa_btn" onClick={decreaseNote}>왼쪽</div>
-          <div className="sa_btn" onClick={increaseNote}>오른쪽</div>
+          <div className="sa_btn" onClick={decreaseNote}>
+            왼쪽
+          </div>
+          <div className="sa_btn" onClick={increaseNote}>
+            오른쪽
+          </div>
         </div>
-        
+
         <div className="scale_analyze_btn">
-          <div className="sa_btn" onClick={playNote}>다시 듣기</div>
+          <div className="sa_btn" onClick={playNote}>
+            다시 듣기
+          </div>
           <div className="sa_btn">녹음</div>
         </div>
         {/* gpt 실시간으로 3초간 녹음 후 음역대 진단 */}
-        <div className="scale_analyze_btn">
-          {/* <button onClick={recordAudio}>{isRecording ? "녹음 중..." : "녹음"}</button> */}
-        </div>
+        <div className="scale_analyze_btn">{/* <button onClick={recordAudio}>{isRecording ? "녹음 중..." : "녹음"}</button> */}</div>
 
         <div className="scale_analyze_textarea">
           <textarea readOnly value={noteMessage} />

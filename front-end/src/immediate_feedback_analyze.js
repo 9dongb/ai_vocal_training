@@ -71,12 +71,10 @@ function Immediate_feedback_analyze() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          songTitle: songTitle,  // 선택된 노래 제목
-          artist: artist        // 선택된 가수명
+          songTitle: songTitle, // 선택된 노래 제목
+          artist: artist, // 선택된 가수명
         }),
-        credentials: "include",
       });
-
       const data = await response.json();
       setLyrics(data.lyrics); // 받아온 배열을 바로 상태에 저장
     } catch (error) {
@@ -95,11 +93,7 @@ function Immediate_feedback_analyze() {
     const currentTime = audioRef.current.currentTime;
 
     // 현재 재생 시간에 맞는 가사를 찾기
-    const currentIndex = lyrics.findIndex(
-      (lyric, index) =>
-        currentTime >= lyric[0] &&
-        (index === lyrics.length - 1 || currentTime < lyrics[index + 1][0])
-    );
+    const currentIndex = lyrics.findIndex((lyric, index) => currentTime >= lyric[0] && (index === lyrics.length - 1 || currentTime < lyrics[index + 1][0]));
 
     if (currentIndex !== -1 && currentIndex !== currentLyricIndex) {
       setCurrentLyricIndex(currentIndex);
@@ -188,7 +182,14 @@ function Immediate_feedback_analyze() {
       setIsPlaying(false);
       setIsPaused(false);
       console.log("녹음 중지");
-      navigate("/feedback"); // 녹음이 중지되면 feedback 페이지로 이동
+      // navigate로 feedback 페이지로 이동, 노래 정보를 state로 전달
+      navigate("/feedback", {
+        state: {
+          songTitle: songTitle,
+          artist: artist,
+          imagePath: imagePath,
+        },
+      });
     }
   };
 
@@ -196,12 +197,13 @@ function Immediate_feedback_analyze() {
   const uploadToServer = async (blob) => {
     const formData = new FormData();
     formData.append("audio", blob, "recording.wav"); // 서버에 파일로 전송
+    //formData.append("artist",artist); //가수 추가
+    //formData.append("title",songTitle); //제목 추가
 
     try {
       const response = await fetch("http://localhost:5000/uploads", {
         method: "POST",
         body: formData,
-        credentials: "include",
       });
       const result = await response.json();
       console.log("서버 응답:", result);
@@ -234,10 +236,7 @@ function Immediate_feedback_analyze() {
               </div>
               <div className="lyrics_text">
                 {lyrics.map((lyric, index) => (
-                  <p
-                    key={index}
-                    className={index === currentLyricIndex ? "highlighted-lyric" : ""}
-                  >
+                  <p key={index} className={index === currentLyricIndex ? "highlighted-lyric" : ""}>
                     {lyric[1]} {/* 가사 텍스트 */}
                   </p>
                 ))}
@@ -247,11 +246,7 @@ function Immediate_feedback_analyze() {
             <div className="btn_container">
               {/* Play 버튼: 녹음 시작 또는 재개 */}
               <div className="playbtn_container">
-                <img
-                  src={isPlaying ? "/img/stopbtn.png" : "/img/playbtn.png"}
-                  alt="Play or Pause Button"
-                  onClick={isPlaying ? handlePause : handleStart}
-                />
+                <img src={isPlaying ? "/img/stopbtn.png" : "/img/playbtn.png"} alt="Play or Pause Button" onClick={isPlaying ? handlePause : handleStart} />
                 <p className="btn_text">{isPlaying ? "일시정지" : isPaused ? "재개" : "재생"}</p>
               </div>
 
@@ -273,13 +268,9 @@ function Immediate_feedback_analyze() {
               preload="auto"
               onTimeUpdate={handleTimeUpdate} // 오디오 재생 시간 업데이트 핸들러 등록
             />
-            
           </div>
           {showToneAdjuster && <Training_Tone onPitchChange={handlePitchChange} />}
           {showSplash && <Training_Splash onFinish={handleSplashFinish} />}
-          {/*<Training_Tone onFinish={handleSplashFinish} />*/}
-          {/* showToneAdjuster && <Training_Tone onFinish={handleSplashFinish} onPitchChange={handlePitchChange} />}
-          {showSplash && <Training_Splash onFinish={handleSplashFinish} />*/}
         </div>
         <Footer activeTab="training" />
       </div>

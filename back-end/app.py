@@ -76,6 +76,7 @@ def logout():
     # 성공적인 로그아웃 응답을 JSON 형태로 반환
     return jsonify({"message": "Logged out successfully!"}), 200
 
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -87,6 +88,21 @@ def register():
         user_pw = data['password']
         return db.db_register(user_id, user_name, user_age, user_gender, user_pw)
     return jsonify({"message": "회원가입 에러"}), 400
+
+@app.route('/get_user_name', methods=['GET'])
+def get_user_name():
+    # Fetch user_id from session
+    user_id = session.get('user_id')
+
+    if user_id:
+        # Assuming you have a function to fetch user data by user_id
+        user_data = db.get_user_name(user_id)  # Replace with your database logic
+        if user_data:
+            return jsonify({'status': 'success', 'user_name': user_data['user_name']})
+        else:
+            return jsonify({'status': 'fail', 'message': 'User not found'}), 404
+    else:
+        return jsonify({'status': 'fail', 'message': 'User not logged in'}), 401
 
 @app.route("/uploads", methods=["GET", "POST"])
 def upload():

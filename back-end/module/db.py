@@ -5,11 +5,11 @@ import pymysql
 # DATABASE_PASSWORD = ""
 
 DATABASE_DB = "singking_db"
-DATABASE_PORT = 3306
+DATABASE_PORT = 3307
 
 DATABASE_HOST = "localhost"
 DATABASE_USER = "root"
-DATABASE_PASSWORD = "1541"
+DATABASE_PASSWORD = "011129"
 
 # Database 클래스는 MySQL 데이터베이스와 연결을 담당
 class Database:
@@ -46,12 +46,21 @@ class Database:
             SQL = '''INSERT INTO singking_db.user_info (user_id, user_name, user_age, user_gender, user_pw, user_membership)
             VALUES (%s, %s, %s, %s,  %s, %s)'''
 
-            self.cursor.execute(SQL, (user_id, '테스트 이름', 25, 'm', user_pw, 'X'))
+            self.cursor.execute(SQL, (user_id, user_name, 25, 'm', user_pw, 'X'))
             self.conn.commit()
             return {'status':'success'}
         except:
             return {'message':'fail'}
-        
+       
+    def get_user_name(self, user_id):
+        try:
+            SQL = 'SELECT user_name FROM singking_db.user_info WHERE user_id = %s'
+            self.cursor.execute(SQL, (user_id,))
+            data = self.cursor.fetchone()
+            return data
+        except Exception as e:
+            return {'message': 'error', 'error': str(e)}
+ 
     
     def vocal_data(self, user_id, user_level, pitch_score, beat_score, pronunciation_score):
         try:

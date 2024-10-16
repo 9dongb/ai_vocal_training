@@ -1,7 +1,7 @@
 .join_member_main {
   padding-top: 50px;
   text-align: center;
-  background: #778EB8;
+  background: #778eb8;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -47,7 +47,7 @@
 .join_member_id input:focus,
 .join_member_password input:focus,
 .join_member_age input:focus {
-  border-bottom: 2px solid #264DA4;
+  border-bottom: 2px solid #264da4;
   outline: none;
 }
 
@@ -57,7 +57,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  
 }
 
 .gender-selection-label {
@@ -81,7 +80,7 @@
   display: inline-block;
   padding: 10px 20px;
   margin: 0 10px;
-  border: 2px solid #264DA4;
+  border: 2px solid #264da4;
   border-radius: 20px;
   font-size: 14px;
   cursor: pointer;
@@ -89,12 +88,12 @@
 }
 
 .gender-option:checked + .gender-label {
-  background-color: #264DA4;
+  background-color: #264da4;
   color: #fff;
 }
 
 .gender-label:hover {
-  background-color: #264DA4;
+  background-color: #264da4;
   color: #fff;
 }
 .join_member_user {
@@ -133,13 +132,4 @@
 
 .join_login:hover {
   text-decoration: underline;
-}
-
-.join_member_version {
-  font-weight: 100;
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: #fff;
 }

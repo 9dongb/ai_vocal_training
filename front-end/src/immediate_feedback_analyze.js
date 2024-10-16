@@ -74,7 +74,9 @@ function Immediate_feedback_analyze() {
           songTitle: songTitle, // 선택된 노래 제목
           artist: artist, // 선택된 가수명
         }),
+        credentials: "include",
       });
+
       const data = await response.json();
       setLyrics(data.lyrics); // 받아온 배열을 바로 상태에 저장
     } catch (error) {
@@ -182,14 +184,7 @@ function Immediate_feedback_analyze() {
       setIsPlaying(false);
       setIsPaused(false);
       console.log("녹음 중지");
-      // navigate로 feedback 페이지로 이동, 노래 정보를 state로 전달
-      navigate("/feedback", {
-        state: {
-          songTitle: songTitle,
-          artist: artist,
-          imagePath: imagePath,
-        },
-      });
+      navigate("/feedback"); // 녹음이 중지되면 feedback 페이지로 이동
     }
   };
 
@@ -197,13 +192,12 @@ function Immediate_feedback_analyze() {
   const uploadToServer = async (blob) => {
     const formData = new FormData();
     formData.append("audio", blob, "recording.wav"); // 서버에 파일로 전송
-    //formData.append("artist",artist); //가수 추가
-    //formData.append("title",songTitle); //제목 추가
 
     try {
       const response = await fetch("http://localhost:5000/uploads", {
         method: "POST",
         body: formData,
+        credentials: "include",
       });
       const result = await response.json();
       console.log("서버 응답:", result);
@@ -271,6 +265,9 @@ function Immediate_feedback_analyze() {
           </div>
           {showToneAdjuster && <Training_Tone onPitchChange={handlePitchChange} />}
           {showSplash && <Training_Splash onFinish={handleSplashFinish} />}
+          {/*<Training_Tone onFinish={handleSplashFinish} />*/}
+          {/* showToneAdjuster && <Training_Tone onFinish={handleSplashFinish} onPitchChange={handlePitchChange} />}
+          {showSplash && <Training_Splash onFinish={handleSplashFinish} />*/}
         </div>
         <Footer activeTab="training" />
       </div>

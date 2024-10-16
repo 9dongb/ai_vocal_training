@@ -12,10 +12,12 @@ const MyPage = () => {
     tone: "진단표시",
   });
 
-  const [userName, setUserName] = useState("조호연");
+  const [userName, setUserName] = useState("게스트");
   const navigate = useNavigate(); // To programmatically navigate
 
+  // Fetch user data and user name when the component mounts
   useEffect(() => {
+    // Fetch vocal data
     fetch("http://localhost:5000/my_page")
       .then((response) => response.json())
       .then((data) => {
@@ -23,6 +25,22 @@ const MyPage = () => {
       })
       .catch((error) => {
         console.error("Error fetching vocal data:", error);
+      });
+
+    fetch("http://localhost:5000/get_user_name", {
+      method: "GET",
+      credentials: "include", // This is crucial to send cookies (session ID)
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "success") {
+          setUserName(data.user_name); // Set the user name state
+        } else {
+          console.error("Failed to fetch user name");
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching user name:", error);
       });
   }, []);
 

@@ -10,9 +10,9 @@ const Matching = () => {
     tone: "진단필요",
   });
 
-  const [userName, setUserName] = useState("조호연");
-
+  const [userName, setUserName] = useState("게스트");
   useEffect(() => {
+    // Fetch vocal data
     fetch("http://localhost:5000/my_page")
       .then((response) => response.json())
       .then((data) => {
@@ -20,6 +20,22 @@ const Matching = () => {
       })
       .catch((error) => {
         console.error("Error fetching vocal data:", error);
+      });
+
+    fetch("http://localhost:5000/get_user_name", {
+      method: "GET",
+      credentials: "include", // This is crucial to send cookies (session ID)
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "success") {
+          setUserName(data.user_name); // Set the user name state
+        } else {
+          console.error("Failed to fetch user name");
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching user name:", error);
       });
   }, []);
   return (

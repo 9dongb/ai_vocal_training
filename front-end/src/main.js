@@ -72,7 +72,14 @@ function ProgressComparison({ title, lastWeekValue, latestValue }) {
 // Main 컴포넌트 정의
 function Main() {
   const [rankingData, setRankingData] = useState([]);
+  const [userData, setUserData] = useState({
+    level: 0,
+    pitch: 0,
+    beat: 0,
+    tone: "진단필요",
+  });
 
+  const [userName, setUserName] = useState("게스트");
   // Flask 서버로부터 주간 랭킹 데이터를 가져오는 함수
   const fetchWeeklyRanking = async () => {
     try {
@@ -90,6 +97,33 @@ function Main() {
   // 컴포넌트가 처음 렌더링될 때 주간 랭킹 데이터를 불러옴
   useEffect(() => {
     fetchWeeklyRanking();
+
+    // Fetch vocal data
+    fetch("http://localhost:5000/my_page")
+      .then((response) => response.json())
+      .then((data) => {
+        setUserData(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching vocal data:", error);
+      });
+
+    fetch("http://localhost:5000/get_user_name", {
+      method: "GET",
+      credentials: "include", // This is crucial to send cookies (session ID)
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "success") {
+          console.log(data);
+          setUserName(data.user_name); // Set the user name state
+        } else {
+          console.error("Failed to fetch user name");
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching user name:", error);
+      });
   }, []);
 
   return (
@@ -97,7 +131,19 @@ function Main() {
       <div className="container">
         <div className="main">
           <div className="singing_battle">
-            <div className="singking_battle_title">SINGKING 배틀</div>
+            <div className="singking_battle_title">HOME</div>
+
+            <div className="mypage_component">
+              <div className="mypage_tone_area">
+                <div>
+                  <div className="battle_text_1">{userName}</div>
+                  <div className="mypage_tone_logo"># {userData.tone}</div>
+                </div>
+                <img src=".\img\mypage_user_icon.png" className="mypage_user_icon" alt="배틀 이미지" />
+              </div>
+            </div>
+
+            {/* <div className="singking_battle_title">SINGKING 배틀</div>
 
             <div className="battle_component">
               <div className="battle_text">
@@ -105,7 +151,7 @@ function Main() {
                 <span className="battle_text_2">유저들과 경쟁해보세요</span>
               </div>
               <img src=".\img\battle_img.png" className="battle_image" alt="배틀 이미지" />
-            </div>
+            </div> */}
 
             <div className="singking_grow">
               <div className="singking_grow_title">SINGKING과 함께 성장했어요!</div>

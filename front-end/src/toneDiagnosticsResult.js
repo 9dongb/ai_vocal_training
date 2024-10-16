@@ -1,53 +1,51 @@
 import React, { useState, useEffect } from "react";
 import Footer from "./common/Footer";
+import { Link, useLocation } from "react-router-dom";
 import "./common/root.css";
 import "./training.css";
 import "./toneDiagnostics.css";
-import { Link } from "react-router-dom";
 
 const ToneDiagnosticsResult = () => {
+  const location = useLocation();
+  const result = location.state?.result; // 받아온 result
+
   // AI 결과와 이미지
   const ai_result = {
-    ballade: { result_img: "./img/singers/cover_jung_seung_hwan_big.png", result_content: "따뜻하고 감성적인 발라드형 음색입니다." },
-    dance: { result_img: "./img/singers/cover_hwasa_big.png", result_content: "음색이 뚜렷한 댄스형 음색입니다." },
-    rock: { result_img: "./img/singers/cover_yoon_do_hyun_big.png", result_content: "음역대가 높고 안정적인 호흡의 락형 음색입니다." },
-    Trot: { result_img: "./img/singers/cover_lim_young_woong_big.png", result_content: "독특하고 간드러지는 음색의 트로트형 음색입니다." },
+    ballade: { 
+      result_img: "./img/singers/cover_jung_seung_hwan_big.png", 
+      result_content: "따뜻하고 감성적인 발라드형 음색입니다." 
+    },
+    dance: { 
+      result_img: "./img/singers/cover_hwasa_big.png", 
+      result_content: "음색이 뚜렷한 댄스형 음색입니다." 
+    },
+    rock: { 
+      result_img: "./img/singers/cover_yoon_do_hyun_big.png", 
+      result_content: "음역대가 높고 안정적인 호흡의 락형 음색입니다." 
+    },
+    Trot: { 
+      result_img: "./img/singers/cover_lim_young_woong_big.png", 
+      result_content: "독특하고 간드러지는 음색의 트로트형 음색입니다." 
+    },
   };
-
-  // 장르에 맞는 추천 곡
-  const toneToSong = {
-    ballade: { title: "안아줘", artist: "정준일", image: "./img/songs/cover_hug_Circle_big.png" },
-    dance: { title: "마지막처럼", artist: "BLACKPINK", image: "./img/songs/cover_last_Circle_big.png" },
-    rock: { title: "낭만고양이", artist: "체리필터", image: "./img/songs/cover_cat_Circle_big.png" },
-    Trot: { title: "찐이야", artist: "영탁", image: "./img/songs/cover_jjin_Circle_big.png" },
-  };
-
-
-  const toneTypes = Object.keys(ai_result);
-
 
   const [selectedTone, setSelectedTone] = useState("");
   const [selectedSong, setSelectedSong] = useState(null);
 
-
-  const getRandomTone = () => {
-    const randomIndex = Math.floor(Math.random() * toneTypes.length);
-    return toneTypes[randomIndex];
-  };
-
-
   useEffect(() => {
-    const randomTone = getRandomTone(); 
-    setSelectedTone(randomTone); 
-  }, []);
-
-
-  useEffect(() => {
-    if (selectedTone) {
-      const currentSong = toneToSong[selectedTone];
-      setSelectedSong(currentSong);
+    if (result) {
+      // result.result 값에 따라 tone 설정
+      const toneMapping = {
+        '발라드': 'ballade',
+        '댄스': 'dance',
+        '락': 'rock',
+        '트로트': 'Trot'
+      };
+      const toneKey = toneMapping[result.result]; // result에서 tone 키 가져오기
+      setSelectedTone(toneKey); // tone 설정
+      setSelectedSong(result); // 추천 곡과 아티스트 설정
     }
-  }, [selectedTone]);
+  }, [result]);
 
   return (
     <div className="body">
@@ -76,12 +74,12 @@ const ToneDiagnosticsResult = () => {
               <div>
                 {selectedSong ? ( 
                   <>
-                    <div className="ai_text_1 tone_text_1">{selectedSong.title}</div>
+                    <div className="ai_text_1 tone_text_1">{selectedSong.recommend}</div>
                     <div className="ai_text_2">{selectedSong.artist}</div>
                     <img
                       className="tone_diagnostics_result_img"
                       src={selectedSong.image} 
-                      alt={`${selectedSong.title} cover`}
+                      alt={`${selectedSong.recommend} cover`}
                     />
                   </>
                 ) : (

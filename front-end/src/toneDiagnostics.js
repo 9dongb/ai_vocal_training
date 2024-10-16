@@ -73,9 +73,7 @@ const ToneDiagnostics = () => {
       const response = await fetch("http://localhost:5000/uploads/tone", {
         method: "POST",
         body: formData,
-        credentials: "include",
       });
-      
       const result = await response.json();
       console.log("서버 응답:", result);
     } catch (error) {

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import "./scale_analyze.css";
 import "./common/root.css";
 import Footer from "./common/Footer";
@@ -58,18 +57,14 @@ function ScaleAnalyze() {
   const [noteIndex, setNoteIndex] = useState(0); // 현재 음의 인덱스
 
   const [noteMessage, setNoteMessage] = useState("");   // 텍스트창 메세지
-  const [userFrequency, setUserFrequency] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
-  const [closestNoteResult, setClosestNoteResult] = useState(null);
+
+  const [highestNoteResult, setHighestNoteResult] = useState(null);;
 
   // console.log("초기 noteIndex : ", noteIndex);
 
-  // 녹음 관련
   const [isPlaying, setIsPlaying] = useState(false); // 재생 상태
-  const [isPaused, setIsPaused] = useState(false); // 녹음 일시 중지 상태
-  const [mediaRecorder, setMediaRecorder] = useState(null); // MediaRecorder 참조
-  const [recordedChunks, setRecordedChunks] = useState([]); // 녹음된 데이터 저장
-  //녹음 끝
+
 
 
   // 주어진 주파수의 음을 재생하는 함수
@@ -142,32 +137,33 @@ function ScaleAnalyze() {
 
 
   // 음을 올리는 함수
-  function increaseNote() {
-    if (noteIndex < notes.length - 1) {
-      console.log("음 올리는 noteIndex : ", noteIndex);
-      const nextIndex = noteIndex + 1;
-      setNoteIndex(nextIndex);
-      playNoteByName(notes[nextIndex].name, 1);
-      console.log("음 올리는 noteIndex : ", noteIndex);
-    }
-  }
+  // function increaseNote() {
+  //   if (noteIndex < notes.length - 1) {
+  //     console.log("음 올리는 noteIndex : ", noteIndex);
+  //     const nextIndex = noteIndex + 1;
+  //     setNoteIndex(nextIndex);
+  //     playNoteByName(notes[nextIndex].name, 1);
+  //     console.log("음 올리는 noteIndex : ", noteIndex);
+  //   }
+  // }
 
   // 음을 내리는 함수
-  function decreaseNote() {
-    if (noteIndex > 0) {
-      console.log("음 내리는 noteIndex : ", noteIndex);
-      const prevIndex = noteIndex - 1;
-      setNoteIndex(prevIndex);
-      playNoteByName(notes[prevIndex].name, 1);
-      console.log("음 내리는 noteIndex : ", noteIndex);
-    }
-  }
+  // function decreaseNote() {
+  //   if (noteIndex > 0) {
+  //     console.log("음 내리는 noteIndex : ", noteIndex);
+  //     const prevIndex = noteIndex - 1;
+  //     setNoteIndex(prevIndex);
+  //     playNoteByName(notes[prevIndex].name, 1);
+  //     console.log("음 내리는 noteIndex : ", noteIndex);
+  //   }
+  // }
 
   // 음 시작
-  function playNote() {
-    console.log("시작하는 noteIndex : ", noteIndex);
-    playNoteByName(notes[noteIndex].name, 1);
-  }
+  // function playNote() {
+  //   console.log("시작하는 noteIndex : ", noteIndex);
+  //   playNoteByName(notes[noteIndex].name, 1);
+  // }
+
   // 실시간으로 5초간 녹음 후 음역대 진단
   const recordAudio = async () => {
     try {
@@ -226,7 +222,8 @@ function ScaleAnalyze() {
       console.log("서버 응답:", result);
       console.log("음역대 결과 : ", result.frequency);
       const closestNote = findClosestNote(result.frequency);
-      const highestNote = findClosestNote(findHighestNote(result.frequency));
+      findHighestNote(result.frequency);
+      const highestNote = findClosestNote(highestNoteResult);
 
       if (closestNote) {
         const message = `사용자의 주파수: ${result.frequency} Hz\n음역대: ${closestNote.info}\n\n\n\n 최고 음역대 : ${highestNote.info}`;
@@ -257,12 +254,8 @@ function ScaleAnalyze() {
 
   // 최고 주파수를 찾는 함수
   const findHighestNote = (userFrequency) => {
-    let highestNote = null;
-
-    if (highestNote < userFrequency)
-      highestNote = userFrequency;
-
-    return highestNote;
+    if (highestNoteResult < userFrequency)
+      setHighestNoteResult(userFrequency);
   }
 
   return (

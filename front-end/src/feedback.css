@@ -76,10 +76,6 @@
   margin-left: 300px;
 }
 
-.detail_link:hover {
-  text-decoration: underline; /* 마우스 오버 시 밑줄 추가 */
-}
-
 .part_score {
   margin-bottom: 20px;
 }
@@ -115,4 +111,34 @@
 
 .wrong_part:hover {
   transform: translateY(-10px);
+}
+
+/* feedback.css */
+
+/* Loading overlay styles */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Make sure it stays on top */
+}
+
+.loading-message {
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  background-color: rgba(0, 0, 0, 0.75); /* Dark background for the message box */
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.chart_img {
+  margin-top: 60px;
+  margin-bottom: 95px;
 }

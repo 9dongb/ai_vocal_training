@@ -131,7 +131,7 @@ function FeedbackChart() {
               {showTuneChart ? (
                 <Chart options={tuneChartData.options} series={tuneChartData.series} type="line" width={500} height={350} />
               ) : (
-                <img src={tuneGraphSrc} alt="음정 그래프" width={500} height={350} />
+                <img className="chart_img" src={tuneGraphSrc} alt="음정 그래프" width={530} height={210} />
               )}
             </div>
             <div>
@@ -154,7 +154,7 @@ function FeedbackChart() {
               {showBeatChart ? (
                 <Chart options={beatChartData.options} series={beatChartData.series} type="line" width={500} height={350} />
               ) : (
-                <img src={beatGraphSrc} alt="박자 그래프" width={500} height={350} />
+                <img className="chart_img" src={beatGraphSrc} alt="박자 그래프" width={530} height={210} />
               )}
             </div>
             <div>

@@ -1,40 +1,87 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./feedback.css";
 import "./common/root.css";
 import Footer from "./common/Footer";
-import { Link } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 function Feedback() {
   const location = useLocation();
-  
-  // location.state로 전달된 값을 받습니다.
   const { songTitle, artist, imagePath } = location.state || {
     songTitle: "기본 제목",
     artist: "기본 가수",
     imagePath: "./img/songs/default.png", // 기본 이미지 경로
   };
 
+  const [scores, setScores] = useState({
+    total_score: 0,
+    pitch_score: 0,
+    beat_score: 0,
+    pronunciation_score: 0,
+    mistakes: [], // 틀린 구간 (mistakes)
+  });
+
+  const [loading, setLoading] = useState(true); // Loading state to show/hide the overlay
+
+  useEffect(() => {
+    // Fetch vocal analysis data from the backend
+    const fetchScores = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/vocal_analysis", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
+        const data = await response.json();
+        // Map the response to the state
+        console.log("결과값 정보", data);
+        setScores({
+          total_score: data["종합 점수"].toFixed(2),
+          pitch_score: data["음정 점수"].toFixed(2),
+          beat_score: data["박자 점수"].toFixed(2),
+          pronunciation_score: data["발음 점수"].toFixed(2),
+          mistakes: data["틀린 구간 초(시작, 끝)"] || [],
+        });
+        setLoading(false); // Stop loading after data is fetched
+      } catch (error) {
+        console.error("Error fetching vocal analysis:", error);
+        setLoading(false); // Stop loading in case of error as well
+      }
+    };
+
+    fetchScores();
+  }, []);
+
   return (
     <div className="body">
+      {/* Loading overlay */}
+      {loading && (
+        <div className="loading-overlay">
+          <div className="loading-message">
+            <p>점수 계산 중...</p>
+          </div>
+        </div>
+      )}
+
       <div className="container">
         <div className="feedback">
           <div className="header_title">평가노래</div>
           <div className="feedback_song_info feedback_component">
             <div>
-<div className="feedback_song_info_songname feedback_header">{songTitle}</div>
+              <div className="feedback_song_info_songname feedback_header">{songTitle}</div>
               <div className="feedback_song_info_singer feedback_text">{artist}</div>
             </div>
 
             <div className="feedback_song_info_container">
-<img className="feedback_song_info_img" src={imagePath} alt={songTitle} />  
+              <img className="feedback_song_info_img" src={imagePath} alt={songTitle} />
             </div>
           </div>
 
           <div className="header_title">종합 점수</div>
           <div className="feedback_final_score feedback_component">
             <div>
-              <div className="feedback_header">97.28</div>
+              <div className="feedback_header">{scores.total_score}점</div>
               <div className="feedback_text">좋은 점수네요! 축하드립니다</div>
             </div>
           </div>
@@ -42,49 +89,63 @@ function Feedback() {
           <div className="header_section">
             <div className="header_title part_score">파트 점수</div>
             <div className="detail_label">
-            <Link
-              to={{pathname: "/feedbackChart",state: { songTitle: songTitle, artist: artist, imagePath: imagePath },}}
-              className="detail_link">자세히 보기
-            </Link>
+              <Link to={{ pathname: "/feedbackChart", state: { songTitle, artist, imagePath } }} className="detail_link">
+                자세히 보기
+              </Link>
             </div>
           </div>
+
           <div className="grow_component">
             <div className="grow_component_1">
               <img src=".\img\key.png" alt="음정 아이콘"></img>
               <br />
               음정
               <br />
-              <div className="key_score">71점</div>
+              <div className="key_score">{scores.pitch_score}점</div>
             </div>
             <div className="grow_component_1">
               <img src=".\img\beat.png" alt="박자 아이콘"></img>
               <br />
               박자
               <br />
-              <div className="beat_score">83점</div>
+              <div className="beat_score">{scores.beat_score}점</div>
             </div>
             <div className="grow_component_1">
               <img src=".\img\pronun.png" alt="발음 아이콘"></img>
               <br />
               발음
               <br />
-              <div className="pronun_score">78점</div>
+              <div className="pronun_score">{scores.pronunciation_score}점</div>
             </div>
           </div>
 
           <Link to="/wrongPart">
-          <div className="header_title">틀린구간</div>
-          <div className="wrong_part feedback_component">
-            <div>
-              <div className="feedback_header">확인 및 연습</div>
-              <div className="feedback_text">부족한 부분을 다시 연습해보세요</div>
+            <div className="header_title">틀린 구간</div>
+            <div className="wrong_part feedback_component">
+              <div>
+                <div className="feedback_header">확인 및 연습</div>
+                <div className="feedback_text">부족한 부분을 다시 연습해보세요</div>
+              </div>
             </div>
-          </div>
           </Link>
+
+          {/* 틀린구간 출력하는 임시 코드 틀린구간 페이지로 넘겨줘야할 값 
+          {scores.mistakes.length > 0 && (
+            <div className="mistakes_section">
+              <h3>틀린 구간:</h3>
+              {scores.mistakes.map((mistake, index) => (
+                <div key={index}>
+                  시작: {mistake[0]}초, 끝: {mistake[1]}초
+                </div>
+              ))}
+            </div>
+          )}
+            */}
         </div>
         <Footer activeTab="training" />
       </div>
- </div>
+    </div>
   );
 }
+
 export default Feedback;

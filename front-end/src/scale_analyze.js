@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./scale_analyze.css";
 import "./common/root.css";
 import "./main.css";
@@ -59,11 +59,9 @@ function ScaleAnalyze() {
   const [noteMessage, setNoteMessage] = useState(""); // 텍스트창 메세지
   const [isRecording, setIsRecording] = useState(false);
 
-  const [highestNoteResult, setHighestNoteResult] = useState(null);
+  const highestNoteRef = useRef(null);
 
   // console.log("초기 noteIndex : ", noteIndex);
-
-  const [isPlaying, setIsPlaying] = useState(false); // 재생 상태
 
   // 주어진 주파수의 음을 재생하는 함수
   function playTone(frequency, duration) {
@@ -171,7 +169,6 @@ function ScaleAnalyze() {
       };
 
       mediaRecorder.start();
-      setIsPlaying(true);
       console.log("녹음 시작");
       setTimeout(() => {
         mediaRecorder.stop();
@@ -179,7 +176,6 @@ function ScaleAnalyze() {
 
       mediaRecorder.onstop = () => {
         setIsRecording(false);
-        setIsPlaying(false);
         console.log("녹음 끝");
 
         const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
@@ -189,7 +185,6 @@ function ScaleAnalyze() {
     } catch (error) {
       console.error("녹음 중 오류 발생 : ", error);
       setIsRecording(false);
-      setIsPlaying(false);
     }
   };
 
@@ -214,10 +209,10 @@ function ScaleAnalyze() {
       console.log("음역대 결과 : ", result.frequency);
       const closestNote = findClosestNote(result.frequency);
       findHighestNote(result.frequency);
-      const highestNote = findClosestNote(highestNoteResult);
+      const highestNote = findClosestNote(highestNoteRef.current);
 
       if (closestNote) {
-        const message = `사용자의 주파수: ${result.frequency} Hz\n현재 음역대: ${closestNote.info}\n\n\n\n 최고 음역대: ${highestNote.info}`;
+        const message = `사용자의 주파수: ${result.frequency} Hz\n현재 음역대: ${closestNote.info}\n\n\n\n\n\n 최고 음역대: ${highestNote.info}`;
         setNoteMessage(message);
       }
 
@@ -245,7 +240,9 @@ function ScaleAnalyze() {
 
   // 최고 주파수를 찾는 함수
   const findHighestNote = (userFrequency) => {
-    if (highestNoteResult < userFrequency) setHighestNoteResult(userFrequency);
+    if (!highestNoteRef.current || highestNoteRef.current < userFrequency) {
+      highestNoteRef.current = userFrequency; // 최고 주파수 업데이트
+    }
   };
 
   return (
@@ -302,8 +299,8 @@ function ScaleAnalyze() {
             </div>
 
             <div className="sa_btn sa_playing_btn" onClick={recordAudio}>
-              <img src={isPlaying ? "/img/pausebtn.png" : "/img/playbtn.png"} style={{ width: "40px" }} alt="Play or Pause Button" />
-              <p>{isPlaying ? "녹음중" : "시작"}</p>
+              <img src={isRecording ? "/img/pausebtn.png" : "/img/playbtn.png"} style={{ width: "40px" }} alt="Play or Pause Button" />
+              <p>{isRecording ? "녹음중" : "시작"}</p>
             </div>
             <div className="sa_btn sa_playing_btn piano_octave_arrow" onClick={upOctaveList}>
               <img src="./img/arrowR.png" style={{ width: "30px", height: "35px", marginBottom: "5px" }} />

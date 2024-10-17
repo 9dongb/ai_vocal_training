@@ -163,6 +163,7 @@
   font-weight: bold;
   color: #525252;
   margin-bottom: 10px;
+  white-space: pre-line;
 }
 .octave_area {
   margin-bottom: 10px;

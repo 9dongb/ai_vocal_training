@@ -166,8 +166,9 @@ def range_check():
     frequency = round(float(extract_pitch(file_path)), 2)
     return jsonify({'frequency': frequency})
 
+
 @app.route("/uploads/tone", methods=["GET", "POST"])
-def tone_check():
+def ai_tone():
     file_path = save_uploaded_file(request, app.config["TONE_UPLOAD_FOLDER"], 'user_tone.wav')
     if isinstance(file_path, tuple):
         return file_path  # 에러 응답 처리
@@ -175,15 +176,24 @@ def tone_check():
     va = VocalAnalysis()
     tone = va.tone_classification()['label']
     
-    test_list = {'발라드':['안아줘', '너였다면', '밤편지'],
-                 '댄스':['Supernova', '마지막처럼', 'Magnetic'],
-                 '락':['사랑, 결코 시들지 않는', '나는 나비', '매일 매일 기다려'],
-                 '트로트':['아모르파티', '어머나', '찐이야']}
-    
-    recommend = random.choice(test_list[tone])
-    
+    # 곡과 아티스트를 튜플로 저장
+    test_list = {
+        '발라드': [('안아줘', '정준일', './img/songs/cover_hug_Circle_big.png'), ('너였다면', '정승환', './img/songs/cover_if_it_is_you.png'), 
+                    ('밤편지', '아이유', './img/songs/cover_letter_at_night.png')],
+        '댄스': [('Supernova', 'aespa', './img/songs/cover_supernova.png'), ('마지막처럼', 'BLACKPINK', './img/songs/cover_last_Circle_big.png'),
+                    ('Magnetic', '아일릿', './img/songs/cover_magnetic.png')],
+        '락': [('사랑, 결코 시들지 않는', '서문탁', './img/songs/cover_love_never.png'), ('나는 나비', 'YB', './img/songs/cover_im_butterfly.png'),
+                    ('매일 매일 기다려', '티삼스', './img/songs/cover_every_wait.png')],
+        '트로트': [('아모르파티', '김연자', './img/songs/cover_amorparty.png'), ('어머나', '장윤정', './img/songs/cover_oops.png'),
+                    ('찐이야', '영탁', './img/songs/cover_jjin_Circle_big.png')]
+    }
 
-    return jsonify({'result': tone, 'recommend': recommend})
+    # 해당 음색의 곡과 아티스트 랜덤 선택
+    recommend, artist, image = random.choice(test_list[tone])
+    
+    print(tone, recommend, artist, image)
+    return jsonify({'result': tone, 'recommend': recommend, 'artist': artist, 'image': image})
+
 
 @app.route("/my_page", methods=["GET", "POST"])
 def my_page():

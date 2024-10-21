@@ -21,6 +21,8 @@ function FeedbackChart() {
   // 각 차트에 대한 평가 결과 상태
   const [tuneFeedbackLevel, setTuneFeedbackLevel] = useState(1); // 1: 좋습니다, 2: 보통입니다, 3: 부족합니다
   const [beatFeedbackLevel, setBeatFeedbackLevel] = useState(3); // 1: 좋습니다, 2: 보통입니다, 3: 부족합니다
+  const [artistData, setartistData] = useState([]);
+  
 
   const [tuneChartData, setTuneChartData] = useState({
     series: [

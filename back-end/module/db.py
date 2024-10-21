@@ -5,11 +5,11 @@ import pymysql
 # DATABASE_PASSWORD = ""
 
 DATABASE_DB = "singking_db"
-DATABASE_PORT = 3307
+DATABASE_PORT = 3306
 
 DATABASE_HOST = "localhost"
 DATABASE_USER = "root"
-DATABASE_PASSWORD = "011129"
+DATABASE_PASSWORD = "1541"
 
 # Database 클래스는 MySQL 데이터베이스와 연결을 담당
 class Database:
@@ -53,11 +53,14 @@ class Database:
             return {'message':'fail'}
         
        
-    def get_user_name(self, user_id):
+    def get_user_info(self, user_id):
         try:
-            SQL = 'SELECT user_name FROM singking_db.user_info WHERE user_id = %s'
+            print(user_id)
+            SQL = 'SELECT user_name, user_tone, user_level, user_membership FROM singking_db.user_info WHERE user_id = %s'
             self.cursor.execute(SQL, (user_id,))
             data = self.cursor.fetchone()
+            print(data, '이거 유저 인포임')
+
             return data
         except Exception as e:
             return {'message': 'error', 'error': str(e)}
@@ -71,6 +74,19 @@ class Database:
             self.cursor.execute(SQL, (user_id, 0, 80.25, 50.25, 70.25))
             self.conn.commit()
             return {'status':'success'}
+        except:
+            return {'message':'fail'}
+    def get_vocal_data(self, user_id):
+        try:
+            SQL = '''SELECT pitch_score, beat_score, pronunciation_score 
+            FROM singking_db.user_scores 
+            WHERE user_id = %s
+            '''
+
+            self.cursor.execute(SQL, (user_id, ))
+            data = self.cursor.fetchone()
+
+            return data
         except:
             return {'message':'fail'}
         

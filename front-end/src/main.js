@@ -72,6 +72,7 @@ function ProgressComparison({ title, lastWeekValue, latestValue }) {
 // Main 컴포넌트 정의
 function Main() {
   const [rankingData, setRankingData] = useState([]);
+  
   const [userData, setUserData] = useState({
     level: 0,
     pitch: 0,

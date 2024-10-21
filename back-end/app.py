@@ -52,11 +52,23 @@ def index():
     print(session['user_id'])
     if session['user_id']:
         weekly_data = db.get_weekly_ranking()
+        user_data = db.get_user_info(session['user_id'])
+        user_vocal_data = db.get_vocal_data(session['user_id'])
 
-        return jsonify({'status':'success', 'data':weekly_data}), 200
+        pitch_score = user_vocal_data['pitch_score']
+        print(pitch_score)
+        beat_score = user_vocal_data['beat_score']
+        pronunciation_score = user_vocal_data['pronunciation_score']
+
+        session['user_tone'] = user_data['user_tone']
+        session['user_level'] = user_data['user_level']
+
+        print(user_vocal_data)
+        return jsonify({'status':'success', 'data':weekly_data,
+                        'pitch_score':pitch_score, 'beat_score':beat_score,
+                        'pronunciation_score':pronunciation_score}), 200
     else:
         return jsonify({'status':'fail', 'message':'로그인 상태가 아닙니다.'}), 404
-
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -67,7 +79,7 @@ def login():
 
         return db.db_login(session['user_id'], session['user_password'])
     return jsonify({"message": "로그인 에러"}), 400
-from flask import jsonify
+
 
 @app.route('/logout', methods=['POST'])
 def logout():
@@ -91,11 +103,12 @@ def register():
 @app.route('/get_user_name', methods=['GET'])
 def get_user_name():
     # Fetch user_id from session
-    user_id = session.get('user_id')
 
-    if user_id:
-        # Assuming you have a function to fetch user data by user_id
-        user_data = db.get_user_name(user_id)  # Replace with your database logic
+
+    if session['user_id']:
+        user_data = db.get_user_info(session['user_id'])  # Replace with your database logic
+        print(user_data)
+
         if user_data:
             return jsonify({'status': 'success', 'user_name': user_data['user_name']})
         else:
@@ -140,21 +153,24 @@ def training():
 @app.route("/vocal_analysis", methods=["GET", "POST"])
 def vocal_analysis():
     va = VocalAnalysis(session['artist'], session['title'])
-    pitch_score, wrong_segments = va.pitch_comparison()
+    pitch_score, wrong_segments, artist_resampled, user_resampled = va.pitch_comparison()
     wrong_lyrics, _ = va.find_incorrect()
     beat_score = round(va.score_cover()['accuracy'], 2)
     pronunciation_score = va.pronunciation_score() or 0.0
 
     total_score = (pitch_score+beat_score+pronunciation_score)/3
     db.vocal_data(session['user_id'], 0, 80.25, 50.25, 70.25)
-
+    
+    print(artist_resampled)
     return jsonify({
         '종합 점수': total_score,
         '음정 점수': pitch_score,
         '박자 점수': beat_score,
         '발음 점수': pronunciation_score,
         '틀린 구간 초(시작, 끝)': wrong_segments,
-        '틀린 가사': wrong_lyrics
+        '틀린 가사': wrong_lyrics,
+        'artist_resampled':artist_resampled,
+         'user_resampled':user_resampled
     })
 
 @app.route("/range_check", methods=["GET", "POST"])

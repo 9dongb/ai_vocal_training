@@ -151,7 +151,7 @@ class VocalAnalysis:
 
         correct_score = round((np.sum(result=='Correct') / len(result))*100, 2)
 
-        return correct_score, resampled_wrong_segments
+        return correct_score, resampled_wrong_segments, artist_resampled, user_resampled
 
     def find_wrong_segments(self, result, status=0):                        # 틀린 구간 시작점과 끝점 찾는 함수 (2초를 초과하여 틀렸을 경우만)
         wrong_segments = []

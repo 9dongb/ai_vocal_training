@@ -1,64 +1,68 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import "./immediate_feedback_analyze.css";
 import "./wrongPart.css";
 import "./common/root.css";
 import Footer from "./common/Footer";
 
 const WrongPart = () => {
-  const [wrongParts, setWrongParts] = useState([]); // 틀린 구간 데이터를 저장할 상태
-  const [currentAudio, setCurrentAudio] = useState(null); // 현재 재생 중인 오디오
-  const [currentTime, setCurrentTime] = useState(0); // 멈춘 시간 저장
-  const [isPlaying, setIsPlaying] = useState([]); // 재생 상태 관리
-
-  // 서버에서 틀린 구간 데이터를 가져오는 함수
-  const fetchWrongSegments = async () => {
-    try {
-      const response = await fetch("http://localhost:5000/wrong_segments", {
-        method: "GET",
-      });
-      const data = await response.json();
-
-      // 틀린 구간 정보를 상태에 저장
-      const newWrongParts = data.wrong_file.map((file, index) => ({
-        imgSrc: `img/songs/cover_${index + 1}.png`, // 이미지를 인덱스에 맞춰 설정 (임시로 1, 2, 3 등)
-        songName: "노래 제목", // 서버에서 받아온 값을 넣을 수도 있음
-        partName: `파트 ${index + 1}`,
-        audioSrc: `/assets/audio/artist/vocal/${file}`, // 서버에서 받은 오디오 파일 경로 사용
-      }));
-      setWrongParts(newWrongParts);
-      setIsPlaying(new Array(newWrongParts.length).fill(false)); // 재생 상태 초기화
-    } catch (error) {
-      console.error("Error fetching wrong segments:", error);
-    }
+  const location = useLocation();
+  const { songTitle, artist, imagePath, mistakes } = location.state || {
+    songTitle: "기본 제목",
+    artist: "기본 가수",
+    imagePath: "./img/songs/default.png",
+    mistakes: [],
   };
 
-  useEffect(() => {
-    fetchWrongSegments();
-  }, []);
+  // 오디오 파일 경로
+  const audioFilePath = `./mr/${artist}-${songTitle}.wav`;
+
+  const [currentAudio, setCurrentAudio] = useState(null); // 현재 재생 중인 오디오
+  const [currentTimes, setCurrentTimes] = useState(
+    new Array(mistakes.length).fill(0)
+  ); // 각 구간별로 멈춘 시간 저장
+  const [isPlaying, setIsPlaying] = useState(
+    new Array(mistakes.length).fill(false)
+  ); // 각 구간의 재생 상태 관리
 
   const togglePlayPause = (index) => {
     if (isPlaying[index]) {
       // 재생 중이면 일시정지
       currentAudio.pause();
-      setCurrentTime(currentAudio.currentTime); // 현재 재생 시간을 저장
+      const newCurrentTimes = [...currentTimes];
+      newCurrentTimes[index] = currentAudio.currentTime; // 현재 재생 시간을 저장
+      setCurrentTimes(newCurrentTimes);
       setCurrentAudio(null);
       updateIsPlaying(index, false);
     } else {
-      // 재생하지 않는 상태에서 새로 재생
+      // 다른 구간이 재생 중이면 멈춤
       if (currentAudio) {
-        currentAudio.pause(); // 다른 오디오 정지
+        currentAudio.pause();
       }
 
-      const newAudio = new Audio(wrongParts[index].audioSrc);
-      newAudio.currentTime = currentTime; // 멈춘 부분부터 재생
+      const newAudio = new Audio(audioFilePath); // 동일한 오디오 파일 사용
+
+      // 특정 구간부터 재생
+      newAudio.currentTime = mistakes[index][0]; // 시작 시간 설정
+
       setCurrentAudio(newAudio);
       newAudio.play();
       updateIsPlaying(index, true);
 
-      // 오디오가 종료되면 상태 초기화
+      // 오디오가 종료되거나 구간이 끝나면 상태 초기화
+      newAudio.ontimeupdate = () => {
+        if (newAudio.currentTime >= mistakes[index][1]) {
+          newAudio.pause(); // 끝 구간에서 일시정지
+          updateIsPlaying(index, false);
+          setCurrentAudio(null);
+        }
+      };
+
       newAudio.onended = () => {
         updateIsPlaying(index, false);
-        setCurrentTime(0);
+        const newCurrentTimes = [...currentTimes];
+        newCurrentTimes[index] = 0; // 끝나면 다시 처음으로 초기화
+        setCurrentTimes(newCurrentTimes);
         setCurrentAudio(null);
       };
     }
@@ -66,18 +70,20 @@ const WrongPart = () => {
 
   // 상태 초기화 함수
   const updateIsPlaying = (index, playing) => {
-    const newIsPlaying = new Array(wrongParts.length).fill(false);
+    const newIsPlaying = new Array(mistakes.length).fill(false);
     if (playing) {
       newIsPlaying[index] = true;
     }
     setIsPlaying(newIsPlaying);
   };
 
-  // 정지 버튼 눌렀을 때 (맨 처음으로 돌아가기)
+  // 정지 버튼을 눌렀을 때(맨 처음으로 돌아가기)
   const handlePauseClick = (index) => {
     if (currentAudio) {
       currentAudio.pause();
-      setCurrentTime(0); // 항상 재생 위치를 처음으로 초기화
+      const newCurrentTimes = [...currentTimes];
+      newCurrentTimes[index] = 0; // 항상 재생 위치를 처음으로 초기화
+      setCurrentTimes(newCurrentTimes);
       setCurrentAudio(null); // 현재 오디오를 null로 설정
       updateIsPlaying(index, false);
     }
@@ -97,14 +103,14 @@ const WrongPart = () => {
       <div className="container">
         <div className="song_container">
           <div className="header_title">틀린 구간</div>
-          {wrongParts.map((part, index) => (
+          {mistakes.map((segment, index) => (
             <div key={index} className="wrong_part_container">
               <div className="song_img">
-                <img src={part.imgSrc} alt={part.songName} />
+                <img src={imagePath} alt={songTitle} />
               </div>
               <div>
-                <div className="wrong_name">{part.songName}</div>
-                <div className="wrong_artist">{part.partName}</div>
+                <div className="wrong_name">{songTitle}</div>
+                <div className="wrong_artist">{artist} - 파트 {index + 1}</div>
               </div>
 
               <div className="wrong_play_Btn">
@@ -115,13 +121,17 @@ const WrongPart = () => {
                   alt={isPlaying[index] ? "stop" : "play"}
                   onClick={() => togglePlayPause(index)}
                 />
-                {/* pause 버튼 */}
+                {/* 정지 버튼 */}
                 <img
                   className="wrong_pause_img"
-                  src="/img/pausebtn.png"
+                  src={"/img/pausebtn.png"}
                   alt="pause"
                   onClick={() => handlePauseClick(index)}
                 />
+              </div>
+              {/* 틀린 구간 정보 */}
+              <div className="wrong_segment">
+                구간: {segment[0]}초 ~ {segment[1]}초
               </div>
             </div>
           ))}

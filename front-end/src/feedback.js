@@ -126,7 +126,10 @@ function Feedback() {
             </div>
           </div>
 
-          <Link to="/wrongPart">
+          <Link to="/wrongPart"
+            state={{ songTitle, artist, imagePath, mistakes: scores.mistakes }} // 틀린 구간도 전달
+            className="detail_link"
+          >
             <div className="header_title">틀린 구간</div>
             <div className="wrong_part feedback_component">
               <div>

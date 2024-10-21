@@ -1,11 +1,12 @@
 import os
+import random
 from module.db import Database
 from flask import Flask, request, session, jsonify, redirect
 from flask_cors import CORS
 from module.vocal_analysis import VocalAnalysis
 from module.range_check import extract_pitch
+from module.pitch_shift import change_pitch_without_speed
 
-import random
 
 # Flask 앱 초기화 및 설정
 app = Flask(__name__)
@@ -229,9 +230,13 @@ def pitch_change():
         if pitch is None:
             return jsonify({"error": "Pitch value is missing"}), 400
         
+        file_name = f"{session['artist']}-{session['title']}"
+
         pitch = int(pitch)
-        print(f"음정을 {pitch}해주세요")
-        
+        if pitch!=0:
+            print(f"음정을 {pitch}해주세요")
+            change_pitch_without_speed(file_name, pitch, 0)
+            change_pitch_without_speed(file_name, pitch, 1)
         return jsonify({
             "message": "Pitch value received successfully",
             "pitch": pitch

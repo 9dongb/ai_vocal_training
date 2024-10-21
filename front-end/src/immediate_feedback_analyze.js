@@ -64,6 +64,7 @@ function Immediate_feedback_analyze() {
 
   const [lyrics, setLyrics] = useState([]); // 가사 데이터 상태
   const [currentLyricIndex, setCurrentLyricIndex] = useState(0); // 현재 하이라이팅할 가사 인덱스
+  const lyricRefs = useRef([]);
 
   // 백엔드에서 가사 파일을 불러오는 함수
   const fetchLyrics = async () => {
@@ -74,8 +75,8 @@ function Immediate_feedback_analyze() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          songTitle: songTitle, // 선택된 노래 제목
-          artist: artist, // 선택된 가수명
+          songTitle: songTitle,  // 선택된 노래 제목
+          artist: artist        // 선택된 가수명
         }),
         credentials: "include",
       });
@@ -98,12 +99,23 @@ function Immediate_feedback_analyze() {
     const currentTime = audioRef.current.currentTime;
 
     // 현재 재생 시간에 맞는 가사를 찾기
-    const currentIndex = lyrics.findIndex((lyric, index) => currentTime >= lyric[0] && (index === lyrics.length - 1 || currentTime < lyrics[index + 1][0]));
+    const currentIndex = lyrics.findIndex(
+      (lyric, index) =>
+        currentTime >= lyric[0] &&
+        (index === lyrics.length - 1 || currentTime < lyrics[index + 1][0])
+    );
 
     if (currentIndex !== -1 && currentIndex !== currentLyricIndex) {
       setCurrentLyricIndex(currentIndex);
+    // 현재 가사로 스크롤
+    if (lyricRefs.current[currentIndex]) {
+      lyricRefs.current[currentIndex].scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
     }
-  };
+  }
+};
 
   // 오디오 재생 및 녹음 시작
   const handleStart = async () => {
@@ -195,8 +207,9 @@ function Immediate_feedback_analyze() {
           imagePath: imagePath,
         },
       });
-    }
+    } 
   };
+
 
   // 서버로 녹음된 파일 전송 함수
   const uploadToServer = async (blob) => {
@@ -239,8 +252,12 @@ function Immediate_feedback_analyze() {
                 <span>Lyrics</span>
               </div>
               <div className="lyrics_text">
-                {lyrics.map((lyric, index) => (
-                  <p key={index} className={index === currentLyricIndex ? "highlighted-lyric" : ""}>
+              {lyrics.map((lyric, index) => (
+                  <p
+                    key={index}
+                    ref={(el) => (lyricRefs.current[index] = el)} // 각 가사 요소에 ref 할당
+                    className={index === currentLyricIndex ? "highlighted-lyric" : ""}
+                  >
                     {lyric[1]} {/* 가사 텍스트 */}
                   </p>
                 ))}
@@ -250,7 +267,11 @@ function Immediate_feedback_analyze() {
             <div className="btn_container">
               {/* Play 버튼: 녹음 시작 또는 재개 */}
               <div className="playbtn_container">
-                <img src={isPlaying ? "/img/stopbtn.png" : "/img/playbtn.png"} alt="Play or Pause Button" onClick={isPlaying ? handlePause : handleStart} />
+                <img
+                  src={isPlaying ? "/img/stopbtn.png" : "/img/playbtn.png"}
+                  alt="Play or Pause Button"
+                  onClick={isPlaying ? handlePause : handleStart}
+                />
                 <p className="btn_text">{isPlaying ? "일시정지" : isPaused ? "재개" : "재생"}</p>
               </div>
 
@@ -272,6 +293,7 @@ function Immediate_feedback_analyze() {
               preload="auto"
               onTimeUpdate={handleTimeUpdate} // 오디오 재생 시간 업데이트 핸들러 등록
             />
+            
           </div>
           {showToneAdjuster && <Training_Tone onPitchChange={handlePitchChange} />}
           {showSplash && <Training_Splash onFinish={handleSplashFinish} />}

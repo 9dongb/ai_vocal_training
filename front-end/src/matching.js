@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Footer from "./common/Footer";
 import "./common/root.css";
 import "./main.css";
+
 const Matching = () => {
   const [userData, setUserData] = useState({
     level: 0,
@@ -11,33 +12,33 @@ const Matching = () => {
   });
 
   const [userName, setUserName] = useState("게스트");
-  useEffect(() => {
-    // Fetch vocal data
-    fetch("http://localhost:5000/my_page")
-      .then((response) => response.json())
-      .then((data) => {
-        setUserData(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching vocal data:", error);
-      });
 
-    fetch("http://localhost:5000/get_user_name", {
+  useEffect(() => {
+    // Fetch vocal data and user name from index endpoint
+    fetch("http://localhost:5000/index", {
       method: "GET",
-      credentials: "include", // This is crucial to send cookies (session ID)
+      credentials: "include", // Include session credentials
     })
       .then((response) => response.json())
       .then((data) => {
         if (data.status === "success") {
-          setUserName(data.user_name); // Set the user name state
+          // Update user data and user name
+          setUserData({
+            level: data.user_level || 0,
+            pitch: data.pitch_score || 0,
+            beat: data.beat_score || 0,
+            tone: data.user_tone || "진단필요",
+          });
+          setUserName(data.user_name || "게스트");
         } else {
-          console.error("Failed to fetch user name");
+          console.error("Failed to fetch user data");
         }
       })
       .catch((error) => {
-        console.error("Error fetching user name:", error);
+        console.error("Error fetching user data:", error);
       });
   }, []);
+
   return (
     <div className="body">
       <div className="container">

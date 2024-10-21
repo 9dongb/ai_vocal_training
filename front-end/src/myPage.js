@@ -6,7 +6,7 @@ import "./main.css";
 
 const MyPage = () => {
   const [userData, setUserData] = useState({
-    level: 0,
+    level: 5,
     pitch: 0,
     beat: 0,
     tone: "진단필요",
@@ -27,18 +27,26 @@ const MyPage = () => {
         console.error("Error fetching vocal data:", error);
       });
 
-    fetch("http://localhost:5000/get_user_name", {
-      method: "GET",
-      credentials: "include", // This is crucial to send cookies (session ID)
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.status === "success") {
-          setUserName(data.user_name); // Set the user name state
-        } else {
-          console.error("Failed to fetch user name");
-        }
+      fetch("http://localhost:5000/index", {
+        method: "GET",
+        credentials: "include", // Include session credentials
       })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.status === "success") {
+            // Update user data from the response
+            setUserData({
+              level: 5,
+              pitch: data.pitch_score,
+              beat: data.beat_score,
+              tone: data.user_tone,
+            });
+            // Set user name
+            setUserName(data.user_name);
+          } else {
+            console.error("Failed to fetch user data");
+          }
+        })
       .catch((error) => {
         console.error("Error fetching user name:", error);
       });

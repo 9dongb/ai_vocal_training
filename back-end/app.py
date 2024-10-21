@@ -56,8 +56,9 @@ def index():
         user_data = db.get_user_info(session['user_id'])
         user_vocal_data = db.get_vocal_data(session['user_id'])
 
+        print(user_data)
+
         pitch_score = user_vocal_data['pitch_score']
-        print(pitch_score)
         beat_score = user_vocal_data['beat_score']
         pronunciation_score = user_vocal_data['pronunciation_score']
 
@@ -67,10 +68,14 @@ def index():
         print(user_vocal_data)
         return jsonify({'status':'success', 'data':weekly_data,
                         'pitch_score':pitch_score, 'beat_score':beat_score,
-                        'pronunciation_score':pronunciation_score}), 200
+                        'pronunciation_score':pronunciation_score,
+                        'user_tone':session['user_tone'],
+                        'user_level':session['user_level'],
+                        'user_name':user_data['user_name']
+                        }), 200
     else:
         return jsonify({'status':'fail', 'message':'로그인 상태가 아닙니다.'}), 404
-
+    
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -101,21 +106,6 @@ def register():
         return db.db_register(user_id, user_name, user_age, user_gender, user_pw)
     return jsonify({"message": "회원가입 에러"}), 400
 
-@app.route('/get_user_name', methods=['GET'])
-def get_user_name():
-    # Fetch user_id from session
-
-
-    if session['user_id']:
-        user_data = db.get_user_info(session['user_id'])  # Replace with your database logic
-        print(user_data)
-
-        if user_data:
-            return jsonify({'status': 'success', 'user_name': user_data['user_name']})
-        else:
-            return jsonify({'status': 'fail', 'message': 'User not found'}), 404
-    else:
-        return jsonify({'status': 'fail', 'message': 'User not logged in'}), 401
 
 @app.route("/uploads", methods=["GET", "POST"])
 def upload():

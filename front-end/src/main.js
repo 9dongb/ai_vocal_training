@@ -90,6 +90,17 @@ function Main() {
       }
       const data = await response.json();
       setRankingData(data.data);
+
+      //서버에서 가져온 userName 설정
+      if(data.user_name){
+        setUserName(data.user_name);
+      }
+
+      //서버에서 가져온 user_tone
+      if(data.user_tone){
+        setUserData({tone:data.user_tone});
+      }
+
     } catch (error) {
       console.error("Error fetching weekly ranking data:", error);
     }
@@ -109,22 +120,22 @@ function Main() {
         console.error("Error fetching vocal data:", error);
       });
 
-    fetch("http://localhost:5000/get_user_name", {
-      method: "GET",
-      credentials: "include", // This is crucial to send cookies (session ID)
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.status === "success") {
-          console.log(data);
-          setUserName(data.user_name); // Set the user name state
-        } else {
-          console.error("Failed to fetch user name");
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching user name:", error);
-      });
+    // fetch("http://localhost:5000/get_user_name", {
+    //   method: "GET",
+    //   credentials: "include", // This is crucial to send cookies (session ID)
+    // })
+    //   .then((response) => response.json())
+    //   .then((data) => {
+    //     if (data.status === "success") {
+    //       console.log(data);
+    //       setUserName(data.user_name); // Set the user name state
+    //     } else {
+    //       console.error("Failed to fetch user name");
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error fetching user name:", error);
+    //   });
   }, []);
 
   return (

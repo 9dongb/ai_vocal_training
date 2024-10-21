@@ -58,23 +58,45 @@ def index():
 
         print(user_data)
 
-        pitch_score = user_vocal_data['pitch_score']
-        beat_score = user_vocal_data['beat_score']
-        pronunciation_score = user_vocal_data['pronunciation_score']
+        # user_vocal_data가 여러 개의 항목을 가진 리스트라고 가정하고, 7일 전과 최신 데이터를 구분
+        if len(user_vocal_data) > 1:
+            last_week_vocal_data = user_vocal_data[0]  # 7일 전 점수 (리스트의 첫 번째 항목)
+            latest_vocal_data = user_vocal_data[-1]  # 최신 점수 (리스트의 마지막 항목)
+        else:
+            last_week_vocal_data = latest_vocal_data = user_vocal_data[0]  # 데이터가 하나라면 동일한 값으로 처리
+
+        # 최신 점수
+        pitch_score = latest_vocal_data['pitch_score']
+        beat_score = latest_vocal_data['beat_score']
+        pronunciation_score = latest_vocal_data['pronunciation_score']
+
+        # 7일 전 점수
+        last_week_pitch = last_week_vocal_data['pitch_score']
+        last_week_beat = last_week_vocal_data['beat_score']
+        last_week_pronunciation = last_week_vocal_data['pronunciation_score']
 
         session['user_tone'] = user_data['user_tone']
         session['user_level'] = user_data['user_level']
 
         print(user_vocal_data)
-        return jsonify({'status':'success', 'data':weekly_data,
-                        'pitch_score':pitch_score, 'beat_score':beat_score,
-                        'pronunciation_score':pronunciation_score,
-                        'user_tone':session['user_tone'],
-                        'user_level':session['user_level'],
-                        'user_name':user_data['user_name']
-                        }), 200
+
+        # 7일 전 점수와 최신 점수를 모두 반환
+        return jsonify({
+            'status':'success',
+            'data':weekly_data,
+            'pitch_score': pitch_score,
+            'beat_score': beat_score,
+            'pronunciation_score': pronunciation_score,
+            'last_week_pitch': last_week_pitch,
+            'last_week_beat': last_week_beat,
+            'last_week_pronunciation': last_week_pronunciation,
+            'user_tone': session['user_tone'],
+            'user_level': session['user_level'],
+            'user_name': user_data['user_name']
+        }), 200
     else:
         return jsonify({'status':'fail', 'message':'로그인 상태가 아닙니다.'}), 404
+
     
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -151,6 +173,13 @@ def vocal_analysis():
 
     total_score = (pitch_score+beat_score+pronunciation_score)/3
     db.vocal_data(session['user_id'], 0, 80.25, 50.25, 70.25)
+
+    print(total_score)
+    print(pitch_score)
+    print(beat_score)
+    print(beat_score)
+    print(pronunciation_score)
+    
     
     print(artist_resampled)
     return jsonify({
@@ -160,8 +189,6 @@ def vocal_analysis():
         '발음 점수': pronunciation_score,
         '틀린 구간 초(시작, 끝)': wrong_segments,
         '틀린 가사': wrong_lyrics,
-        'artist_resampled':artist_resampled,
-         'user_resampled':user_resampled
     })
 
 @app.route("/range_check", methods=["GET", "POST"])

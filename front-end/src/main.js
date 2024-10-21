@@ -74,9 +74,12 @@ function Main() {
   const [rankingData, setRankingData] = useState([]);
   
   const [userData, setUserData] = useState({
-    level: 0,
     pitch: 0,
     beat: 0,
+    pronunciation: 0,
+    lastWeekPitch: 0,
+    lastWeekBeat: 0,
+    lastWeekPronunciation: 0,
     tone: "진단필요",
   });
 
@@ -96,15 +99,21 @@ function Main() {
         setUserName(data.user_name);
       }
 
-      //서버에서 가져온 user_tone
-      if(data.user_tone){
-        setUserData({tone:data.user_tone});
-      }
+      // 서버에서 받아온 데이터를 state에 설정
+      setUserData({
+        pitch: data.pitch_score || 0,
+        beat: data.beat_score || 0,
+        pronunciation: data.pronunciation_score || 0,
+        lastWeekPitch: data.last_week_pitch || 0,
+        lastWeekBeat: data.last_week_beat || 0,
+        lastWeekPronunciation: data.last_week_pronunciation || 0,
+        tone: data.user_tone || "진단필요"
+      });
 
-    } catch (error) {
-      console.error("Error fetching weekly ranking data:", error);
+    }catch(error){
+      console.error("Error fetching weekly ranking data:",error);
     }
-  };
+    };
 
   // 컴포넌트가 처음 렌더링될 때 주간 랭킹 데이터를 불러옴
   useEffect(() => {
@@ -173,21 +182,21 @@ function Main() {
                   <br />
                   음정
                   <br />
-                  <div className="key_score">71점</div>
+                  <div className="key_score">{userData.pitch}점</div>
                 </div>
                 <div className="grow_component_1">
                   <img src=".\img\beat.png" alt="박자 아이콘"></img>
                   <br />
                   박자
                   <br />
-                  <div className="beat_score">83점</div>
+                  <div className="beat_score">{userData.beat}점</div>
                 </div>
                 <div className="grow_component_1">
                   <img src=".\img\pronun.png" alt="발음 아이콘"></img>
                   <br />
                   발음
                   <br />
-                  <div className="pronun_score">78점</div>
+                  <div className="pronun_score">{userData.pronunciation}점</div>
                 </div>
               </div>
             </div>
@@ -201,11 +210,10 @@ function Main() {
                   <div className="battle_text_1 last">최신 기록</div>
                 </div>
 
-                <ProgressComparison title="음정" lastWeekValue={62} latestValue={72} />
-                <ProgressComparison title="박자" lastWeekValue={54} latestValue={80} />
-                <ProgressComparison title="발음" lastWeekValue={67} latestValue={99} />
-                <ProgressComparison title="템포" lastWeekValue={72} latestValue={91} />
-                <ProgressComparison title="볼륨" lastWeekValue={25} latestValue={89} />
+                <ProgressComparison title="음정" lastWeekValue={userData.lastWeekPitch} latestValue={userData.pitch} />
+                <ProgressComparison title="박자" lastWeekValue={userData.lastWeekBeat} latestValue={userData.beat} />
+                <ProgressComparison title="발음" lastWeekValue={userData.lastWeekPronunciation} latestValue={userData.pronunciation} />
+                
               </div>
             </div>
 

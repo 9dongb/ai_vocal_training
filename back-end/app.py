@@ -6,6 +6,7 @@ from flask_cors import CORS
 from module.vocal_analysis import VocalAnalysis
 from module.range_check import extract_pitch
 from module.pitch_shift import change_pitch_without_speed
+from flask import Flask,send_from_directory
 
 
 # Flask 앱 초기화 및 설정
@@ -47,6 +48,12 @@ def save_uploaded_file(request, folder_path, filename):
 #         return jsonify({'status': 'fail', 'message': 'No ranking data found'}), 404
 #     except Exception as e:
 #         return jsonify({'status': 'fail', 'message': str(e)}), 500
+
+
+#그래프 정적 경로 설정
+@app.route('/assets/graph/<path:filename>')
+def serve_image(filename):
+    return send_from_directory('assets/graph',filename)
 
 @app.route("/index", methods=["GET", "POST"])
 def index():
@@ -200,6 +207,17 @@ def range_check():
     frequency = round(float(extract_pitch(file_path)), 2)
     return jsonify({'frequency': frequency})
 
+@app.route("/wrong_segments", methods=["GET", "POST"])
+def wrong_segments():
+    wrong_count=0
+    wrong_file=[]
+    for i in os.listdir('assets/audio/artist/vocal'):
+        
+        if f"{session['artist']}-{session['title']}_segment"in i:
+            wrong_count+=1
+            wrong_file.append(i)
+    return jsonify({'wrong_count':wrong_count, 'wrong_file':wrong_file})
+
 
 @app.route("/uploads/tone", methods=["GET", "POST"])
 def ai_tone():
@@ -234,6 +252,18 @@ def my_page():
 
     # 임시로 정보 보냅니다
     return {'level':10, 'pitch':80, 'beat':70, 'tone':'발라드'}
+
+@app.route("/graph", methods=["GET", "POST"])
+def graph():
+
+    #session['artist'], session['title']
+    va = VocalAnalysis('정준일', '안아줘')
+    _, _, artist_resampled, user_resampled = va.pitch_comparison()
+    
+    artist_array = [round(ar, 2) for ar in artist_resampled]
+    user_array = [round(ur, 2) for ur in user_resampled]
+    
+    return jsonify({'artist_array':artist_array, 'user_array':user_array})
 
  #음역대 데이터(pitch)
 @app.route("/pitch_change", methods=["GET", "POST"])

@@ -82,14 +82,21 @@ function Feedback() {
           <div className="feedback_final_score feedback_component">
             <div>
               <div className="feedback_header">{scores.total_score}점</div>
-              <div className="feedback_text">좋은 점수네요! 축하드립니다</div>
+              <div className="feedback_text">
+                {scores.total_score<60&&"좀 더 연습이 필요해요! 노력하세요."}
+                {scores.total_score>=60&& scores.total_score<80&&"좋은 점수네요! 계속해서 발전하세요."}
+                {scores.total_score >= 80 && "훌륭한 점수네요! 축하드립니다."}
+              </div>
             </div>
           </div>
 
           <div className="header_section">
             <div className="header_title part_score">파트 점수</div>
             <div className="detail_label">
-              <Link to={{ pathname: "/feedbackChart", state: { songTitle, artist, imagePath } }} className="detail_link">
+            <Link to="/feedbackChart"
+              state={{ songTitle, artist, imagePath }} // state를 따로 전달
+              className="detail_link"
+             >
                 자세히 보기
               </Link>
             </div>
@@ -129,18 +136,6 @@ function Feedback() {
             </div>
           </Link>
 
-          {/* 틀린구간 출력하는 임시 코드 틀린구간 페이지로 넘겨줘야할 값 
-          {scores.mistakes.length > 0 && (
-            <div className="mistakes_section">
-              <h3>틀린 구간:</h3>
-              {scores.mistakes.map((mistake, index) => (
-                <div key={index}>
-                  시작: {mistake[0]}초, 끝: {mistake[1]}초
-                </div>
-              ))}
-            </div>
-          )}
-            */}
         </div>
         <Footer activeTab="training" />
       </div>

@@ -9,7 +9,7 @@ DATABASE_PORT = 3306
 
 DATABASE_HOST = "localhost"
 DATABASE_USER = "root"
-DATABASE_PASSWORD = "1234"
+DATABASE_PASSWORD = "1541"
 
 # Database 클래스는 MySQL 데이터베이스와 연결을 담당
 class Database:
@@ -71,7 +71,7 @@ class Database:
 
             VALUES (%s, %s, %s, %s,  %s)'''
 
-            self.cursor.execute(SQL, (user_id, 0, 80.25, 50.25, 70.25))
+            self.cursor.execute(SQL, (user_id, 0, pitch_score, beat_score, pronunciation_score))
             self.conn.commit()
             return {'status':'success'}
         except:
@@ -82,7 +82,6 @@ class Database:
             FROM singking_db.user_scores 
             WHERE user_id = %s
             '''
-
             self.cursor.execute(SQL, (user_id, ))
             data = self.cursor.fetchall()
             print(data)

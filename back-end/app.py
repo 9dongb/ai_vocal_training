@@ -179,7 +179,7 @@ def vocal_analysis():
     pronunciation_score = va.pronunciation_score() or 0.0
 
     total_score = (pitch_score+beat_score+pronunciation_score)/3
-    db.vocal_data(session['user_id'], 0, 80.25, 50.25, 70.25)
+    db.vocal_data(session['user_id'], 0, pitch_score, beat_score, pronunciation_score)
 
     print(total_score)
     print(pitch_score)

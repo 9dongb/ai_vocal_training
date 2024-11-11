@@ -5,3 +5,6 @@ models/
 *.h5
 *.wav
 *.webm
+
+__pycache__/
+*.pyc

@@ -7,11 +7,22 @@ import Footer from "./common/Footer";
 
 const WrongPart = () => {
   const location = useLocation();
-  const { songTitle, artist, imagePath, mistakes } = location.state || {
+  const { songTitle, artist, imagePath, mistakes, wrongLyrics  } = location.state || {
     songTitle: "기본 제목",
     artist: "기본 가수",
     imagePath: "./img/songs/default.png",
     mistakes: [],
+    wrongLyrics: [],
+  };
+  
+  // 각 파트의 가사 확장 상태를 관리하는 배열
+  const [showLyrics, setShowLyrics] = useState(new Array(mistakes.length).fill(false));
+
+  // 특정 파트의 가사 확장 토글
+  const toggleLyrics = (index) => {
+    const updatedShowLyrics = [...showLyrics];
+    updatedShowLyrics[index] = !updatedShowLyrics[index];
+    setShowLyrics(updatedShowLyrics);
   };
 
   // 오디오 파일 경로
@@ -97,7 +108,7 @@ const WrongPart = () => {
       }
     };
   }, [currentAudio]);
-
+  
   return (
     <div className="body">
       <div className="container">
@@ -114,24 +125,24 @@ const WrongPart = () => {
               </div>
 
               <div className="wrong_play_Btn">
-                {/* 재생 버튼 */}
-                <img
-                  className="wrong_play_img"
-                  src={isPlaying[index] ? "/img/stopbtn.png" : "/img/playbtn.png"}
-                  alt={isPlaying[index] ? "stop" : "play"}
-                  onClick={() => togglePlayPause(index)}
-                />
-                {/* 정지 버튼 */}
-                <img
-                  className="wrong_pause_img"
-                  src={"/img/pausebtn.png"}
-                  alt="pause"
-                  onClick={() => handlePauseClick(index)}
-                />
-              </div>
-              {/* 틀린 구간 정보 */}
-              <div className="wrong_segment">
-                구간: {segment[0]}초 ~ {segment[1]}초
+                {/* 구간 표시 */}
+                <div className="wrong_segment">
+                  구간: {segment[0]}초 ~ {segment[1]}초
+                </div>
+
+                {/* 더보기 버튼 */}
+                <button onClick={() => toggleLyrics(index)} className="more_button">
+                  {showLyrics[index] ? "접기" : "더보기"}
+                </button>
+                
+                {/* 가사 표시 */}
+                {showLyrics[index] && (
+                  <div className="wrong_lyrics">
+                    {wrongLyrics[index].map((line, lineIndex) => (
+                      <p key={lineIndex}>{line}</p>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           ))}

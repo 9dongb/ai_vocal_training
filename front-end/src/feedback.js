@@ -42,6 +42,7 @@ function Feedback() {
           beat_score: data["박자 점수"].toFixed(2),
           pronunciation_score: data["발음 점수"].toFixed(2),
           mistakes: data["틀린 구간 초(시작, 끝)"] || [],
+          wrong_lyrics: data["틀린 가사"] || [],
         });
         setLoading(false); // Stop loading after data is fetched
       } catch (error) {
@@ -59,7 +60,7 @@ function Feedback() {
       {loading && (
         <div className="loading-overlay">
           <div className="loading-message">
-            <p>점수 계산 중...</p>
+            <p>음성 분석 중...</p>
           </div>
         </div>
       )}

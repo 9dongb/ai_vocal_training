@@ -68,3 +68,19 @@
 .wrong_pause_img {
   margin-left: 10px;
 }
+.wrong_lyrics {
+  margin-top: 10px;
+  color: #525252;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.more_button {
+  background-color: #e0e0e0;
+  border: none;
+  color: #333;
+  padding: 6px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 8px;
+}

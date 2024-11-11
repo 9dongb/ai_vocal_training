@@ -83,8 +83,8 @@ function Feedback() {
             <div>
               <div className="feedback_header">{scores.total_score}점</div>
               <div className="feedback_text">
-                {scores.total_score<60&&"좀 더 연습이 필요해요! 노력하세요."}
-                {scores.total_score>=60&& scores.total_score<80&&"좋은 점수네요! 계속해서 발전하세요."}
+                {scores.total_score < 60 && "좀 더 연습이 필요해요! 노력하세요."}
+                {scores.total_score >= 60 && scores.total_score < 80 && "좋은 점수네요! 계속해서 발전하세요."}
                 {scores.total_score >= 80 && "훌륭한 점수네요! 축하드립니다."}
               </div>
             </div>
@@ -93,10 +93,11 @@ function Feedback() {
           <div className="header_section">
             <div className="header_title part_score">파트 점수</div>
             <div className="detail_label">
-            <Link to="/feedbackChart"
-              state={{ songTitle, artist, imagePath }} // state를 따로 전달
-              className="detail_link"
-             >
+              <Link
+                to="/feedbackChart"
+                state={{ songTitle, artist, imagePath, mistakes: scores.mistakes }} // state를 따로 전달
+                className="detail_link"
+              >
                 자세히 보기
               </Link>
             </div>
@@ -126,7 +127,7 @@ function Feedback() {
             </div>
           </div>
 
-          <Link to="/wrongPart"
+          {/* <Link to="/wrongPart"
             state={{ songTitle, artist, imagePath, mistakes: scores.mistakes }} // 틀린 구간도 전달
             className="detail_link"
           >
@@ -137,8 +138,7 @@ function Feedback() {
                 <div className="feedback_text">부족한 부분을 다시 연습해보세요</div>
               </div>
             </div>
-          </Link>
-
+          </Link> */}
         </div>
         <Footer activeTab="training" />
       </div>

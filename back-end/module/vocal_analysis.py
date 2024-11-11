@@ -55,7 +55,6 @@ class VocalAnalysis:
         if not os.path.exists(model_path):                # 모델 경로가 없으면 디렉토리 생성
             os.makedirs(model_path)
     
-        print("모델 다운로드 중")
         model = hub.load("https://tfhub.dev/google/spice/2")
         tf.saved_model.save(model, model_path)
         return model
@@ -604,8 +603,8 @@ class VocalAnalysis:
 
         if text:
             # `text`가 제대로 인식된 경우에만 Levenshtein 유사도 계산
-            lyrics_score = self.calculate_levenshtein_similarity(text)
-            print(lyrics_score)
+            lyrics_score = float(self.calculate_levenshtein_similarity(text))
+            
             return lyrics_score
         else:
             print("텍스트가 비어 있으므로 유사도를 계산할 수 없습니다.")

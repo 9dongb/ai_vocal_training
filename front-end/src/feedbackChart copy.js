@@ -7,28 +7,22 @@ import Chart from "react-apexcharts";
 
 function FeedbackChart() {
   const location = useLocation();
-  const {
-    artist,
-    songTitle,
-    imagePath,
-    mistakes,
-    pitchScore,
-    beatScore,
-    pronunciationScore,
-    totalScore
-  } = location.state || {
+  const { artist, songTitle, imagePath, mistakes } = location.state || {
     artist: "기본 가수",
     songTitle: "기본 제목",
-    imagePath: "./img/songs/default.png",
-    mistakes: [],
-    pitchScore: 0,
-    beatScore: 0,
-    pronunciationScore: 0,
-    totalScore: 0,
+    imagePath: "./img/songs/default.png", // 기본 이미지 경로
+    mistakes: [], // Default empty array for mistakes
   };
 
   const [showTuneChart, setShowTuneChart] = useState(true);
   const [showBeatChart, setShowBeatChart] = useState(true);
+
+  const [vocalScores, setVocalScores] = useState({
+    pitchScore: 0,
+    beatScore: 0,
+    pronunciationScore: 0,
+    totalScore: 0,
+  });
 
   const [tuneChartData, setTuneChartData] = useState({
     series: [
@@ -47,13 +41,10 @@ function FeedbackChart() {
 
   const fetchGraphData = async () => {
     try {
-      const response = await fetch(
-        `http://localhost:5000/graph?artist=${artist}&songTitle=${songTitle}`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`http://localhost:5000/graph?artist=${artist}&songTitle=${songTitle}`, {
+        method: "GET",
+        credentials: "include",
+      });
       const data = await response.json();
 
       setTuneChartData((prevData) => ({
@@ -63,8 +54,24 @@ function FeedbackChart() {
           { name: "사용자 음성 데이터", data: data.user_array },
         ],
       }));
+
+      const scoreResponse = await fetch("http://localhost:5000/vocal_analysis", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      const scoreData = await scoreResponse.json();
+
+      setVocalScores({
+        pitchScore: scoreData["음정 점수"],
+        beatScore: scoreData["박자 점수"],
+        pronunciationScore: scoreData["발음 점수"],
+        totalScore: scoreData["종합 점수"],
+      });
     } catch (error) {
-      console.error("Error fetching graph data:", error);
+      console.error("Error fetching graph or score data:", error);
     }
   };
 
@@ -86,7 +93,6 @@ function FeedbackChart() {
     <div className="body">
       <div className="container">
         <div className="feedback">
-          {/* 음정 그래프 */}
           <div className="feedback_chart_title">
             <div className="header_title">음정 그래프</div>
             <button className="feedback_chart_toggle" onClick={() => setShowTuneChart(!showTuneChart)}>
@@ -102,12 +108,11 @@ function FeedbackChart() {
               )}
             </div>
             <div>
-              <div className="feedback_song_info_songname feedback_header">{getFeedbackMessage(pitchScore).header}</div>
-              <div className="feedback_song_info_singer feedback_text">{getFeedbackMessage(pitchScore).text}</div>
+              <div className="feedback_song_info_songname feedback_header">{getFeedbackMessage(vocalScores.pitchScore).header}</div>
+              <div className="feedback_song_info_singer feedback_text">{getFeedbackMessage(vocalScores.pitchScore).text}</div>
             </div>
           </div>
 
-          {/* 박자 그래프 */}
           <div className="feedback_chart_title">
             <div className="header_title">박자 그래프</div>
             <button className="feedback_chart_toggle" onClick={() => setShowBeatChart(!showBeatChart)}>
@@ -127,12 +132,11 @@ function FeedbackChart() {
               )}
             </div>
             <div>
-              <div className="feedback_song_info_songname feedback_header">{getFeedbackMessage(beatScore).header}</div>
-              <div className="feedback_song_info_singer feedback_text">{getFeedbackMessage(beatScore).text}</div>
+              <div className="feedback_song_info_songname feedback_header">{getFeedbackMessage(vocalScores.beatScore).header}</div>
+              <div className="feedback_song_info_singer feedback_text">{getFeedbackMessage(vocalScores.beatScore).text}</div>
             </div>
           </div>
 
-          {/* 틀린 구간 확인 링크 */}
           <Link to="/wrongPart" state={{ songTitle, artist, imagePath, mistakes }} className="detail_link">
             <div className="header_title">틀린 구간</div>
             <div className="wrong_part feedback_component">

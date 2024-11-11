@@ -84,7 +84,7 @@ class Database:
             '''
             self.cursor.execute(SQL, (user_id, ))
             data = self.cursor.fetchall()
-            print(data)
+ 
             return data
         except:
             return {'message':'fail'}

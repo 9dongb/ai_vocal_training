@@ -96,11 +96,7 @@ function Feedback() {
             <div className="detail_label">
               <Link
                 to="/feedbackChart"
-                state={{ songTitle, artist, imagePath, mistakes: scores.mistakes, 
-                  pitchScore: scores.pitch_score,
-                  beatScore: scores.beat_score,
-                  pronunciationScore: scores.pronunciation_score,
-                  totalScore: scores.total_score }} // state를 따로 전달
+                state={{ songTitle, artist, imagePath, mistakes: scores.mistakes }} // state를 따로 전달
                 className="detail_link"
               >
                 자세히 보기

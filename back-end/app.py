@@ -7,7 +7,8 @@ from module.vocal_analysis import VocalAnalysis
 from module.range_check import extract_pitch
 from module.pitch_shift import change_pitch_without_speed
 from flask import Flask,send_from_directory
-
+import numpy as np
+import json
 
 # Flask 앱 초기화 및 설정
 app = Flask(__name__)
@@ -63,8 +64,6 @@ def index():
         user_data = db.get_user_info(session['user_id'])
         user_vocal_data = db.get_vocal_data(session['user_id'])
 
-        print(user_data)
-
         # user_vocal_data가 여러 개의 항목을 가진 리스트라고 가정하고, 7일 전과 최신 데이터를 구분
         if len(user_vocal_data) > 1:
             last_week_vocal_data = user_vocal_data[0]  # 7일 전 점수 (리스트의 첫 번째 항목)
@@ -85,7 +84,7 @@ def index():
         session['user_tone'] = user_data['user_tone']
         session['user_level'] = user_data['user_level']
 
-        print(user_vocal_data)
+
 
         # 7일 전 점수와 최신 점수를 모두 반환
         return jsonify({
@@ -174,6 +173,12 @@ def training():
 def vocal_analysis():
     va = VocalAnalysis(session['artist'], session['title'])
     pitch_score, wrong_segments, artist_resampled, user_resampled = va.pitch_comparison()
+
+    print('일단 va에서 배열 받아옴 ')
+    session['artist_resampled'] = json.dumps(artist_resampled.tolist())
+    session['user_resampled'] = json.dumps(user_resampled.tolist())
+    print('세션에 배열 저장됨')
+
     wrong_lyrics, _ = va.find_incorrect()
     beat_score = round(va.score_cover()['accuracy'], 2)
     pronunciation_score = va.pronunciation_score() or 0.0
@@ -181,14 +186,6 @@ def vocal_analysis():
     total_score = (pitch_score+beat_score+pronunciation_score)/3
     db.vocal_data(session['user_id'], 0, pitch_score, beat_score, pronunciation_score)
 
-    print(total_score)
-    print(pitch_score)
-    print(beat_score)
-    print(beat_score)
-    print(pronunciation_score)
-    
-    
-    print(artist_resampled)
     return jsonify({
         '종합 점수': total_score,
         '음정 점수': pitch_score,
@@ -256,9 +253,12 @@ def my_page():
 @app.route("/graph", methods=["GET", "POST"])
 def graph():
 
-    #session['artist'], session['title']
-    va = VocalAnalysis('정준일', '안아줘')
-    _, _, artist_resampled, user_resampled = va.pitch_comparison()
+    # va = VocalAnalysis(session['artist'], session['title'])
+
+    print('엔드포인트 graph 실행됨')
+
+    artist_resampled = np.array(json.loads(session.get('artist_resampled', '[]'))).tolist()
+    user_resampled = np.array(json.loads(session.get('user_resampled', '[]'))).tolist()
     
     artist_array = [round(ar, 2) for ar in artist_resampled]
     user_array = [round(ur, 2) for ur in user_resampled]

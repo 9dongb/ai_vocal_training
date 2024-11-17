@@ -6,17 +6,17 @@ def change_pitch_without_speed(input_file, semitones, path_num):
     file_path = ''
     output_file = ''
     if path_num == 0:
-        file_path = f"assets/audio/artist/inst/{input_file}.wav"
+        file_path = f"../front-end/public/mr/{input_file}.wav"
         if semitones >=0:
-            output_file = f"assets/audio/artist/inst/{input_file}+{semitones}.wav"
+            output_file = f"../front-end/public/mr/{input_file}+{semitones}.wav"
         else:
-            output_file = f"assets/audio/artist/inst/{input_file}-{semitones}.wav"
+            output_file = f"../front-end/public/mr/{input_file}{semitones}.wav"
     elif path_num==1:
         file_path = f"assets/audio/artist/vocal/{input_file}.wav"
         if semitones >=0:
             output_file = f"assets/audio/artist/vocal/{input_file}+{semitones}.wav"
         else:
-            output_file = f"assets/audio/artist/vocal/{input_file}-{semitones}.wav"
+            output_file = f"assets/audio/artist/vocal/{input_file}{semitones}.wav"
     
     y, sr = librosa.load(file_path)
 

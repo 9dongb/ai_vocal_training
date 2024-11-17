@@ -179,64 +179,40 @@ class VocalAnalysis:
                 wrong_segments.append((start_idx, end_idx))
         return wrong_segments
     
-    def find_incorrect(self):                        # 틀린 구간의 가사를 찾아주는 함수 정의
+    # Convert time string to seconds
+    def time_to_seconds(self, time_str):
+        mins, secs = map(float, time_str.split(":"))
+        return mins * 60 + secs
 
-        wrong_segment_file = []
-        for s in os.listdir(f'assets/audio/artist/vocal'):
-            if f'flower_segment' in s:
-                wrong_segment_file.append(s)
+    def find_incorrect_lyrics(self, wrong_segments):                        # 틀린 구간의 가사를 찾아주는 함수 정의
 
-        lyrics_path = f'assets/lyrics/{self.artist}-{self.title}.txt'
+        if wrong_segments == "":
+            return ["완벽해요!"]
         
-        incorrect_lyrics = []
-        incorrect_similar = []
-        for w in wrong_segment_file:
-            audio_path = f'assets/audio/artist/vocal/{w}'
-                
-            r = s_r.Recognizer()
-            
-            song = s_r.AudioFile(audio_path)                                # 오디오 파일 로드
+        lyrics_path = f'assets/lrc/{self.artist}-{self.title}'
+        with open(f'{lyrics_path}.lrc', encoding='UTF8') as lrc_file:
+            lines = lrc_file.readlines()
 
-            with song as source:
-                audio = r.record(source)
+        lyrics = """"""
+        for line in lines:
+            lyrics += line.strip()+"\n"
 
-            result = r.recognize_google(audio_data=audio, language='ko-KR') # 음성을 텍스트로 변환
+        result = []
+        # Parse lyrics into a list of tuples (time in seconds, text)
+        parsed_lyrics = re.findall(r"\[(\d+:\d+\.\d+)\](.*)", lyrics)
+        parsed_lyrics = [(self.time_to_seconds(time), text.strip()) for time, text in parsed_lyrics]
+        
+        # Convert wrong segments to numeric ranges
+        numeric_ranges = []
 
-            f = open(lyrics_path, 'r', encoding='utf-8')                                      # 읽기 모드로 파일 준비
-            lyrics = f.readlines()                                          # 각 줄을 element로 받는 리스트 반환
-            lyrics = list(map(lambda x: x.replace('\n',''), lyrics))        # 각 리스트에서 \n 제외하고 리스트 반환
-
-            threshold = 0.09                                                # 임계값
-
-                                                                            # SequenceMatcher 방법
-            lyrics_index = []
-            lyrics_similarity = []
-            
-            for index, ly in enumerate(lyrics):
-                answer_bytes = bytes(ly, 'utf-8')
-                input_bytes = bytes(result, 'utf-8')
-                answer_bytes_list = list(answer_bytes)
-                input_bytes_list = list(input_bytes)
-                
-                sm = difflib.SequenceMatcher(None, answer_bytes_list, input_bytes_list)
-                similar = sm.ratio()
-
-                if similar not in lyrics_similarity:                        # 중복된 가사 아닐 경우
-                    lyrics_index.append(index)
-                    lyrics_similarity.append(similar)
-                                                                            # 최대 유사도와 임계값 범위의 가사와 인덱스 추출 
-            incorrect_section = [(index, similarity) for index, similarity in zip(lyrics_index, lyrics_similarity) if max(lyrics_similarity)-threshold<= similarity <= max(lyrics_similarity)]
-
-            for index, similarity in incorrect_section:
-                print(index, similarity)
-                incorrect_lyrics.append(lyrics[index])
-                incorrect_similar.append(similarity)
-
-            
-        for w in wrong_segment_file:                # 분석 후 틀린 구간 오디오 삭제
-            os.remove(f'assets/audio/artist/{w}')
-
-        return incorrect_lyrics, incorrect_similar
+        # Extract lyrics for each range
+        for start, end in wrong_segments:
+            range_lyrics = "\n".join(
+                text for time, text in parsed_lyrics if start <= time <= end
+            )
+            result.append(range_lyrics)
+        
+        return result
 
 ##################################################################################################################################
 
@@ -608,7 +584,7 @@ class VocalAnalysis:
             return lyrics_score
         else:
             print("텍스트가 비어 있으므로 유사도를 계산할 수 없습니다.")
-            return None  # 적절한 기본값을 반환
+            return 0.0  # 적절한 기본값을 반환
 
     def change_pitch_without_speed(self, semitones):
 

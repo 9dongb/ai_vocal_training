@@ -173,13 +173,16 @@ def training():
 def vocal_analysis():
     va = VocalAnalysis(session['artist'], session['title'])
     pitch_score, wrong_segments, artist_resampled, user_resampled = va.pitch_comparison()
-
-    print('일단 va에서 배열 받아옴 ')
+    
+    print("세션이 문제라면 여기까지는 보이고")
     session['artist_resampled'] = json.dumps(artist_resampled.tolist())
     session['user_resampled'] = json.dumps(user_resampled.tolist())
-    print('세션에 배열 저장됨')
+    print("세션이 문제라면 여기까지는 안보일듯")
 
-    wrong_lyrics, _ = va.find_incorrect()
+    print("여기는 app.py의 wrong segments: ")
+    print(wrong_segments)
+    wrong_lyrics = va.find_incorrect_lyrics(wrong_segments)
+    print(wrong_lyrics)
     beat_score = round(va.score_cover()['accuracy'], 2)
     pronunciation_score = va.pronunciation_score() or 0.0
 
@@ -252,8 +255,6 @@ def my_page():
 
 @app.route("/graph", methods=["GET", "POST"])
 def graph():
-
-    # va = VocalAnalysis(session['artist'], session['title'])
 
     print('엔드포인트 graph 실행됨')
 

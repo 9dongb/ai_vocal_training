@@ -16,6 +16,7 @@ function Immediate_feedback_analyze() {
   const [showToneAdjuster, setShowToneAdjuster] = useState(true);
   const [showSplash, setShowSplash] = useState(false);
   const [showMainContent, setShowMainContent] = useState(false);
+  const [tone, setTone] = useState(0); // tone 상태 추가
 
   const handleToneAdjusterFinish = () => {
     setShowToneAdjuster(false);
@@ -28,6 +29,7 @@ function Immediate_feedback_analyze() {
   };
 
   const handlePitchChange = async (pitch) => {
+    console.log("Pitch sent to server:", pitch);
     try {
       const response = await fetch("http://localhost:5000/pitch_change", {
         method: "POST",
@@ -44,6 +46,10 @@ function Immediate_feedback_analyze() {
 
       const result = await response.json();
       console.log("Pitch 값이 성공적으로 전송되었습니다.", result);
+
+      // 서버 응답에서 tone 값 설정
+    setTone(result.pitch);
+
       setShowToneAdjuster(false);
       setShowSplash(true);
     } catch (error) {
@@ -59,8 +65,12 @@ function Immediate_feedback_analyze() {
     imagePath: "./img/songs/default.png", // 기본 이미지 경로
   };
 
-  //오디오 경로 설정
-  const audioFilePath = `./mr/${artist}-${songTitle}.wav`;
+  // 오디오 경로 설정
+const audioFilePath = `./mr/${artist}-${songTitle}${tone !== 0 ? (tone > 0 ? `+${tone}` : `${tone}`) : ""}.wav`;
+
+// 확인용 로그
+console.log("생성된 오디오 파일 경로:", audioFilePath);
+
 
   const [lyrics, setLyrics] = useState([]); // 가사 데이터 상태
   const [currentLyricIndex, setCurrentLyricIndex] = useState(0); // 현재 하이라이팅할 가사 인덱스
@@ -295,7 +305,11 @@ function Immediate_feedback_analyze() {
             />
             
           </div>
-          {showToneAdjuster && <Training_Tone onPitchChange={handlePitchChange} />}
+          {showToneAdjuster &&  <Training_Tone
+    onPitchChange={handlePitchChange}
+    tone={tone} // 부모에서 tone 상태를 전달
+    setTone={setTone} // 부모에서 상태 업데이트 함수 전달
+  />}
           {showSplash && <Training_Splash onFinish={handleSplashFinish} />}
           {/*<Training_Tone onFinish={handleSplashFinish} />*/}
           {/* showToneAdjuster && <Training_Tone onFinish={handleSplashFinish} onPitchChange={handlePitchChange} />}

@@ -96,7 +96,7 @@ function Feedback() {
             <div className="detail_label">
               <Link
                 to="/feedbackChart"
-                state={{ songTitle, artist, imagePath, mistakes: scores.mistakes, 
+                state={{ songTitle, artist, imagePath, mistakes: scores.mistakes || [], wrongLyrics: scores.wrong_lyrics || [],
                   pitchScore: scores.pitch_score,
                   beatScore: scores.beat_score,
                   pronunciationScore: scores.pronunciation_score,
@@ -131,19 +131,6 @@ function Feedback() {
               <div className="pronun_score">{scores.pronunciation_score}점</div>
             </div>
           </div>
-
-          {/* <Link to="/wrongPart"
-            state={{ songTitle, artist, imagePath, mistakes: scores.mistakes }} // 틀린 구간도 전달
-            className="detail_link"
-          >
-            <div className="header_title">틀린 구간</div>
-            <div className="wrong_part feedback_component">
-              <div>
-                <div className="feedback_header">확인 및 연습</div>
-                <div className="feedback_text">부족한 부분을 다시 연습해보세요</div>
-              </div>
-            </div>
-          </Link> */}
         </div>
         <Footer activeTab="training" />
       </div>

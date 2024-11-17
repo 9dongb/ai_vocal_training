@@ -14,6 +14,9 @@ const WrongPart = () => {
     mistakes: [],
     wrongLyrics: [],
   };
+
+  console.log("mistakes:", mistakes);
+  console.log("wrongLyrics:", wrongLyrics);
   
   // 각 파트의 가사 확장 상태를 관리하는 배열
   const [showLyrics, setShowLyrics] = useState(new Array(mistakes.length).fill(false));
@@ -115,36 +118,39 @@ const WrongPart = () => {
         <div className="song_container">
           <div className="header_title">틀린 구간</div>
           {mistakes.map((segment, index) => (
-            <div key={index} className="wrong_part_container">
-              <div className="song_img">
-                <img src={imagePath} alt={songTitle} />
-              </div>
-              <div>
-                <div className="wrong_name">{songTitle}</div>
-                <div className="wrong_artist">{artist} - 파트 {index + 1}</div>
-              </div>
+  <div key={index} className="wrong_part_container">
+    <div className="song_img">
+      <img src={imagePath} alt={songTitle} />
+    </div>
+    <div className="wrong_details">
+      <div className="wrong_name">{songTitle}</div>
+      <div className="wrong_artist">{artist} - 파트 {index + 1}</div>
+    </div>
 
-              <div className="wrong_play_Btn">
-                {/* 구간 표시 */}
-                <div className="wrong_segment">
-                  구간: {segment[0]}초 ~ {segment[1]}초
-                </div>
+    <div className="wrong_play_Btn">
+      {/* 구간 표시 */}
+      <div className="wrong_segment">
+        구간: {segment[0]}초 ~ {segment[1]}초
+      </div>
 
-                {/* 더보기 버튼 */}
-                <button onClick={() => toggleLyrics(index)} className="more_button">
-                  {showLyrics[index] ? "접기" : "더보기"}
-                </button>
-                
-                {/* 가사 표시 */}
-                {showLyrics[index] && (
-                  <div className="wrong_lyrics">
-                    {wrongLyrics[index].map((line, lineIndex) => (
-                      <p key={lineIndex}>{line}</p>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
+      {/* 더보기 버튼 */}
+      <button onClick={() => toggleLyrics(index)} className="more_button">
+        {showLyrics[index] ? "접기" : "더보기"}
+      </button>
+    </div>
+
+      {showLyrics[index] && (
+        <div className="wrong_lyrics">
+         {Array.isArray(wrongLyrics[index]) ? (
+            wrongLyrics[index].map((line, lineIndex) => (
+              <p key={lineIndex}>{line}</p>
+            ))
+         ) : (
+          <p>{wrongLyrics[index] || "가사가 없습니다."}</p>
+        )}
+         </div>
+      )}
+          </div>
           ))}
         </div>
         <Footer activeTab="training" />

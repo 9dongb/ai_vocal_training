@@ -12,6 +12,7 @@ function FeedbackChart() {
     songTitle,
     imagePath,
     mistakes,
+    wrongLyrics,
     pitchScore,
     beatScore,
     pronunciationScore,
@@ -21,11 +22,14 @@ function FeedbackChart() {
     songTitle: "기본 제목",
     imagePath: "./img/songs/default.png",
     mistakes: [],
+    wrongLyrics: [],
     pitchScore: 0,
     beatScore: 0,
     pronunciationScore: 0,
     totalScore: 0,
   };
+
+  console.log("Feedback에서 전달된 데이터:", location.state);
 
   const [showTuneChart, setShowTuneChart] = useState(true);
   const [showBeatChart, setShowBeatChart] = useState(true);
@@ -133,7 +137,7 @@ function FeedbackChart() {
           </div>
 
           {/* 틀린 구간 확인 링크 */}
-          <Link to="/wrongPart" state={{ songTitle, artist, imagePath, mistakes }} className="detail_link">
+          <Link to="/wrongPart" state={{ songTitle, artist, imagePath, mistakes, wrongLyrics }} className="detail_link">
             <div className="header_title">틀린 구간</div>
             <div className="wrong_part feedback_component">
               <div>

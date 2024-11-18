@@ -32,8 +32,6 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics.pairwise import cosine_similarity
 
 
-
-
 class VocalAnalysis:
     def __init__(self, artist=None, title=None):
         self.title = title
@@ -184,7 +182,7 @@ class VocalAnalysis:
         mins, secs = map(float, time_str.split(":"))
         return mins * 60 + secs
 
-    def find_incorrect_lyrics(self, wrong_segments):                        # 틀린 구간의 가사를 찾아주는 함수 정의
+    def find_incorrect_lyrics(self, wrong_segments, tolerance=1):                        # 틀린 구간의 가사를 찾아주는 함수 정의
 
         if wrong_segments == "":
             return ["완벽해요!"]
@@ -202,15 +200,13 @@ class VocalAnalysis:
         parsed_lyrics = re.findall(r"\[(\d+:\d+\.\d+)\](.*)", lyrics)
         parsed_lyrics = [(self.time_to_seconds(time), text.strip()) for time, text in parsed_lyrics]
         
-        # Convert wrong segments to numeric ranges
-        numeric_ranges = []
-
-        # Extract lyrics for each range
+        # Extract lyrics for each range with tolerance on start time
         for start, end in wrong_segments:
             range_lyrics = "\n".join(
-                text for time, text in parsed_lyrics if start <= time <= end
+                text for time, text in parsed_lyrics if (start - tolerance <= time <= end)
             )
-            result.append(range_lyrics)
+            # Append empty string if no lyrics are found for the range
+            result.append(range_lyrics if range_lyrics else "")
         
         return result
 

@@ -98,43 +98,37 @@ const WrongPart = () => {
           <div className="header_title">틀린 구간</div>
           {mistakes.map((segment, index) => (
             <div key={index} className="wrong_part_container">
-
               <div className="song_img">
                 <img src={imagePath} alt={songTitle} />
               </div>
-              
               <div className="wrong_details">
                 <div className="wrong_name">{songTitle}</div>
-                
+                <div className="wrong_artist">{artist} - 파트 {index + 1}</div>
               </div>
-          
+
               <div className="wrong_play_Btn">
-                {isPlaying[index] ? (
-                  <img
-                    className="wrong_play_img"
-                    src="/img/stopbtn.png"
-                    alt="stop"
-                    onClick={() => togglePlayPause(index)}
-                  />
-                ) : (
-                  <img
-                    className="wrong_play_img"
-                    src="/img/playbtn.png"
-                    alt="play"
-                    onClick={() => togglePlayPause(index)}
-                  />
-                )}
+                <img
+                  className="wrong_play_img"
+                  src={isPlaying[index] ? "/img/stopbtn.png" : "/img/playbtn.png"}
+                  alt={isPlaying[index] ? "stop" : "play"}
+                  onClick={() => togglePlayPause(index)}
+                />
+                <img
+                  className="wrong_pause_img"
+                  src={"/img/pausebtn.png"}
+                  alt="pause"
+                  onClick={() => handlePauseClick(index)}
+                />
+                
+                <div className="wrong_segment">
+                  
+                  구간: {segment[0]}초 ~ {segment[1]}초
+                 
+                </div>
+                <button onClick={() => toggleLyrics(index)} className="more_button">
+                  {showLyrics[index] ? "접기" : "더보기"}
+                </button>
               </div>
-              <div className="wrong_segment">
-              <div className="wrong_artist">{artist} - 파트 {index + 1}</div>
-                구간: {segment[0]}초 ~ {segment[1]}초
-              </div>
-
-
-              <button onClick={() => toggleLyrics(index)} className="more_button">
-                {showLyrics[index] ? "접기" : "더보기"}
-              </button>
-
 
               {showLyrics[index] && (
                 <div className="wrong_lyrics">

@@ -72,7 +72,7 @@
 }
 
 .song_lyrics_container {
-  padding: 24px 0px 0px 16px;
+  padding: 24px 16px 16px 16px;
   width: 500px;
   height: 450px;
   margin: 0 auto;
@@ -125,4 +125,10 @@
   color: #525252;
   font-size: 17px;
   margin-top: 5px;
+}
+
+.highlighted-lyric {
+  background-color: #f0f0f0; /* 하이라이팅된 가사의 배경 색상 */
+  color: #d9534f; /* 하이라이팅된 가사 색상 */
+  font-weight: bold; /* 하이라이팅된 가사는 굵게 표시 */
 }

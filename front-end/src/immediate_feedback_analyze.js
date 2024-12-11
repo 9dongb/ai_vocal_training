@@ -1,21 +1,153 @@
-import React, { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom"; // useNavigate 임포트
+import React, { useState, useRef, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom"; // useLocation 추가
 import "./immediate_feedback_analyze.css";
 import "./common/root.css";
 import Footer from "./common/Footer";
+import Training_Splash from "./training_splash";
+import Training_Tone from "./training_tone";
 
 function Immediate_feedback_analyze() {
-  const [isPlaying, setIsPlaying] = useState(false); // 재생 상태
-  const [isPaused, setIsPaused] = useState(false); // 녹음 일시 중지 상태
-  const audioRef = useRef(null); // 오디오 요소 참조
-  const [mediaRecorder, setMediaRecorder] = useState(null); // MediaRecorder 참조
-  const [recordedChunks, setRecordedChunks] = useState([]); // 녹음된 데이터 저장
-  const navigate = useNavigate(); // useNavigate 훅 사용
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const audioRef = useRef(null);
+  const [mediaRecorder, setMediaRecorder] = useState(null);
+  const [recordedChunks, setRecordedChunks] = useState([]);
+  const navigate = useNavigate();
+  const [showToneAdjuster, setShowToneAdjuster] = useState(true);
+  const [showSplash, setShowSplash] = useState(false);
+  const [showMainContent, setShowMainContent] = useState(false);
+  const [tone, setTone] = useState(0); // tone 상태 추가
+
+  const handleToneAdjusterFinish = () => {
+    setShowToneAdjuster(false);
+    setShowSplash(true);
+  };
+
+  const handleSplashFinish = () => {
+    setShowSplash(false);
+    setShowMainContent(true);
+  };
+
+  const handlePitchChange = async (pitch) => {
+    console.log("Pitch sent to server:", pitch);
+    try {
+      const response = await fetch("http://localhost:5000/pitch_change", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ pitch }),
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Pitch 값이 성공적으로 전송되었습니다.", result);
+
+      // 서버 응답에서 tone 값 설정
+    setTone(result.pitch);
+
+      setShowToneAdjuster(false);
+      setShowSplash(true);
+    } catch (error) {
+      console.error("서버 통신 오류:", error);
+    }
+  };
+
+  // useLocation으로 전달된 state에서 songTitle, artist, imagePath 받아오기
+  const location = useLocation();
+  const { songTitle, artist, imagePath } = location.state || {
+    songTitle: "기본 제목",
+    artist: "기본 가수",
+    imagePath: "./img/songs/default.png", // 기본 이미지 경로
+  };
+
+  // 오디오 경로 설정
+const audioFilePath = `./mr/${artist}-${songTitle}${tone !== 0 ? (tone > 0 ? `+${tone}` : `${tone}`) : ""}.wav`;
+
+// 확인용 로그
+console.log("생성된 오디오 파일 경로:", audioFilePath);
+
+
+  const [lyrics, setLyrics] = useState([]); // 가사 데이터 상태
+  const [currentLyricIndex, setCurrentLyricIndex] = useState(0); // 현재 하이라이팅할 가사 인덱스
+  const lyricRefs = useRef([]);
+
+  // 백엔드에서 가사 파일을 불러오는 함수
+  const fetchLyrics = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/training", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          songTitle: songTitle,  // 선택된 노래 제목
+          artist: artist        // 선택된 가수명
+        }),
+        credentials: "include",
+      });
+
+      const data = await response.json();
+      setLyrics(data.lyrics); // 받아온 배열을 바로 상태에 저장
+    } catch (error) {
+      console.error("Failed to fetch lyrics:", error);
+    }
+  };
+
+  // 컴포넌트가 마운트될 때 가사 불러오기
+  useEffect(() => {
+    fetchLyrics(); // 가사를 불러오는 API 호출
+  }, []);
+
+  // 오디오 시간 업데이트 이벤트 핸들러
+  const handleTimeUpdate = () => {
+    if (!audioRef.current) return; // audioRef가 초기화되지 않았으면 리턴
+    const currentTime = audioRef.current.currentTime;
+
+    // 현재 재생 시간에 맞는 가사를 찾기
+    const currentIndex = lyrics.findIndex(
+      (lyric, index) =>
+        currentTime >= lyric[0] &&
+        (index === lyrics.length - 1 || currentTime < lyrics[index + 1][0])
+    );
+
+    if (currentIndex !== -1 && currentIndex !== currentLyricIndex) {
+      setCurrentLyricIndex(currentIndex);
+    // 현재 가사로 스크롤
+    if (lyricRefs.current[currentIndex]) {
+      lyricRefs.current[currentIndex].scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }
+};
 
   // 오디오 재생 및 녹음 시작
   const handleStart = async () => {
     if (audioRef.current) {
-      audioRef.current.play();
+      // 오디오 로드가 완료되었을 때만 재생
+      if (audioRef.current.readyState >= 3) {
+        audioRef.current.play();
+        setIsPlaying(true);
+        setIsPaused(false);
+        console.log("오디오 재생 시작");
+      } else {
+        audioRef.current.addEventListener("canplay", () => {
+          audioRef.current.play();
+          setIsPlaying(true);
+          setIsPaused(false);
+          console.log("오디오 재생 시작");
+        });
+        audioRef.current.load(); // 오디오 파일을 로드
+      }
+    } else {
+      console.error("오디오 참조가 null입니다.");
+      return;
     }
 
     try {
@@ -38,9 +170,7 @@ function Immediate_feedback_analyze() {
       };
 
       recorder.start();
-      setIsPlaying(true);
-      setIsPaused(false);
-      console.log("녹음 및 재생 시작");
+      console.log("녹음 시작");
     } catch (error) {
       console.error("녹음 시작 오류:", error);
     }
@@ -50,7 +180,7 @@ function Immediate_feedback_analyze() {
   const handlePause = () => {
     if (mediaRecorder && mediaRecorder.state === "recording") {
       mediaRecorder.pause();
-      audioRef.current.pause();
+      if (audioRef.current) audioRef.current.pause();
       setIsPaused(true);
       setIsPlaying(false);
       console.log("녹음 및 재생 일시 중지");
@@ -61,7 +191,7 @@ function Immediate_feedback_analyze() {
   const handleResume = () => {
     if (mediaRecorder && mediaRecorder.state === "paused") {
       mediaRecorder.resume();
-      audioRef.current.play();
+      if (audioRef.current) audioRef.current.play();
       setIsPaused(false);
       setIsPlaying(true);
       console.log("녹음 및 재생 재개");
@@ -72,14 +202,24 @@ function Immediate_feedback_analyze() {
   const handleStop = () => {
     if (mediaRecorder && mediaRecorder.state !== "inactive") {
       mediaRecorder.stop();
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
       setIsPlaying(false);
       setIsPaused(false);
       console.log("녹음 중지");
-      navigate("/feedback"); // 녹음이 중지되면 feedback 페이지로 이동
-    }
+      // navigate로 feedback 페이지로 이동, 노래 정보를 state로 전달
+      navigate("/feedback", {
+        state: {
+          songTitle: songTitle,
+          artist: artist,
+          imagePath: imagePath,
+        },
+      });
+    } 
   };
+
 
   // 서버로 녹음된 파일 전송 함수
   const uploadToServer = async (blob) => {
@@ -90,6 +230,7 @@ function Immediate_feedback_analyze() {
       const response = await fetch("http://localhost:5000/uploads", {
         method: "POST",
         body: formData,
+        credentials: "include",
       });
       const result = await response.json();
       console.log("서버 응답:", result);
@@ -107,67 +248,40 @@ function Immediate_feedback_analyze() {
 
             <div className="song_info_container">
               <div className="song_img">
-                <img src="img\songs\cover_hug.png" alt="안아줘" />
+                <img src={imagePath} alt={songTitle} />
               </div>
               <div>
-                <div className="song_name ">안아줘</div>
-                <div className="song_artist">정준일</div>
+                <div className="song_name ">{songTitle}</div> {/* 제목 표시 */}
+                <div className="song_artist">{artist}</div> {/* 가수 표시 */}
               </div>
             </div>
 
             <div className="song_lyrics_container">
               <div className="lyrics_header">
-                <img src="img\lyrics.png" alt="안아줘" />
+                <img src="img/lyrics.png" alt={songTitle} />
                 <span>Lyrics</span>
               </div>
               <div className="lyrics_text">
-                서러운 맘을 못 이겨
-                <br /> 잠 못 들던 어둔 밤을 또 견디고
-                <br /> 내 절망관 상관없이
-                <br /> 무심하게도 아침은 날 깨우네
-                <br />
-                <br /> 상처는 생각보다 쓰리고
-                <br /> 아픔은 생각보다 깊어가
-                <br /> 널 원망하던 수많은 밤이 내겐 지옥 같아
-                <br />
-                <br /> 내 곁에 있어줘, 내게 머물러줘
-                <br /> 네 손을 잡은 날 놓치지 말아줘
-                <br /> 이렇게 네가 한걸음 멀어지면
-                <br /> 내가 한 걸음 더 가면 되잖아
-                <br />
-                <br /> 하루에도 수천 번씩
-                <br /> 네 모습을 되뇌이고 생각했어
-                <br /> 내게 했던 모진 말들
-                <br /> 그 싸늘한 눈빛 차가운 표정들
-                <br />
-                <br /> 넌 참 예쁜 사람이었잖아
-                <br /> 넌 참 예쁜 사람이었잖아
-                <br /> 제발 내게 이러지 말아줘, 넌 날 잘 알잖아
-                <br />
-                <br /> 내 곁에 있어줘, 내게 머물러줘
-                <br /> 네 손을 잡은 날 놓치지 말아줘
-                <br /> 이렇게 네가 한걸음 멀어지면
-                <br /> 내가 한 걸음 더 가면 되잖아
-                <br />
-                <br /> 내겐 내가 없어, 난 자신이 없어
-                <br /> 네가 없는 하루 견딜 수가 없어
-                <br /> 이젠 뭘 어떻게 해야 할지 모르겠어,
-                <br /> 네가 없는 난
-                <br />
-                <br /> 그냥 날 안아줘, 나를 좀 안아줘
-                <br /> 아무 말 말고서 내게 달려와줘
-                <br /> 외롭고 불안하기만 한 맘으로
-                <br /> 이렇게 널 기다리고 있잖아
-                <br /> 난 너를 사랑해, 난 너를 사랑해
-                <br /> 긴 침묵 속에서 소리 내 외칠게
-                <br /> 어리석고 나약하기만 한 내 마음을
+              {lyrics.map((lyric, index) => (
+                  <p
+                    key={index}
+                    ref={(el) => (lyricRefs.current[index] = el)} // 각 가사 요소에 ref 할당
+                    className={index === currentLyricIndex ? "highlighted-lyric" : ""}
+                  >
+                    {lyric[1]} {/* 가사 텍스트 */}
+                  </p>
+                ))}
               </div>
             </div>
 
             <div className="btn_container">
               {/* Play 버튼: 녹음 시작 또는 재개 */}
               <div className="playbtn_container">
-                <img src={isPlaying ? "/img/stopbtn.png" : "/img/playbtn.png"} alt="Play or Pause Button" onClick={isPlaying ? handlePause : handleStart} />
+                <img
+                  src={isPlaying ? "/img/stopbtn.png" : "/img/playbtn.png"}
+                  alt="Play or Pause Button"
+                  onClick={isPlaying ? handlePause : handleStart}
+                />
                 <p className="btn_text">{isPlaying ? "일시정지" : isPaused ? "재개" : "재생"}</p>
               </div>
 
@@ -183,8 +297,23 @@ function Immediate_feedback_analyze() {
               </div>
             </div>
 
-            <audio ref={audioRef} src="./mr/hug_me.wav" />
+            <audio
+              ref={audioRef}
+              src={audioFilePath} // Dynamic audio path
+              preload="auto"
+              onTimeUpdate={handleTimeUpdate} // 오디오 재생 시간 업데이트 핸들러 등록
+            />
+            
           </div>
+          {showToneAdjuster &&  <Training_Tone
+    onPitchChange={handlePitchChange}
+    tone={tone} // 부모에서 tone 상태를 전달
+    setTone={setTone} // 부모에서 상태 업데이트 함수 전달
+  />}
+          {showSplash && <Training_Splash onFinish={handleSplashFinish} />}
+          {/*<Training_Tone onFinish={handleSplashFinish} />*/}
+          {/* showToneAdjuster && <Training_Tone onFinish={handleSplashFinish} onPitchChange={handlePitchChange} />}
+          {showSplash && <Training_Splash onFinish={handleSplashFinish} />*/}
         </div>
         <Footer activeTab="training" />
       </div>

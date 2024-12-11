@@ -19,16 +19,33 @@ import re
 import requests
 import Levenshtein
 from flask import jsonify
+
+import librosa
+import soundfile as sf
+
+import pandas as pd
+from tensorflow import keras
+from datetime import datetime
+from keras.models import load_model
+from keras.utils import to_categorical
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics.pairwise import cosine_similarity
+
+
 class VocalAnalysis:
-    def __init__(self, artist, title):
+    def __init__(self, artist=None, title=None):
         self.title = title
         self.artist = artist
-        self.artist_audio_path = f'assets/audio/artist/test/{self.artist}-{self.title}.wav'
+        self.artist_audio_path = f'assets/audio/artist/vocal/{self.artist}-{self.title}.wav'
         self.user_audio_path = f'assets/audio/user/{self.artist}-{self.title}.wav'
         self.lrc_path = f'assets/lrc/{self.artist}-{self.title}.lrc'
+
         self.sampling_rate = 16000
         self.model = self.model_load()
 
+    def recording_result(self):
+        audio_data, sample_rate = librosa.load(self.user_audio_path, sr=None)
+        sf.write(self.user_audio_path, audio_data, sample_rate)
 
     def model_load(self):                           
         model_path = os.path.join(os.getcwd(), "models")  # 모델 경로
@@ -36,7 +53,6 @@ class VocalAnalysis:
         if not os.path.exists(model_path):                # 모델 경로가 없으면 디렉토리 생성
             os.makedirs(model_path)
     
-        print("모델 다운로드 중")
         model = hub.load("https://tfhub.dev/google/spice/2")
         tf.saved_model.save(model, model_path)
         return model
@@ -63,14 +79,14 @@ class VocalAnalysis:
         
         resampled_pitch_outputs = interp_func(resampled_time)                                       # 보간법 적용하여 음정 출력을 원래 신호의 길이에 맞춤
 
-        file_path = audio_path.replace('.wav', '.npy')                                              # 오디오 파일명과 같은 이름으로 npy 파일 생성
+        # file_path = audio_path.replace('.wav', '.npy')                                              # 오디오 파일명과 같은 이름으로 npy 파일 생성
 
-        np.save(file_path, resampled_pitch_outputs)                                                 # 오디오 배열 저장
+        # np.save(file_path, resampled_pitch_outputs)                                                 # 오디오 배열 저장
 
         return pitch_outputs, resampled_pitch_outputs, original_y, sr
     
     def pitch_comparison(self):
-        y, sr =  librosa.load(self.artist_audio_path, mono=True)
+        y, sr =  librosa.load(self.user_audio_path, mono=True)
         duration = len(y)/sr
 
         artist_original, artist_resampled, artist_y, _  = self.extract_pitches(self.artist_audio_path, duration)
@@ -132,7 +148,7 @@ class VocalAnalysis:
 
         correct_score = round((np.sum(result=='Correct') / len(result))*100, 2)
 
-        return correct_score, resampled_wrong_segments
+        return correct_score, resampled_wrong_segments, artist_resampled, user_resampled
 
     def find_wrong_segments(self, result, status=0):                        # 틀린 구간 시작점과 끝점 찾는 함수 (2초를 초과하여 틀렸을 경우만)
         wrong_segments = []
@@ -161,64 +177,38 @@ class VocalAnalysis:
                 wrong_segments.append((start_idx, end_idx))
         return wrong_segments
     
-    def find_incorrect(self):                        # 틀린 구간의 가사를 찾아주는 함수 정의
+    # Convert time string to seconds
+    def time_to_seconds(self, time_str):
+        mins, secs = map(float, time_str.split(":"))
+        return mins * 60 + secs
 
-        wrong_segment_file = []
-        for s in os.listdir(f'assets/audio/artist/test'):
-            if f'flower_segment' in s:
-                wrong_segment_file.append(s)
+    def find_incorrect_lyrics(self, wrong_segments, tolerance=1):                        # 틀린 구간의 가사를 찾아주는 함수 정의
 
-        lyrics_path = f'assets/lyrics/{self.artist}-{self.title}.txt'
+        if wrong_segments == "":
+            return ["완벽해요!"]
         
-        incorrect_lyrics = []
-        incorrect_similar = []
-        for w in wrong_segment_file:
-            audio_path = f'assets/audio/artist/test/{w}'
-                
-            r = s_r.Recognizer()
-            
-            song = s_r.AudioFile(audio_path)                                # 오디오 파일 로드
+        lyrics_path = f'assets/lrc/{self.artist}-{self.title}'
+        with open(f'{lyrics_path}.lrc', encoding='UTF8') as lrc_file:
+            lines = lrc_file.readlines()
 
-            with song as source:
-                audio = r.record(source)
+        lyrics = """"""
+        for line in lines:
+            lyrics += line.strip()+"\n"
 
-            result = r.recognize_google(audio_data=audio, language='ko-KR') # 음성을 텍스트로 변환
-
-            f = open(lyrics_path, 'r', encoding='utf-8')                                      # 읽기 모드로 파일 준비
-            lyrics = f.readlines()                                          # 각 줄을 element로 받는 리스트 반환
-            lyrics = list(map(lambda x: x.replace('\n',''), lyrics))        # 각 리스트에서 \n 제외하고 리스트 반환
-
-            threshold = 0.09                                                # 임계값
-
-                                                                            # SequenceMatcher 방법
-            lyrics_index = []
-            lyrics_similarity = []
-            
-            for index, ly in enumerate(lyrics):
-                answer_bytes = bytes(ly, 'utf-8')
-                input_bytes = bytes(result, 'utf-8')
-                answer_bytes_list = list(answer_bytes)
-                input_bytes_list = list(input_bytes)
-                
-                sm = difflib.SequenceMatcher(None, answer_bytes_list, input_bytes_list)
-                similar = sm.ratio()
-
-                if similar not in lyrics_similarity:                        # 중복된 가사 아닐 경우
-                    lyrics_index.append(index)
-                    lyrics_similarity.append(similar)
-                                                                            # 최대 유사도와 임계값 범위의 가사와 인덱스 추출 
-            incorrect_section = [(index, similarity) for index, similarity in zip(lyrics_index, lyrics_similarity) if max(lyrics_similarity)-threshold<= similarity <= max(lyrics_similarity)]
-
-            for index, similarity in incorrect_section:
-                print(index, similarity)
-                incorrect_lyrics.append(lyrics[index])
-                incorrect_similar.append(similarity)
-
-            
-        for w in wrong_segment_file:                # 분석 후 틀린 구간 오디오 삭제
-            os.remove(f'assets/audio/artist/{w}')
-
-        return incorrect_lyrics, incorrect_similar
+        result = []
+        # Parse lyrics into a list of tuples (time in seconds, text)
+        parsed_lyrics = re.findall(r"\[(\d+:\d+\.\d+)\](.*)", lyrics)
+        parsed_lyrics = [(self.time_to_seconds(time), text.strip()) for time, text in parsed_lyrics]
+        
+        # Extract lyrics for each range with tolerance on start time
+        for start, end in wrong_segments:
+            range_lyrics = "\n".join(
+                text for time, text in parsed_lyrics if (start - tolerance <= time <= end)
+            )
+            # Append empty string if no lyrics are found for the range
+            result.append(range_lyrics if range_lyrics else "")
+        
+        return result
 
 ##################################################################################################################################
 
@@ -567,21 +557,106 @@ class VocalAnalysis:
         return str(similarity)
     
     def pronunciation_score(self):
-        r = s_r.Recognizer() # 객체 생성
+        r = s_r.Recognizer()  # 객체 생성
+        text = ""  # 기본값 설정
 
+        # 오디오 파일에서 음성을 인식
         with s_r.AudioFile(self.user_audio_path) as source:
             audio = r.record(source)
+
         try:
             # 구글 음성 API로 인식 (하루 제한 50회)
-            text=r.recognize_google(audio, language="ko-KR")
-            print("말하고 있는 음성: "+text)
+            text = r.recognize_google(audio, language="ko-KR")
+            print("말하고 있는 음성: " + text)
         except s_r.UnknownValueError:
             print("음성 인식을 이해하는데 실패했습니다.")
         except s_r.RequestError as e:
-            print("요청 실패: {0}".format(e)) # API Key 오류, 네트워크 문제 등
+            print("요청 실패: {0}".format(e))  # API Key 오류, 네트워크 문제 등
 
-        # lrc = self.read_lrc(self.lrc_path)
+        if text:
+            # `text`가 제대로 인식된 경우에만 Levenshtein 유사도 계산
+            lyrics_score = float(self.calculate_levenshtein_similarity(text))
+            
+            return lyrics_score
+        else:
+            print("텍스트가 비어 있으므로 유사도를 계산할 수 없습니다.")
+            return 0.0  # 적절한 기본값을 반환
 
-        lyrics_score = self.calculate_levenshtein_similarity(text)
-        print(lyrics_score)
-        return lyrics_score
+    def change_pitch_without_speed(self, semitones):
+
+
+
+
+        # 파일 경로
+        inst_file = f"assets/audio/artist/inst/{self.artist}-{self.title}.wav"
+        input = [self.artist_audio_path, inst_file]
+
+        for i in input:
+            y, sr = librosa.load(i)
+
+            # Change pitch without changing speed
+            y_shifted = librosa.effects.pitch_shift(y, sr=sr, n_steps=semitones)
+
+            pm = '+'if semitones > 0 else '-'
+            output_file = f"{i.replace('.wav','')}{pm}{semitones}.wav"
+
+            # Save the pitch-shifted audio
+            sf.write(output_file, y_shifted, sr)
+
+    def extract_features(self, model, data):
+        intermediate_layer_model = keras.Model(inputs=model.inputs, outputs=model.get_layer(index=-2).output)
+        features = intermediate_layer_model.predict(data)
+        return features
+    
+    def tone_classification(self):
+        labels = ['발라드', '락', '트로트', '댄스']
+
+        model = load_model('models/voice_char.h5')
+        now = datetime.now()
+        le = LabelEncoder()
+
+        max_pad_len = 10000
+
+        file_name = 'assets/audio/user/tone/user_tone.wav' # 변경할 부분
+        y, sr = librosa.load(file_name, sr=None) 
+        test_data = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40)
+
+        pad_width = max_pad_len - test_data.shape[1]
+
+        if pad_width > 0:
+            test_data = np.pad(test_data, pad_width=((0, 0), (0, pad_width)), mode='constant')
+        else:
+            test_data = test_data[:, :max_pad_len]
+
+        n_columns = 10000
+        n_row = 40
+        n_channels = 1
+
+        test_data = tf.reshape(test_data, [-1, n_row, n_columns, n_channels])
+
+        # ------DB에서 데이터 읽어들이는 작업 필요--------
+        # 지금은 샘플의 파일을 넣어 작성
+        df = pd.read_pickle('models/voice_data.pkl')
+
+        x = np.array(df.feature.tolist())
+        y = np.array(df.label.tolist())
+        yy = to_categorical(le.fit_transform(y))
+        # -----------------------------------------------
+        database_data = x
+        database_labels = yy
+        title = df.title.tolist()
+
+        input_features = self.extract_features(model, test_data)
+        database_features = self.extract_features(model, database_data)
+
+        similarity_scores = cosine_similarity(input_features, database_features)
+
+        recommended_indices = np.argsort(similarity_scores[0])[::-1]
+        recommended_songs = [title[i] for i in recommended_indices[:5]]
+        class_labels = int(np.argmax(model.predict(test_data)))
+        
+        label = labels[class_labels]
+
+        recommend_dict = {'label' : label, 'recommend' : recommended_songs}
+
+        return recommend_dict

@@ -8,7 +8,7 @@ const WeeklyRanking = ({ rankingData }) => {
 
     return (
         <div className="ranking_container">
-            {rankingData.map((item, index) => (
+            {rankingData.slice(0,5).map((item, index) => (
                 <div key={index} className="ranking_item">
                     <span className="rank">{item.rank}</span>
                     <span className="user_name">{item.user_name}</span>

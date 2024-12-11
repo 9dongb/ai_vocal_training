@@ -7,9 +7,9 @@ import pymysql
 DATABASE_DB = "singking_db"
 DATABASE_PORT = 3306
 
-DATABASE_HOST = "localhost"
+DATABASE_HOST = ""
 DATABASE_USER = "root"
-DATABASE_PASSWORD = "1541"
+DATABASE_PASSWORD = ""
 
 # Database 클래스는 MySQL 데이터베이스와 연결을 담당
 class Database:

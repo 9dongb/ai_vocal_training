@@ -10,8 +10,13 @@
 - **Database**: MySQL
 - **Server**: AWS EC2, AWS RDS
 
+##👨‍💼 담당 작업(구동빈)
+- AWS EC2, AWS RDS 설정
+- Flask 소스코드 작성 및 관리
+- Python을 활용한 음성 데이터 분석(음정 비교 기능, 틀린 구간과 가사 찾기) 구현
+
 ## 1. 개요
-- 보컬 트레이닝을 필요로 하지만 학원에서 소모되는 시간과 비용이 부담스러운 음치 및 박치에게 시 · 공간적인 제약 없이 보컬 향상에 도움을 주는 것을 목적으로 함
+- 보컬 트레이닝을 필요로 하지만 학원에서 소모되는 시간과 비용이 부담스러운 **음치 및 박치**에게 시 · 공간적인 제약 없이 보컬 향상에 도움을 주는 것을 목적으로 함
 <img src="https://github.com/user-attachments/assets/89b3538c-924b-4a13-a0b2-e08f9263fad0" width="70%" height="70%"/>
 
 ## 2. 페이지 소개
@@ -32,8 +37,8 @@
 
 ■ 트레이닝 페이지 - 정밀 트레이닝
 - 원하는 곡을 선정한 후 노래 가창 가능
-- 사용자 노래의 음정과 박자를 원곡 가수의 노래와 비교하여 점수를 산정하고, 두가지 그래프로 표시해 줌
-- 틀린 구간을 선별해 가사와 반주를 실행해 반복 연습 가능
+- 사용자 노래의 **음정과 박자**를 원곡 가수의 노래와 비교하여 점수를 산정하고, 두가지 **그래프로 표시**해 줌
+- **틀린 구간을 선별**해 가사와 반주를 실행해 반복 연습 가능
 <img src="https://github.com/user-attachments/assets/9cceae9a-cbfc-4656-961a-3c62b8dbd509" width="20%" height="30%"/>
 <img src="https://github.com/user-attachments/assets/b2cbd1bf-3b79-4782-97d6-1d64a02525cd" width="20%" height="30%"/>
 <img src="https://github.com/user-attachments/assets/d6cfddd7-292c-4f1d-8aab-4635fc0e05f9" width="20%" height="30%"/>

@@ -7,8 +7,8 @@
 - **AI**: Tensorflow
 - **Front-End**: HTML, CSS, JavaScript
 - **Back-End**: Flask
-- **Database**: MySQL
-- **Server**: AWS EC2, AWS RDS
+- **Database**: AWS RDS
+- **Server**: AWS EC2
 
 ### 👨‍💼 담당 작업(구동빈)
 - AWS EC2, AWS RDS 설정

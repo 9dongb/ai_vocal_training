@@ -10,7 +10,7 @@
 - **Database**: MySQL
 - **Server**: AWS EC2, AWS RDS
 
-##👨‍💼 담당 작업(구동빈)
+### 👨‍💼 담당 작업(구동빈)
 - AWS EC2, AWS RDS 설정
 - Flask 소스코드 작성 및 관리
 - Python을 활용한 음성 데이터 분석(음정 비교 기능, 틀린 구간과 가사 찾기) 구현

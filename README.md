@@ -7,6 +7,7 @@
 - **AI**: Tensorflow
 - **Back-end**: Python3, Flask
 - **Front-end**: HTML, CSS, JavaScript, React.js
+- **Server**: AWS EC2
 - **Database**: AWS RDS, MySQL
 
 ### 👨‍💼 담당 작업(구동빈)
@@ -73,7 +74,7 @@
 - 트레이닝 기록 확인
 <img src="https://github.com/user-attachments/assets/dd010647-f565-43e1-8ef3-c4321c95b49f" width="30%" height="30%"/>
 
-## 3. 트러블 슈팅
+## 3. 핵심 트러블 슈팅
 
 <details>
 <summary>Flask의 session 정보 유지 불가 문제 </summary>
@@ -90,4 +91,14 @@
     - (1) Flask 서버에서 CORS(Cross-Origin Resource Sharing) 허용 코드를 추가한다. `CORS(app, supports_credentials=True)`
     - (2) js파일의 Fetch 메서드에 쿠키 값 공유 허용 코드를 추가한다. `credentials: "include"`
     - 위 두가지 설정 이후 session 정보 공유 문제는 모두 해결되었다.
+</details>
+
+
+## 4. 그 외 트러블 슈팅
+
+<details>
+<summary> AWS EC2 서버 설정 </summary>
+
+  - 일부 녹음이 Python 파일 자체로 진행되었는데, 그대로 AWS EC2 서버에 업로드하니 녹음 장치를 찾을 수 없다는 오류가 발생했다.
+  - 녹음 과정을 전부 프론트엔드에서 받고 mp3 파일만 서버로 전송해 받아 사용하는 방식으로 변경해 해결되었다.
 </details>

@@ -42,8 +42,9 @@
 
 **■ 트레이닝 페이지 - AI 음색 진단**
 
-<img src="https://github.com/user-attachments/assets/44b9d4db-fe26-48cc-811c-8d238f8712f2" width="20%" height="30%"/>
-<img src="https://github.com/user-attachments/assets/031cc45a-eaa9-4082-813f-d60f5ed687fd" width="20%" height="30%"/>
+<img src="https://github.com/user-attachments/assets/44b9d4db-fe26-48cc-811c-8d238f8712f2" width="20%" height="20%"/>
+
+<img src="https://github.com/user-attachments/assets/b776150a-f792-44f9-bb76-b0d130e3d72c" width="20%" height="20%"/>
 
 - 사용자가 마이크 버튼을 눌러 음성을 녹음할 수 있는 기능 구현
 - 입력된 목소리가 **네 개의 음색 정보**(발라드, 댄스, 락, 트로트) 중 가장 어울리는(유사한) 음색을 사용자에게 부여하도록 구현
@@ -64,15 +65,15 @@
 
 **■ 트레이닝 페이지 - 음역대 진단**
 
-<img src="https://github.com/user-attachments/assets/c48378c5-ad99-4d79-b4f5-7259cd6844bf" width="30%" height="30%"/>
+<img src="https://github.com/user-attachments/assets/c48378c5-ad99-4d79-b4f5-7259cd6844bf" width="20%" height="20%"/>
 
 - 피아노 건반을 눌러서 재생되는 음정을 따라 음을 내면 사용자가 소리낸 음정과 주파수를 보여줌
 - 1옥타브 ~ 3옥타브까지 확인 가능
 
 **■ 매칭 페이지**
 
-<img src="https://github.com/user-attachments/assets/84711f62-c9e5-4fb3-8b0c-232a9d062839" width="30%" height="30%"/>
-<img src="https://github.com/user-attachments/assets/87e46a35-395a-4bbd-a6b0-e57f4e109b85" width="30%" height="30%"/>
+<img src="https://github.com/user-attachments/assets/84711f62-c9e5-4fb3-8b0c-232a9d062839" width="20%" height="20%"/>
+<img src="https://github.com/user-attachments/assets/87e46a35-395a-4bbd-a6b0-e57f4e109b85" width="20%" height="20%"/>
 
 - 사용자 간의 멘토 멘티 매칭 (예정)
 - 전문가와의 멘토 멘티 매칭 (예정)
@@ -80,7 +81,7 @@
 
 **■ 마이 페이지**
 
-<img src="https://github.com/user-attachments/assets/dd010647-f565-43e1-8ef3-c4321c95b49f" width="30%" height="30%"/>
+<img src="https://github.com/user-attachments/assets/dd010647-f565-43e1-8ef3-c4321c95b49f" width="20%" height="20%"/>
 
 - 음색 정보 확인 기능 구현
 - 보컬 데이터 확인 기능 구현

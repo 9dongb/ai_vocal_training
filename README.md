@@ -80,11 +80,15 @@
   
   - 문제 정의
     - Flask의 session에 정보를 저장했을 때, 다른 엔드 포인트에서 session 정보를 인식하지 못하는 문제가 발생했다.
+    - 
   - 사실 수집
     - 엔드포인트 하나 하나 session을 설정해보았지만, 해당 session을 설정했던 엔드포인트에서만 session 정보를 인식하고 나머지는 모두 인식하지 못한다.
   - 원인추론
     - 새로운 폴더와 HTML 파일 만들어 간단히 session 기능을 테스트해보니 문제가 없다.
     - 같은 코드를 js 파일과 함께 실행하면 session 정보를 인식하지 못한다.
     - js 파일에서 session 정보를 저장하는 것에 문제가 생긴 것 아닐까?
-  - 조치방안과 
+  - 조치 방안과 결과
+    - (1) Flask 서버에서 CORS(Cross-Origin Resource Sharing) 허용 코드를 추가한다. `CORS(app, supports_credentials=True)`
+    - (2) js파일의 Fetch 메서드에 쿠키 값 공유 허용 코드를 추가한다. `credentials: "include"`
+    - 위 두가지 설정 이후 session 정보 공유 문제는 모두 해결되었다.
 </details>

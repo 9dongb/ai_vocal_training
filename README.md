@@ -17,11 +17,6 @@
 ## 1. 개요
 보컬 트레이닝을 필요로 하지만 소모되는 시간과 비용이 부담스러운 음치 및 박치 직장인, 학생에게 시·공간적인 제약 없이 사용자의 노래 가창 요소(발성, 음정, 박자, 가사 전달력)에 대한 **음성 데이터 분석**과 **인공지능 모델**을 활용해 사용자 맞춤형 피드백을 통해 노래 실력 향상에 도움을 기여할 수 있는 인공지능 기반의 보컬 코칭 서비스입니다. 영상만 재생시켜 주는 기존 보컬 코칭 서비스와는 달리 음성 데이터 분석과 인공지능을 활용하여 차별화된 서비스를 제공하는 것을 목적으로 개발하였습니다.
 
-### 프로젝트 주요 내용
--
--
--
-
 <img src="https://github.com/user-attachments/assets/89b3538c-924b-4a13-a0b2-e08f9263fad0" width="70%" height="70%"/>
 
 ## 2. 페이지 소개
@@ -102,8 +97,12 @@
     - 같은 코드를 js 파일과 함께 실행하면 session 정보를 인식하지 못한다.
     - js 파일에서 session 정보를 저장하는 것에 문제가 생긴 것 아닐까?
   - 조치 방안과 결과
-    - (1) Flask 서버에서 CORS(Cross-Origin Resource Sharing) 허용 코드를 추가한다. `CORS(app, supports_credentials=True)`
-    - (2) js파일의 Fetch 메서드에 쿠키 값 공유 허용 코드를 추가한다. `credentials: "include"`
+    - (1) Flask 서버에서 CORS(Cross-Origin Resource Sharing) 허용 코드를 추가한다.
+    
+      `CORS(app, supports_credentials=True)`
+    - (2) js파일의 Fetch 메서드에 쿠키 값 공유 허용 코드를 추가한다.
+    
+      `credentials: "include"`
     - 위 두가지 설정 이후 session 정보 공유 문제는 모두 해결되었다.
 </details>
 
@@ -111,7 +110,7 @@
 ## 4. 그 외 트러블 슈팅
 
 <details>
-<summary> AWS EC2 서버 설정 </summary>
+<summary> AWS EC2 서버 녹음 장치 문제 </summary>
 
   - 일부 녹음이 Python 파일 자체로 진행되었는데, 그대로 AWS EC2 서버에 업로드하니 녹음 장치를 찾을 수 없다는 오류가 발생했다.
   - 녹음과 관련된 부분은 전부 프론트엔드 처리하고 녹음 받은 mp3 파일만 서버로 전송히여 서버에서는 mp3 파일을 받아 사용하는 방식으로 변경해 해결되었다.

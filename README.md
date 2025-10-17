@@ -189,7 +189,7 @@ npm start
 
 - Pull Request 및 Issue 등록 환영
 - 본 프로젝트는 **MIT License**를 따릅니다. 라이선스 전문은 [LICENSE](링크/to/LICENSE) 파일에서 확인하실 수 있습니다.
-- 
+
 ---
 
 ## Acknowledgements (감사 및 출처)
